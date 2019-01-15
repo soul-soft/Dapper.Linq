@@ -1,0 +1,95 @@
+{
+  "version": 3,
+  "targets": {
+    ".NETFramework,Version=v4.5": {
+      "Dapper/1.42.0": {
+        "type": "package",
+        "frameworkAssemblies": [
+          "Microsoft.CSharp"
+        ],
+        "compile": {
+          "lib/net45/Dapper.dll": {}
+        },
+        "runtime": {
+          "lib/net45/Dapper.dll": {}
+        }
+      }
+    }
+  },
+  "libraries": {
+    "Dapper/1.42.0": {
+      "sha512": "4tJlY93CSDCdqh6eEYR7au06R+moIgEQs5/rNrPYvSu+kwtlWnUPFzaWPSmk3biS9qKeI/QsJkfVWnSdb95dTw==",
+      "type": "package",
+      "path": "dapper/1.42.0",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "dapper.1.42.0.nupkg.sha512",
+        "dapper.nuspec",
+        "lib/net35/Dapper.dll",
+        "lib/net35/Dapper.pdb",
+        "lib/net35/Dapper.xml",
+        "lib/net40/Dapper.dll",
+        "lib/net40/Dapper.pdb",
+        "lib/net40/Dapper.xml",
+        "lib/net45/Dapper.dll",
+        "lib/net45/Dapper.pdb",
+        "lib/net45/Dapper.xml"
+      ]
+    }
+  },
+  "projectFileDependencyGroups": {
+    ".NETFramework,Version=v4.5": [
+      "Dapper >= 1.42.0"
+    ]
+  },
+  "packageFolders": {
+    "C:\\Users\\Administrator\\.nuget\\packages\\": {},
+    "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder": {}
+  },
+  "project": {
+    "version": "1.0.0.1",
+    "restore": {
+      "projectUniqueName": "D:\\GitHub\\Dapper.Common\\Dapper.Common\\Dapper.Common.csproj",
+      "projectName": "Dapper.Common",
+      "projectPath": "D:\\GitHub\\Dapper.Common\\Dapper.Common\\Dapper.Common.csproj",
+      "packagesPath": "C:\\Users\\Administrator\\.nuget\\packages\\",
+      "outputPath": "D:\\GitHub\\Dapper.Common\\Dapper.Common\\obj\\",
+      "projectStyle": "PackageReference",
+      "fallbackFolders": [
+        "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
+      ],
+      "configFilePaths": [
+        "C:\\Users\\Administrator\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+      ],
+      "originalTargetFrameworks": [
+        "net45"
+      ],
+      "sources": {
+        "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+        "https://www.nuget.org/api/v2/": {}
+      },
+      "frameworks": {
+        "net45": {
+          "projectReferences": {}
+        }
+      },
+      "warningProperties": {
+        "warnAsError": [
+          "NU1605"
+        ]
+      }
+    },
+    "frameworks": {
+      "net45": {
+        "dependencies": {
+          "Dapper": {
+            "target": "Package",
+            "version": "[1.42.0, )"
+          }
+        }
+      }
+    }
+  }
+}
