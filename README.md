@@ -21,7 +21,9 @@
         [TestMethod]
         public void TestMethod1()
         {
-                                 
+            var session = SessionFactory.GetSession();    
+            session.Buffer=true;
+            session.Timeout=1000;
             session.Open(true);
             var row = 0;
             //Inset
