@@ -102,11 +102,12 @@
                 MuName = "cc"
             };
             //分页查询:必须条件IsChild==1，动态条件MuName不为空则MuName必须包含cc
-            req.Query
+            var query = new SqlQuery()
                 .And(s => s.IsChild == 1)
-                .AndThen(req.MuName != null, s => s.MuName.Like(req.MuName));
+                .And(req.MuName != null, s => s.MuName.Like(req.MuName));
+                
             list = session.From<T_SYSTEM_MENUS>()
-                .Where(req.Query)
+                .Where(query)
                 .Asc(s => s.MuType)
                 .Skip(1,10,out total)
                 .Select();
