@@ -79,7 +79,7 @@
                 .Where(m => m.IsChild == 1 && m.Id.Between(1, 23) && m.MuType.In(new int[] { 1, 2, 3 }))
                 .Asc(s => s.Id)
                 .Desc(s => s.Sort)
-                .Top(0, 10)
+                .Limit(0, 10)
                 .Select();
 
             //Select Single
@@ -109,9 +109,10 @@
                 .Select();
            //Sql查询
            var list1 = session.From("student")
-                .Where("Age>@Age1", new { Age1 = 10 })
+                .Where("Age>@Age1")
                 .GroupBy("GANDER")
-                .Having("SUM(AGE)>@Age2", new { Age2 = 54 })
+                .Having("SUM(AGE)>@Age2")
+                .Param(new {Age1=10,Age2=100})
                 .Top(10)
                 .Select("GANDER,SUM(AGE) AS AGE");
                 
@@ -252,6 +253,5 @@
             }
         }
     }
-}
 
 
