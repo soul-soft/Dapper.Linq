@@ -6,7 +6,7 @@
      {
        
 
-         [TestInitialize]//这段代码只配置一次
+        [TestInitialize]//这段代码只配置一次
         public void TestInit()
         {
             //配置会话工厂
