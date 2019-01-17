@@ -13,7 +13,7 @@
             var connectionString = ConfigurationManager.ConnectionStrings["mysql"].ConnectionString;
             //配置数据源
             SessionFactory.DataSource = () => new MySqlConnection(connectionString);
-            //开启代理
+            //开启Session的静态代理，记录会话SQL，session.Logger()
             SessionFactory.SessionProxy = true;
             //下划线不敏感
             SessionFactory.MatchNamesWithUnderscores = true;
