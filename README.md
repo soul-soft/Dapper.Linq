@@ -77,7 +77,9 @@
                 .Delete();
 
             //Select ALL:查询菜单子节点并且id在1~23之间的,按Id升序,Sort降序查第一页所有数据
-            var list = session.From<T_SYSTEM_MENUS>().Lock().Select();//悲观锁 for update
+            var list = session.From<T_SYSTEM_MENUS>()
+                        .XLock()//悲观锁 for update
+                        .Select();
             var list = session.From<T_SYSTEM_MENUS>()
                 .Where(m => m.IsChild == 1 && m.Id.Between(1, 23) && m.MuType.In(new int[] { 1, 2, 3 }))
                 .Asc(s => s.Id)
