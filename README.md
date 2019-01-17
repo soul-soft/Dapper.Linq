@@ -58,6 +58,11 @@
                 .Set(s => s.MuDesc, "Child")//必须更新
                 .Where(s => s.IsChild == 1)
                 .Update();
+            //引用更新
+            session.From<T_SYSTEM_MENUS>()
+                .Set(1>2,s => s.Age.Eq(s.Age+10))/Age=Age+10              
+                .Where(s => s.IsChild == 1)
+                .Update();
             //Delete:根据Id删除，及删除Id==2的
             row = session.From<T_SYSTEM_MENUS>().Delete(new T_SYSTEM_MENUS()
             {
