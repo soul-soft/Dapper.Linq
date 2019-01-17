@@ -10,6 +10,7 @@
         [TestMethod]
         public void TestMethod1()
         {
+            //SessionFactory 只需要配置一次，应写在程序启动，或者静态代码块中
              //配置会话工厂
             var connectionString = "server=127.0.0.1;user id=root;password=1024;database=test;pooling=True;minpoolsize=1;maxpoolsize=100;connectiontimeout=180;";
             //配置数据源
@@ -21,6 +22,8 @@
             //获取一个代理会话
             var session = SessionFactory.GetSession();
             //开启事物/关闭自动提交
+            
+            
             session.Open(true);
             var row = 0;
             //Inset
