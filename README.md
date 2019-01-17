@@ -49,7 +49,7 @@
              var row = session.From<T_USER>()
                 .Set(s => s.Balance, 100)
                 .Set(s => s.Version, Guid.NewGuid().ToString())//设置新的版本号
-                .Where(s => s.Id == 1&&a.Version==user.Version)//老的版本号
+                .Where(s => s.Id == 1&&a.Version==user.Version)//老的版本号，由数据库检查版本号是否被其他事物修改
                 .Update();
              if(row==0)
              {
