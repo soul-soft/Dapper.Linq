@@ -6,24 +6,22 @@
      {
        
 
-
-        [TestMethod]
-        public void TestMethod1()
+         [TestInitialize]//这段代码只配置一次
+        public void TestInit()
         {
-            //SessionFactory 只需要配置一次，应写在程序启动，或者静态代码块中
-             //配置会话工厂
-            var connectionString = "server=127.0.0.1;user id=root;password=1024;database=test;pooling=True;minpoolsize=1;maxpoolsize=100;connectiontimeout=180;";
+            //配置会话工厂
+            var connectionString = ConfigurationManager.ConnectionStrings["mysql"].ConnectionString;
             //配置数据源
             SessionFactory.DataSource = () => new MySqlConnection(connectionString);
             //开启代理
             SessionFactory.SessionProxy = true;
             //下划线不敏感
-            SessionFactory.MatchNamesWithUnderscores = true;         
-            //获取一个代理会话
-            var session = SessionFactory.GetSession();
-            //开启事物/关闭自动提交
-            
-            
+            SessionFactory.MatchNamesWithUnderscores = true;
+        }
+        [TestMethod]
+        public void TestMethod1()
+        {
+                                 
             session.Open(true);
             var row = 0;
             //Inset
