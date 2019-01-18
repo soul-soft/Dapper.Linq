@@ -13,8 +13,8 @@ namespace Dapper.Common
         }
         public ColumnAttribute(string name,bool identity=false)
         {
-            this.Name = name;
-            this.Identity = identity;
+            Name = name;
+            Identity = identity;
         }
     }
 }

@@ -19,9 +19,12 @@ namespace UnitTest
         [TestMethod]
         public void TestMethod1()
         {
-            var session1 = SessionFactory.GetSession();
-            var asc = session1.From<Student>().Where(a => a.Age > 1000).Exists();
-           
+            var sesion = SessionFactory.GetSession();
+            sesion.From("student")
+               .Set("age=20")
+               .Where("age>400")
+               .Update();
+
         }
     }
 }
