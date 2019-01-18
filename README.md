@@ -9,7 +9,7 @@
         static Program()
         {
             //配置数据源为mysql
-            SessionFactory.DataSource = ()=>new MySqlConnection("server=47.94.59.37;user id=mammothcode;password=mammothcode;database=test;");
+            SessionFactory.DataSource = ()=>new MySqlConnection("server=127.0.0.1;user id=root;password=1024;database=test;");
             //下划线不敏感,默认不区分大小写
             SessionFactory.MatchNamesWithUnderscores = true;
             //Session使用静态代理,记录会话日志,生产模式设置false
