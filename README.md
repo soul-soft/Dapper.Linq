@@ -2,7 +2,7 @@
 
 
     QQ群：642555086
-     class Program
+    class Program
     {
         //类加载时配置一次
         static Program()
