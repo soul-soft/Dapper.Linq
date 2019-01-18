@@ -26,6 +26,10 @@
                 session = SessionFactory.GetSession();
                 //开启事物,取消自动提交
                 session.Open(false);
+                //事物操作1
+                //事物操作2
+                //事物操作1
+                //.......
                 //提交事物
                 session.Commit();
             }
