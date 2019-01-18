@@ -6,21 +6,24 @@
      {
        
 
-
+        [TestInitialize]//这段代码只配置一次
+        public void TestInit()
+        {
+            //配置会话工厂
+            var connectionString = ConfigurationManager.ConnectionStrings["mysql"].ConnectionString;
+            //配置数据源
+            SessionFactory.DataSource = () => new MySqlConnection(connectionString);
+            //开启Session的静态代理，记录会话SQL，session.Logger()
+            SessionFactory.SessionProxy = true;
+            //下划线不敏感
+            SessionFactory.MatchNamesWithUnderscores = true;
+        }
         [TestMethod]
         public void TestMethod1()
         {
-             //配置会话工厂
-            var connectionString = "server=127.0.0.1;user id=root;password=1024;database=test;pooling=True;minpoolsize=1;maxpoolsize=100;connectiontimeout=180;";
-            //配置数据源
-            SessionFactory.DataSource = () => new MySqlConnection(connectionString);
-            //开启代理
-            SessionFactory.SessionProxy = true;
-            //下划线不敏感
-            SessionFactory.MatchNamesWithUnderscores = true;         
-            //获取一个代理会话
-            var session = SessionFactory.GetSession();
-            //开启事物/关闭自动提交
+            var session = SessionFactory.GetSession();    
+            session.Buffer=true;
+            session.Timeout=1000;
             session.Open(true);
             var row = 0;
             //Inset
@@ -46,7 +49,7 @@
              var row = session.From<T_USER>()
                 .Set(s => s.Balance, 100)
                 .Set(s => s.Version, Guid.NewGuid().ToString())//设置新的版本号
-                .Where(s => s.Id == 1&&a.Version==user.Version)//老的版本号
+                .Where(s => s.Id == 1&&a.Version==user.Version)//老的版本号，由数据库检查版本号是否被其他事物修改
                 .Update();
              if(row==0)
              {
@@ -56,6 +59,11 @@
             session.From<T_SYSTEM_MENUS>()
                 .Set(1>2,s => s.MuName, "Child")//当条件成立时
                 .Set(s => s.MuDesc, "Child")//必须更新
+                .Where(s => s.IsChild == 1)
+                .Update();
+            //引用更新
+            session.From<T_SYSTEM_MENUS>()
+                .Set(1>2,s => s.Age.Eq(s.Age+10))/Age=Age+10              
                 .Where(s => s.IsChild == 1)
                 .Update();
             //Delete:根据Id删除，及删除Id==2的
@@ -69,12 +77,14 @@
                 .Delete();
 
             //Select ALL:查询菜单子节点并且id在1~23之间的,按Id升序,Sort降序查第一页所有数据
-            var list = session.From<T_SYSTEM_MENUS>().Lock().Select();//悲观锁 for update
+            var list = session.From<T_SYSTEM_MENUS>()
+                        .XLock()//悲观锁 for update
+                        .Select();
             var list = session.From<T_SYSTEM_MENUS>()
                 .Where(m => m.IsChild == 1 && m.Id.Between(1, 23) && m.MuType.In(new int[] { 1, 2, 3 }))
                 .Asc(s => s.Id)
                 .Desc(s => s.Sort)
-                .Top(0, 10)
+                .Limit(0, 10)
                 .Select();
 
             //Select Single
@@ -94,19 +104,21 @@
                 MuName = "cc"
             };
             //分页查询:必须条件IsChild==1，动态条件MuName不为空则MuName必须包含cc
-            req.Query
+            var query = new SqlQuery()
                 .And(s => s.IsChild == 1)
-                .AndThen(req.MuName != null, s => s.MuName.Like(req.MuName));
+                .And(req.MuName != null, s => s.MuName.Like(req.MuName));
+                
             list = session.From<T_SYSTEM_MENUS>()
-                .Where(req.Query)
+                .Where(query)
                 .Asc(s => s.MuType)
                 .Skip(1,10,out total)
                 .Select();
            //Sql查询
            var list1 = session.From("student")
-                .Where("Age>@Age1", new { Age1 = 10 })
+                .Where("Age>@Age1")
                 .GroupBy("GANDER")
-                .Having("SUM(AGE)>@Age2", new { Age2 = 54 })
+                .Having("SUM(AGE)>@Age2")
+                .Param(new {Age1=10,Age2=100})
                 .Top(10)
                 .Select("GANDER,SUM(AGE) AS AGE");
                 
@@ -246,6 +258,6 @@
                 }
             }
         }
-
     }
-}
+
+
