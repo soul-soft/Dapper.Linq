@@ -152,6 +152,7 @@ namespace Dapper.Common
                 Param = param,
                 Time = DateTime.Now,
                 Text = "Execute",
+                Row = row,
                 Watch = watch.ElapsedMilliseconds
             });
             return row;
@@ -168,6 +169,7 @@ namespace Dapper.Common
                 Param = param,
                 Time = DateTime.Now,
                 Text = "ExecuteAsync",
+                Row = task.Result,
                 Watch = watch.ElapsedMilliseconds
             });
             return task;
@@ -379,6 +381,11 @@ namespace Dapper.Common
                 builder.AppendFormat("Method:{0}\n", item.Text);
                 builder.AppendFormat("Time:{0}\n", item.Time.ToString("yyyy-MM-dd HH:mm:ss"));
                 builder.AppendFormat("Watch:{0}\n", item.Watch);
+                if (item.Row!=null)
+                {
+                    builder.AppendFormat("Change:{0}\n", item.Row);
+                }
+                builder.AppendFormat("Execute:");
                 var logger = item.ParamToFormat();
                 if (!string.IsNullOrEmpty(logger))
                 {
@@ -390,7 +397,7 @@ namespace Dapper.Common
                 }
                 builder.Append("\n");
             }
-            builder.AppendFormat("=========================== {0} ===========================\n", DateTime.Now.ToString("==================="));
+            builder.AppendFormat("===========================================================================\n");
             return builder.ToString();
         }
         #endregion

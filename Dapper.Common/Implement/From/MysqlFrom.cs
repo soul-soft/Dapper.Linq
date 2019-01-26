@@ -472,7 +472,7 @@ namespace Dapper.Common
             }
             else if (condition)
             {
-                DeleteSql.AppendFormat(" WHERE {0}=@{0}", TypeMapper.GetIdentityFieldName<T>());
+                DeleteSql.AppendFormat(" WHERE {0} = @{0}", TypeMapper.GetIdentityFieldName<T>());
             }
             return DeleteSql.ToString();
         }

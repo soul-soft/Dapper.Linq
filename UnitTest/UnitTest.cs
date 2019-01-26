@@ -26,7 +26,7 @@ namespace UnitTest
             var sesion = SessionFactory.GetSession();
             /*****************INSERT*******************/
             //Dapper
-            var row1 = sesion.Execute("insert into student(Age,ME_NAME)values(@Age,@MeName)", new { Age = 20, MeName = "Dapper" });
+            var row1 = sesion.Execute("insert into student(Age,NAME)values(@Age,@MeName)", new { Age = 20, MeName = "Dapper" });
             //扩展
             var row2 = sesion.From<Student>().Insert(new Student()
             {
@@ -121,6 +121,7 @@ namespace UnitTest
                 .Or(a => a.Id.In(new[] { 1, 2, 3 }))
                 .And(a => 1 > 2 ? a.Name.Like("cc%") : a.Id > 100);
             var res = sesion.From<Student>().Where(query).Exists();
+            var rows6 = sesion.From<Student>().Where(a=>a.Id==29).DeleteAsync();
             /*****************会话日志*******************/
             var aa = sesion.Logger();
 

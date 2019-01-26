@@ -16,6 +16,7 @@ namespace Dapper.Common
         public DateTime Time { get; set; }
         public long Watch { get; set; }
         public string Text { get; set; }
+        public int? Row { get; set; }
         /// <summary>
         /// 参数格式化
         /// </summary>
