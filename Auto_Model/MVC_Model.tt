@@ -53,7 +53,7 @@ namespace Dapper.Enhance.Model
 <#}#> 
 			};
 		}
-		public SqlQuery<<#=Utils.Pascal(table.TableName)#>> Query = new SqlQuery<<#=Utils.Pascal(table.TableName)#>>();
+		public WhereQuery<<#=Utils.Pascal(table.TableName)#>> Query = new WhereQuery<<#=Utils.Pascal(table.TableName)#>>();
 	}
 }
 
