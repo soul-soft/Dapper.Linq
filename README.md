@@ -81,7 +81,7 @@
         public DateTime? CreateTime { get; set; }
     }
     三、常用API
-    var sesion = SessionFactory.GetSession();
+             var sesion = SessionFactory.GetSession();
             /*****************INSERT*******************/
             //Dapper
             var row1 = sesion.Execute("insert into student(Age,ME_NAME)values(@Age,@MeName)", new { Age = 20, MeName = "Dapper" });
