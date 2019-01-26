@@ -142,7 +142,7 @@
             .Where(a => a.Id == 30)
             //要执行的操作
             .Update();
-        /*****************UPDATE*******************/
+        /*****************DELETE*******************/
         //更新实体ID删除
         var row7 = sesion.From<Student>().Delete(new Student() { Id = 30 });
         //条件删除
