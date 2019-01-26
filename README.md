@@ -143,7 +143,7 @@
             //要执行的操作
             .Update();
         /*****************DELETE*******************/
-        //更新实体ID删除
+        //更据实体ID删除
         var row7 = sesion.From<Student>().Delete(new Student() { Id = 30 });
         //条件删除
         var row8 = sesion.From<Student>()
