@@ -8,13 +8,13 @@ using System.Threading.Tasks;
 
 namespace Dapper.Common
 {
-    public static class SqlOperator
+    public static class WhereOperator
     {
         #region Cache
         public static List<string> Methods = new List<string>();
-        static SqlOperator()
+        static WhereOperator()
         {
-            Methods = typeof(SqlOperator).GetMethods().Select(m => m.Name).ToList();
+            Methods = typeof(WhereOperator).GetMethods().Select(m => m.Name).ToList();
         }
         #endregion
 
@@ -269,8 +269,7 @@ namespace Dapper.Common
                     break;
                 case "NotRegexp":
                     name = "NOT REGEXP";
-                    break;
-                default: throw new Exception("该操作符未定义");
+                    break;              
             }
             return name;
         }
@@ -318,7 +317,8 @@ namespace Dapper.Common
                 case ExpressionType.Divide:
                     name = "/";
                     break;
-                default:
+                case ExpressionType.Default:
+                    name = string.Empty;
                     break;
             }
             return name;

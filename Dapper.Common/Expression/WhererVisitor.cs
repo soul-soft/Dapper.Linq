@@ -8,21 +8,21 @@ using System.Threading.Tasks;
 
 namespace Dapper.Common
 {
-    
+
     /// <summary>
     /// 数据库表达式构建
     /// </summary>
-    public class SqlVisitor : ExpressionVisitor
+    public class WhererVisitor : ExpressionVisitor
     {
         #region Props
         /// <summary>
         /// 表达式字符串
         /// </summary>
-        private StringBuilder SqlExpression = new StringBuilder();
+        private StringBuilder WhereExpression = new StringBuilder();
         /// <summary>
         /// 表达式参数
         /// </summary>
-        private DynamicParameters Args = new DynamicParameters();
+        private DynamicParameters Param = new DynamicParameters();
         /// <summary>
         /// 类型
         /// </summary>
@@ -34,7 +34,7 @@ namespace Dapper.Common
         /// <summary>
         /// 当前运算符
         /// </summary>
-        private string CurrentOperator;
+        private string CurrentOperator=null;
         #endregion
 
         #region Method
@@ -45,17 +45,17 @@ namespace Dapper.Common
         private void SetValue(object value)
         {
             var name = Names.Pop();
-            var key = string.Format("@{0}_{1}", name, Args.ParameterNames.Count());
-            if (value==null)
+            var key = string.Format("@{0}_{1}", name, Param.ParameterNames.Count());
+            if (value == null)
             {
                 throw new Exception(string.Format("参数:{0}不能null", key));
             }
-            if (CurrentOperator == "LIKE" || CurrentOperator == "NOT LIKE")
-            {
-                value = "%" + value.ToString() + "%";
-            }
-            SqlExpression.Append(key);
-            Args.Add(key, value);
+            //if (CurrentOperator == "LIKE" || CurrentOperator == "NOT LIKE")
+            //{
+            //    value = "%" + value.ToString() + "%";
+            //}
+            WhereExpression.Append(key);
+            Param.Add(key, value);
         }
         /// <summary>
         /// 构建表达式字段
@@ -64,7 +64,7 @@ namespace Dapper.Common
         /// <param name="memberName"></param>
         private void SetName(string columnName, string memberName)
         {
-            SqlExpression.Append(columnName);
+            WhereExpression.Append(columnName);
             Names.Push(memberName);
             if (CurrentOperator == "BETWEEN" || CurrentOperator == "NOT BETWEEN")
             {
@@ -78,57 +78,58 @@ namespace Dapper.Common
         /// <typeparam name="T"></typeparam>
         /// <param name="expressionList"></param>
         /// <returns></returns>
-        public string Build<T>(ref DynamicParameters args, List<SqlExpression> expressionList)
+        public string Build<T>(ref DynamicParameters param, List<WhereExpression> expressionList)
         {
             ClassType = typeof(T);
-            Args = args;
+            Param = param;
             foreach (var item in expressionList)
             {
-                if (!string.IsNullOrEmpty(item.Include))
+                if ((!item.Equals(expressionList.FindAll(f => string.IsNullOrEmpty(f.StringWhere)).First())) && item.ExpressType != ExpressionType.Default)
                 {
-                    SqlExpression.Append(item.Include);
+                    WhereExpression.AppendFormat(" {0} ", WhereOperator.GetOperator(item.ExpressType ?? 0));
+                }               
+                if (!string.IsNullOrEmpty(item.StringWhere))
+                {
+                    WhereExpression.Append(item.StringWhere);
                     continue;
                 }
-                if ((!item.Equals(expressionList.FindAll(f => string.IsNullOrEmpty(f.Include)).First())) && !SqlExpression.ToString().EndsWith("("))
-                {
-                    SqlExpression.AppendFormat(" {0} ", SqlOperator.GetOperator(item.ExpressType));
-                }
-                Visit(item.Expression);
+                Visit(item.Expression);               
+               
             }
-            return SqlExpression.ToString().Replace("()","");
+            return WhereExpression.ToString();
         }
         #endregion
 
         #region Visiit
         protected override Expression VisitMethodCall(MethodCallExpression node)
         {
-            if (node.Arguments.Count == 3 && SqlOperator.Methods.Contains(node.Method.Name) && node.Method.Name.Contains("Between"))
+            if (node.Arguments.Count == 3 && WhereOperator.Methods.Contains(node.Method.Name) && node.Method.Name.Contains("Between"))
             {
-                SqlExpression.Append("(");
-                CurrentOperator = SqlOperator.GetOperator(node.Method.Name);
+                WhereExpression.Append("(");
+                CurrentOperator = WhereOperator.GetOperator(node.Method.Name);
                 Visit(node.Arguments[0]);
-                SqlExpression.AppendFormat(" {0} ", CurrentOperator);
+                WhereExpression.AppendFormat(" {0} ", CurrentOperator);
                 Visit(node.Arguments[1]);
-                SqlExpression.AppendFormat(" AND ");
+                WhereExpression.AppendFormat(" AND ");
                 Visit(node.Arguments[2]);
-                SqlExpression.Append(")");
+                WhereExpression.Append(")");
             }
-            else if (node.Arguments.Count == 2 && SqlOperator.Methods.Contains(node.Method.Name))
+            else if (node.Arguments.Count == 2 && WhereOperator.Methods.Contains(node.Method.Name))
             {
-                SqlExpression.Append("(");
+                WhereExpression.Append("(");
                 Visit(node.Arguments[0]);
-                CurrentOperator = SqlOperator.GetOperator(node.Method.Name);
-                SqlExpression.AppendFormat(" {0} ", CurrentOperator);
+                CurrentOperator = WhereOperator.GetOperator(node.Method.Name);
+                WhereExpression.AppendFormat(" {0} ", CurrentOperator);
                 Visit(node.Arguments[1]);
-                SqlExpression.Append(")");
+                WhereExpression.Append(")");
             }
-            else if (node.Arguments.Count == 1 && SqlOperator.Methods.Contains(node.Method.Name))
+            else if (node.Arguments.Count == 1 && WhereOperator.Methods.Contains(node.Method.Name))
             {
-                SqlExpression.Append("(");
+                WhereExpression.Append("(");
                 Visit(node.Arguments[0]);
-                CurrentOperator = SqlOperator.GetOperator(node.Method.Name);
-                SqlExpression.AppendFormat(" {0} ", CurrentOperator);
-                SqlExpression.Append(")");
+                CurrentOperator = WhereOperator.GetOperator(node.Method.Name);
+                WhereExpression.AppendFormat(" {0} ", CurrentOperator);
+                WhereExpression.Append(")");
             }
             else
             {
@@ -139,12 +140,12 @@ namespace Dapper.Common
         }
         protected override Expression VisitBinary(BinaryExpression node)
         {
-            SqlExpression.Append("(");
+            WhereExpression.Append("(");
             Visit(node.Left);
-            CurrentOperator = SqlOperator.GetOperator(node.NodeType);
-            SqlExpression.AppendFormat(" {0} ", CurrentOperator);
+            CurrentOperator = WhereOperator.GetOperator(node.NodeType);
+            WhereExpression.AppendFormat(" {0} ", CurrentOperator);
             Visit(node.Right);
-            SqlExpression.Append(")");
+            WhereExpression.Append(")");
             return node;
         }
         protected override Expression VisitMember(MemberExpression node)
@@ -176,7 +177,7 @@ namespace Dapper.Common
         {
             if (node.NodeType == ExpressionType.Not)
             {
-                SqlExpression.Append(SqlOperator.GetOperator(node.NodeType));
+                WhereExpression.Append(WhereOperator.GetOperator(node.NodeType));
                 Visit(node.Operand);
             }
             else
@@ -273,6 +274,6 @@ namespace Dapper.Common
         #endregion
 
     }
-   
+
 
 }

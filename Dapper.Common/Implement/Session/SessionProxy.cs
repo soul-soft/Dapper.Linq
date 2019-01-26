@@ -149,7 +149,7 @@ namespace Dapper.Common
             Loggers.Add(new SessionLogger()
             {
                 Sql = sql,
-                Value = param,
+                Param = param,
                 Time = DateTime.Now,
                 Text = "Execute",
                 Watch = watch.ElapsedMilliseconds
@@ -165,7 +165,7 @@ namespace Dapper.Common
             Loggers.Add(new SessionLogger()
             {
                 Sql = sql,
-                Value = param,
+                Param = param,
                 Time = DateTime.Now,
                 Text = "ExecuteAsync",
                 Watch = watch.ElapsedMilliseconds
@@ -181,7 +181,7 @@ namespace Dapper.Common
             Loggers.Add(new SessionLogger()
             {
                 Sql = sql,
-                Value = param,
+                Param = param,
                 Time = DateTime.Now,
                 Text = "ExecuteReader",
                 Watch = watch.ElapsedMilliseconds
@@ -197,7 +197,7 @@ namespace Dapper.Common
             Loggers.Add(new SessionLogger()
             {
                 Sql = sql,
-                Value = param,
+                Param = param,
                 Time = DateTime.Now,
                 Text = "ExecuteReaderAsync",
                 Watch = watch.ElapsedMilliseconds
@@ -213,7 +213,7 @@ namespace Dapper.Common
             Loggers.Add(new SessionLogger()
             {
                 Sql = sql,
-                Value = param,
+                Param = param,
                 Time = DateTime.Now,
                 Text = "ExecuteScalar",
                 Watch = watch.ElapsedMilliseconds
@@ -229,7 +229,7 @@ namespace Dapper.Common
             Loggers.Add(new SessionLogger()
             {
                 Sql = sql,
-                Value = param,
+                Param = param,
                 Time = DateTime.Now,
                 Text = "ExecuteScalar",
                 Watch = watch.ElapsedMilliseconds
@@ -245,7 +245,7 @@ namespace Dapper.Common
             Loggers.Add(new SessionLogger()
             {
                 Sql = sql,
-                Value = param,
+                Param = param,
                 Time = DateTime.Now,
                 Text = "ExecuteScalarAsync",
                 Watch = watch.ElapsedMilliseconds
@@ -261,7 +261,7 @@ namespace Dapper.Common
             Loggers.Add(new SessionLogger()
             {
                 Sql = sql,
-                Value = param,
+                Param = param,
                 Time = DateTime.Now,
                 Text = "ExecuteScalarAsync",
                 Watch = watch.ElapsedMilliseconds
@@ -280,7 +280,7 @@ namespace Dapper.Common
             Loggers.Add(new SessionLogger()
             {
                 Sql = sql,
-                Value = param,
+                Param = param,
                 Time = DateTime.Now,
                 Text = "Query",
                 Watch = watch.ElapsedMilliseconds
@@ -296,7 +296,7 @@ namespace Dapper.Common
             Loggers.Add(new SessionLogger()
             {
                 Sql = sql,
-                Value = param,
+                Param = param,
                 Time = DateTime.Now,
                 Text = "QueryAsync",
                 Watch = watch.ElapsedMilliseconds
@@ -312,7 +312,7 @@ namespace Dapper.Common
             Loggers.Add(new SessionLogger()
             {
                 Sql = sql,
-                Value = param,
+                Param = param,
                 Time = DateTime.Now,
                 Text = "Query",
                 Watch = watch.ElapsedMilliseconds
@@ -328,7 +328,7 @@ namespace Dapper.Common
             Loggers.Add(new SessionLogger()
             {
                 Sql = sql,
-                Value = param,
+                Param = param,
                 Time = DateTime.Now,
                 Text = "QueryAsync",
                 Watch = watch.ElapsedMilliseconds
@@ -344,7 +344,7 @@ namespace Dapper.Common
             Loggers.Add(new SessionLogger()
             {
                 Sql = sql,
-                Value = param,
+                Param = param,
                 Time = DateTime.Now,
                 Text = "QueryMultiple",
                 Watch = watch.ElapsedMilliseconds
@@ -360,7 +360,7 @@ namespace Dapper.Common
             Loggers.Add(new SessionLogger()
             {
                 Sql = sql,
-                Value = param,
+                Param = param,
                 Time = DateTime.Now,
                 Text = "QueryMultipleAsync",
                 Watch = watch.ElapsedMilliseconds
@@ -379,9 +379,10 @@ namespace Dapper.Common
                 builder.AppendFormat("Method:{0}\n", item.Text);
                 builder.AppendFormat("Time:{0}\n", item.Time.ToString("yyyy-MM-dd HH:mm:ss"));
                 builder.AppendFormat("Watch:{0}\n", item.Watch);
-                if (!string.IsNullOrEmpty(item.LoggerFormat()))
+                var logger = item.ParamToFormat();
+                if (!string.IsNullOrEmpty(logger))
                 {
-                    builder.AppendFormat("\n{0}", item.LoggerFormat());
+                    builder.AppendFormat("\n{0}", logger);
                 }
                 if (!string.IsNullOrEmpty(item.Sql))
                 {

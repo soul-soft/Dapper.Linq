@@ -31,7 +31,7 @@ namespace Dapper.Common
         /// <summary>
         /// 查询参数
         /// </summary>
-        private DynamicParameters Values = new DynamicParameters();
+        private DynamicParameters Param = new DynamicParameters();
         /// <summary>
         /// 查询SQL
         /// </summary>
@@ -68,7 +68,8 @@ namespace Dapper.Common
         /// <returns></returns>
         private string SelectBuild(string columns = "*")
         {
-            columns = (_distinct.Length > 0 ? _distinct.ToString() + " " : "") + columns;
+            columns = columns == "*" ? string.Join(",",TypeMapper.GetColumns<T>().Select(s=>string.Format("{0} AS {1}",s.ColumnName,s.FieldName))):columns;
+            columns = (_distinct != null ? _distinct + " " : "") + columns;
             QuerySql.AppendFormat("SELECT {0} FROM {1}", columns, FromSql);
             if (_where.Length > 0)
             {
@@ -90,7 +91,7 @@ namespace Dapper.Common
             {
                 QuerySql.AppendFormat(" LIMIT {0}", _limit);
             }
-            if (_lock.Length>0)
+            if (_lock.Length > 0)
             {
                 QuerySql.AppendFormat(" {0}", _lock);
             }
@@ -104,7 +105,7 @@ namespace Dapper.Common
         public List<T> Select(string columns = "*")
         {
             var sql = SelectBuild(columns);
-            var list = Session.Query<T>(sql, Values, CommandType.Text).ToList();
+            var list = Session.Query<T>(sql, Param, CommandType.Text).ToList();
             return list;
         }
         /// <summary>
@@ -115,7 +116,7 @@ namespace Dapper.Common
         public Task<IEnumerable<T>> SelectAsync(string columns = "*")
         {
             var sql = SelectBuild(columns);
-            var task = Session.QueryAsync<T>(sql, Values, CommandType.Text);
+            var task = Session.QueryAsync<T>(sql, Param, CommandType.Text);
             return task;
         }
         /// <summary>
@@ -125,7 +126,7 @@ namespace Dapper.Common
         /// <returns></returns>
         public List<T> Select(Expression<Func<T, object>> expression)
         {
-            var data = Select(string.Join(",", SqlVisitor.GetColumnNames(expression)));
+            var data = Select(string.Join(",", WhererVisitor.GetColumnNames(expression)));
             return data;
         }
         /// <summary>
@@ -135,7 +136,7 @@ namespace Dapper.Common
         /// <returns></returns>
         public Task<IEnumerable<T>> SelectAsync(Expression<Func<T, object>> expression)
         {
-            var data = SelectAsync(string.Join(",", SqlVisitor.GetColumnNames(expression)));
+            var data = SelectAsync(string.Join(",", WhererVisitor.GetColumnNames(expression)));
             return data;
         }
         /// <summary>
@@ -147,7 +148,7 @@ namespace Dapper.Common
         {
             Limit(1);
             var sql = SelectBuild(columns);
-            var data = Session.Query<T>(sql, Values).SingleOrDefault();
+            var data = Session.Query<T>(sql, Param).SingleOrDefault();
             return data;
         }
         /// <summary>
@@ -159,7 +160,7 @@ namespace Dapper.Common
         {
             Limit(1);
             var sql = SelectBuild(columns);
-            var task = Session.QueryAsync<T>(sql, Values);
+            var task = Session.QueryAsync<T>(sql, Param);
             return task;
         }
         /// <summary>
@@ -169,7 +170,7 @@ namespace Dapper.Common
         /// <returns></returns>
         public T Single(Expression<Func<T, object>> expression)
         {
-            var data = Single(string.Join(",", SqlVisitor.GetColumnNames<T>(expression)));
+            var data = Single(string.Join(",", WhererVisitor.GetColumnNames<T>(expression)));
             return data;
         }
         /// <summary>
@@ -179,7 +180,7 @@ namespace Dapper.Common
         /// <returns></returns>
         public Task<IEnumerable<T>> SingleAsync(Expression<Func<T, object>> expression)
         {
-            var task = SingleAsync(string.Join(",", SqlVisitor.GetColumnNames<T>(expression)));
+            var task = SingleAsync(string.Join(",", WhererVisitor.GetColumnNames<T>(expression)));
             return task;
         }
         #endregion
@@ -208,7 +209,7 @@ namespace Dapper.Common
             {
                 TopSql = new StringBuilder(string.Format("SELECT COUNT(1) FROM ({0}) AS T", TopSql.ToString()));
             }
-            var count = Session.ExecuteScalar<int>(TopSql.ToString(), Values, CommandType.Text);
+            var count = Session.ExecuteScalar<int>(TopSql.ToString(), Param, CommandType.Text);
             return count;
         }
         /// <summary>
@@ -231,7 +232,7 @@ namespace Dapper.Common
                 TopSql.AppendFormat(" HAVING {0}", _having);
             }
             string existsSql = string.Format("SELECT EXISTS ({0})", TopSql);
-            var count = Session.ExecuteScalar<int>(existsSql, Values, CommandType.Text);
+            var count = Session.ExecuteScalar<int>(existsSql, Param, CommandType.Text);
             return count >= 1;
         }
         #endregion
@@ -260,8 +261,8 @@ namespace Dapper.Common
                 return 0;
             }
             var sql = InsertBuild();
-            Values.AddDynamicParams(entity);
-            var row = Session.Execute(sql, Values, CommandType.Text);
+            Param.AddDynamicParams(entity);
+            var row = Session.Execute(sql, Param, CommandType.Text);
             return row;
         }
         /// <summary>
@@ -276,8 +277,8 @@ namespace Dapper.Common
                 return Task.Run(() => 0);
             }
             var sql = InsertBuild();
-            Values.AddDynamicParams(entity);
-            var task = Session.ExecuteAsync(sql, Values, CommandType.Text);
+            Param.AddDynamicParams(entity);
+            var task = Session.ExecuteAsync(sql, Param, CommandType.Text);
             return task;
         }
         /// <summary>
@@ -292,8 +293,8 @@ namespace Dapper.Common
                 return 0;
             }
             var sql = InsertBuild();
-            Values.AddDynamicParams(entity);
-            var identity = Session.ExecuteScalar<int>(string.Format("{0};SELECT @@IDENTITY;", sql), Values, CommandType.Text);
+            Param.AddDynamicParams(entity);
+            var identity = Session.ExecuteScalar<int>(string.Format("{0};SELECT @@IDENTITY;", sql), Param, CommandType.Text);
             entity.GetType().GetProperty(TypeMapper.GetIdentityFieldName<T>()).SetValue(entity, identity);
             return identity;
         }
@@ -309,8 +310,8 @@ namespace Dapper.Common
                 return Task.Run(() => 0);
             }
             var sql = InsertBuild();
-            Values.AddDynamicParams(entity);
-            var task = Session.ExecuteScalarAsync<int>(string.Format("{0};SELECT @@IDENTITY;", sql), Values, CommandType.Text);
+            Param.AddDynamicParams(entity);
+            var task = Session.ExecuteScalarAsync<int>(string.Format("{0};SELECT @@IDENTITY;", sql), Param, CommandType.Text);
             if (task.IsCompleted)
             {
                 entity.GetType().GetProperty(TypeMapper.GetIdentityFieldName<T>()).SetValue(entity, task.Result);
@@ -344,7 +345,7 @@ namespace Dapper.Common
                 return Task.Run(() => 0);
             }
             var sql = InsertBuild();
-            Values.AddDynamicParams(entitys);
+            Param.AddDynamicParams(entitys);
             var task = Session.ExecuteAsync(sql, entitys.Select(s => new DynamicParameters(s)), CommandType.Text);
             return task;
         }
@@ -384,7 +385,7 @@ namespace Dapper.Common
         public int Update()
         {
             var sql = UpdateBuild(false);
-            var row = Session.Execute(sql, Values, CommandType.Text);
+            var row = Session.Execute(sql, Param, CommandType.Text);
             return row;
         }
         /// <summary>
@@ -394,7 +395,7 @@ namespace Dapper.Common
         public Task<int> UpdateAsync()
         {
             var sql = UpdateBuild(false);
-            var task = Session.ExecuteAsync(sql, Values, CommandType.Text);
+            var task = Session.ExecuteAsync(sql, Param, CommandType.Text);
             return task;
         }
         /// <summary>
@@ -409,8 +410,8 @@ namespace Dapper.Common
                 return 0;
             }
             var sql = UpdateBuild(true);
-            Values.AddDynamicParams(entity);
-            var row = Session.Execute(sql, Values, CommandType.Text);
+            Param.AddDynamicParams(entity);
+            var row = Session.Execute(sql, Param, CommandType.Text);
             return row;
         }
         /// <summary>
@@ -425,8 +426,8 @@ namespace Dapper.Common
                 return Task.Run(() => 0);
             }
             var sql = UpdateBuild(true);
-            Values.AddDynamicParams(entity);
-            var task = Session.ExecuteAsync(sql, Values, CommandType.Text);
+            Param.AddDynamicParams(entity);
+            var task = Session.ExecuteAsync(sql, Param, CommandType.Text);
             return task;
         }
         /// <summary>
@@ -482,7 +483,7 @@ namespace Dapper.Common
         public int Delete()
         {
             var sql = DeleteBuild(false);
-            var row = Session.Execute(sql, Values, CommandType.Text);
+            var row = Session.Execute(sql, Param, CommandType.Text);
             return row;
         }
         /// <summary>
@@ -492,7 +493,7 @@ namespace Dapper.Common
         public Task<int> DeleteAsync()
         {
             var sql = DeleteBuild(false);
-            var task = Session.ExecuteAsync(sql, Values, CommandType.Text);
+            var task = Session.ExecuteAsync(sql, Param, CommandType.Text);
             return task;
         }
         /// <summary>
@@ -507,8 +508,8 @@ namespace Dapper.Common
                 return 0;
             }
             var sql = DeleteBuild(true);
-            Values.AddDynamicParams(entity);
-            var row = Session.Execute(sql, Values, CommandType.Text);
+            Param.AddDynamicParams(entity);
+            var row = Session.Execute(sql, Param, CommandType.Text);
             return row;
         }
         /// <summary>
@@ -523,8 +524,8 @@ namespace Dapper.Common
                 return Task.Run(() => 0);
             }
             var sql = DeleteBuild(true);
-            Values.AddDynamicParams(entity);
-            var task = Session.ExecuteAsync(sql, Values, CommandType.Text);
+            Param.AddDynamicParams(entity);
+            var task = Session.ExecuteAsync(sql, Param, CommandType.Text);
             return task;
         }
         /// <summary>
@@ -562,10 +563,10 @@ namespace Dapper.Common
         #endregion
 
         #region Distinct
-        private StringBuilder _distinct = new StringBuilder();
+        private string _distinct = null;
         public IFrom<T> Distinct()
         {
-            _distinct.Append("DISTINCT");
+            _distinct = "DISTINCT";
             return this;
         }
         #endregion
@@ -617,11 +618,11 @@ namespace Dapper.Common
         /// </summary>
         /// <param name="query"></param>
         /// <returns></returns>
-        public IFrom<T> Where(SqlQuery<T> query)
+        public IFrom<T> Where(WhereQuery<T> query)
         {
             if (query.Count > 0)
             {
-                _where.Append(new SqlVisitor().Build<T>(ref Values, query.Expressions));
+                _where.Append(new WhererVisitor().Build<T>(ref Param, query.Expressions));
             }
             return this;
         }
@@ -632,7 +633,7 @@ namespace Dapper.Common
         /// <returns></returns>
         public IFrom<T> Where(Expression<Func<T, bool>> expression)
         {
-            Where(new SqlQuery<T>(expression));
+            Where(new WhereQuery<T>(expression));
             return this;
         }
         /// <summary>
@@ -657,9 +658,9 @@ namespace Dapper.Common
         /// </summary>
         /// <param name="param"></param>
         /// <returns></returns>
-        public IFrom<T> Param(object param)
+        public IFrom<T> AddParam(object param)
         {
-            Values.AddDynamicParams(param);
+            Param.AddDynamicParams(param);
             return this;
         }
         /// <summary>
@@ -667,11 +668,11 @@ namespace Dapper.Common
         /// </summary>
         /// <param name="param"></param>
         /// <returns></returns>
-        public IFrom<T> Param(bool condition, object param)
+        public IFrom<T> AddParam(bool condition, object param)
         {
             if (condition)
             {
-                Param(param);
+                AddParam(param);
             }
             return this;
         }
@@ -735,10 +736,10 @@ namespace Dapper.Common
         /// <returns></returns>
         public IFrom<T> Set(Expression<Func<T, object>> expression, object value)
         {
-            var column = SqlVisitor.GetColumnName<T>(expression.Body);
+            var column = WhererVisitor.GetColumnName<T>(expression.Body);
             var field = TypeMapper.GetFieldName<T>(column);
             _set.AppendFormat("{0}{1} = @{2}", _set.Length == 0 ? "" : ",", column, TypeMapper.GetFieldName<T>(column));
-            Values.Add("@" + field, value);
+            Param.Add("@" + field, value);
             return this;
         }
         /// <summary>
@@ -763,7 +764,7 @@ namespace Dapper.Common
         /// <returns></returns>
         public IFrom<T> Set(Expression<Func<T, bool>> expression)
         {
-            var setsql = new SqlVisitor().Build<T>(ref Values, new SqlQuery<T>().And(expression).Expressions).Trim(new char[] { '(', ')' }) + ")";
+            var setsql = new WhererVisitor().Build<T>(ref Param, new WhereQuery<T>().And(expression).Expressions).Trim(new char[] { '(', ')' }) + ")";
             Set(setsql);
             return this;
         }
@@ -797,7 +798,7 @@ namespace Dapper.Common
         /// <returns></returns>
         public IFrom<T> GroupBy(Expression<Func<T, object>> expression)
         {
-            GroupBy(string.Format("{0}", string.Join(",", SqlVisitor.GetColumnNames(expression))));
+            GroupBy(string.Format("{0}", string.Join(",", WhererVisitor.GetColumnNames(expression))));
             return this;
         }
         private StringBuilder _having = new StringBuilder();
@@ -817,11 +818,11 @@ namespace Dapper.Common
         /// </summary>
         /// <param name="expression"></param>
         /// <returns></returns>
-        public IFrom<T> Having(SqlQuery<T> expression)
+        public IFrom<T> Having(WhereQuery<T> expression)
         {
             if (expression.Count > 0)
             {
-                _having.Append(new SqlVisitor().Build<T>(ref Values, expression.Expressions));
+                _having.Append(new WhererVisitor().Build<T>(ref Param, expression.Expressions));
             }
             return this;
         }
@@ -832,7 +833,7 @@ namespace Dapper.Common
         /// <returns></returns>
         public IFrom<T> Having(Expression<Func<T, bool>> expression)
         {
-            Having(new SqlQuery<T>(expression));
+            Having(new WhereQuery<T>(expression));
             return this;
         }
         #endregion        
@@ -846,7 +847,7 @@ namespace Dapper.Common
         /// <returns></returns>
         public IFrom<T> Desc(Expression<Func<T, object>> orderBy)
         {
-            var name = SqlVisitor.GetColumnName<T>(orderBy.Body);
+            var name = WhererVisitor.GetColumnName<T>(orderBy.Body);
             OrderBy(string.Format("{0} DESC", name));
             return this;
         }
@@ -871,7 +872,7 @@ namespace Dapper.Common
         /// <returns></returns>
         public IFrom<T> Asc(Expression<Func<T, object>> orderBy)
         {
-            var name = SqlVisitor.GetColumnName<T>(orderBy.Body);
+            var name = WhererVisitor.GetColumnName<T>(orderBy.Body);
             OrderBy(string.Format("{0} ASC", name));
             return this;
         }
@@ -896,7 +897,7 @@ namespace Dapper.Common
         /// <returns></returns>
         public IFrom<T> OrderBy(string orderBy)
         {
-            _orderBy.AppendFormat("{0}{1} ", _orderBy.Length > 0 ? "," : "", orderBy);
+            _orderBy.AppendFormat("{0}{1}", _orderBy.Length > 0 ? "," : "", orderBy);
             return this;
         }
         #endregion

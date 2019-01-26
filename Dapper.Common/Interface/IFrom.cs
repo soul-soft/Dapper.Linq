@@ -196,7 +196,7 @@ namespace Dapper.Common
         /// </summary>
         /// <param name="where"></param>
         /// <returns></returns>
-        IFrom<T> Where(SqlQuery<T> where);
+        IFrom<T> Where(WhereQuery<T> where);
         /// <summary>
         /// Where
         /// </summary>
@@ -215,14 +215,14 @@ namespace Dapper.Common
         /// </summary>
         /// <param name="param"></param>
         /// <returns></returns>
-        IFrom<T> Param(object param);
+        IFrom<T> AddParam(object param);
         /// <summary>
         /// Add Param
         /// </summary>
         /// <param name="condition"></param>
         /// <param name="param"></param>
         /// <returns></returns>
-        IFrom<T> Param(bool condition,object param);
+        IFrom<T> AddParam(bool condition,object param);
         /// <summary>
         /// Set custom sql
         /// </summary>
@@ -291,7 +291,7 @@ namespace Dapper.Common
         /// </summary>
         /// <param name="having"></param>
         /// <returns></returns>
-        IFrom<T> Having(SqlQuery<T> having);
+        IFrom<T> Having(WhereQuery<T> having);
         /// <summary>
         /// Having
         /// </summary>

@@ -180,12 +180,10 @@ namespace Dapper.Common
         /// 提交事务
         /// </summary>
         void Commit();
-
         /// <summary>
         /// 会滚事物
         /// </summary>
         void Rollback();
-
         /// <summary>
         /// 关闭事物
         /// </summary>
