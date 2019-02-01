@@ -126,7 +126,7 @@ namespace Dapper.Common
         /// <returns></returns>
         public List<T> Select(Expression<Func<T, object>> expression)
         {
-            var data = Select(string.Join(",", WhererVisitor.GetColumnNames(expression)));
+            var data = Select(string.Join(",", WhererVisitor.GetColumnWithNames(expression)));
             return data;
         }
         /// <summary>
@@ -136,7 +136,7 @@ namespace Dapper.Common
         /// <returns></returns>
         public Task<IEnumerable<T>> SelectAsync(Expression<Func<T, object>> expression)
         {
-            var data = SelectAsync(string.Join(",", WhererVisitor.GetColumnNames(expression)));
+            var data = SelectAsync(string.Join(",", WhererVisitor.GetColumnWithNames(expression)));
             return data;
         }
         /// <summary>
@@ -170,7 +170,7 @@ namespace Dapper.Common
         /// <returns></returns>
         public T Single(Expression<Func<T, object>> expression)
         {
-            var data = Single(string.Join(",", WhererVisitor.GetColumnNames<T>(expression)));
+            var data = Single(string.Join(",", WhererVisitor.GetColumnWithNames<T>(expression)));
             return data;
         }
         /// <summary>
@@ -180,7 +180,7 @@ namespace Dapper.Common
         /// <returns></returns>
         public Task<IEnumerable<T>> SingleAsync(Expression<Func<T, object>> expression)
         {
-            var task = SingleAsync(string.Join(",", WhererVisitor.GetColumnNames<T>(expression)));
+            var task = SingleAsync(string.Join(",", WhererVisitor.GetColumnWithNames<T>(expression)));
             return task;
         }
         #endregion
@@ -764,8 +764,8 @@ namespace Dapper.Common
         /// <returns></returns>
         public IFrom<T> Set(Expression<Func<T, bool>> expression)
         {
-            var setsql = new WhererVisitor().Build<T>(ref Param, new WhereQuery<T>().And(expression).Expressions).Trim(new char[] { '(', ')' }) + ")";
-            Set(setsql);
+            var setsql = new WhererVisitor().Build<T>(ref Param, new WhereQuery<T>().And(expression).Expressions);
+            Set(setsql.Substring(1,setsql.Length-2));
             return this;
         }
         /// <summary>

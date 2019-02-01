@@ -77,11 +77,11 @@ namespace UnitTest
             };
             var row6 = sesion.From<Student>()
                 //如果第一个条件为true，则更新MeName为entity.Name
-                .Set(!string.IsNullOrEmpty(entity.Name), a => a.Name, entity.Name)
+                .Set(!string.IsNullOrEmpty(entity.Name), a=>a.Name.Eq("hahah"))
                 //Age在原来的基础上加20
-                .Set(a => a.Age.Eq(a.Age + entity.Age))
+                .Set(a => a.Age.Eq(a.Age+100))
                 //条件ID=30
-                .Where(a => a.Id == 30)
+                .Where(a => a.Id == 1)
                 //要执行的操作
                 .Update();
             /*****************UPDATE*******************/

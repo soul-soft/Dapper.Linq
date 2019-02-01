@@ -271,6 +271,18 @@ namespace Dapper.Common
             var columns = TypeMapper.GetColumnNames<T>(props.ToList());
             return columns.ToList();
         }
+        /// <summary>
+        /// 返回字段名并进行映射
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="express"></param>
+        /// <returns></returns>
+        public static List<string> GetColumnWithNames<T>(Expression<Func<T, object>> express)
+        {
+            var props = express.Body.Type.GetProperties().Select(s => s.Name);
+            
+            return props.Select(s=>string.Format("{0} AS {1}",TypeMapper.GetColumnName<T>(s),s)).ToList();
+        }
         #endregion
 
     }

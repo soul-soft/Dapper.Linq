@@ -136,12 +136,32 @@ namespace Dapper.Common
             return true;
         }
         /// <summary>
+        /// 不等于
+        /// </summary>
+        /// <param name="param1"></param>
+        /// <param name="param2"></param>
+        /// <returns></returns>
+        public static bool Ne(this string param1, string param2)
+        {
+            return true;
+        }
+        /// <summary>
         /// 等于
         /// </summary>
         /// <param name="param1"></param>
         /// <param name="param2"></param>
         /// <returns></returns>
         public static bool Eq(this ValueType param1, ValueType param2)
+        {
+            return true;
+        }
+        /// <summary>
+        /// 等于
+        /// </summary>
+        /// <param name="param1"></param>
+        /// <param name="param2"></param>
+        /// <returns></returns>
+        public static bool Eq(this string param1, string param2)
         {
             return true;
         }
