@@ -8,13 +8,13 @@ using System.Threading.Tasks;
 
 namespace Dapper.Common
 {
-    public static class WhereOperator
+    public static class WhereType
     {
         #region Cache
         public static List<string> Methods = new List<string>();
-        static WhereOperator()
+        static WhereType()
         {
-            Methods = typeof(WhereOperator).GetMethods().Select(m => m.Name).ToList();
+            Methods = typeof(WhereType).GetMethods().Select(m => m.Name).ToList();
         }
         #endregion
 
@@ -233,7 +233,7 @@ namespace Dapper.Common
                     break;
                 case "NotLike":
                     name = "NOT LIKE";
-                    break;
+                    break;              
                 case "Gt":
                     name = ">";
                     break;
@@ -269,7 +269,7 @@ namespace Dapper.Common
                     break;
                 case "NotRegexp":
                     name = "NOT REGEXP";
-                    break;              
+                    break;
             }
             return name;
         }

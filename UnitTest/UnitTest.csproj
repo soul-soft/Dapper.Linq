@@ -39,6 +39,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Microsoft.CSharp" />
     <Reference Include="Microsoft.VisualStudio.TestPlatform.TestFramework, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\packages\MSTest.TestFramework.1.3.2\lib\net45\Microsoft.VisualStudio.TestPlatform.TestFramework.dll</HintPath>
     </Reference>
@@ -62,7 +63,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Dapper.Common\Dapper.Common.csproj">
-      <Project>{26b19cbc-786f-4ab0-b74d-ef767b3d295c}</Project>
+      <Project>{26B19CBC-786F-4AB0-B74D-EF767B3D295C}</Project>
       <Name>Dapper.Common</Name>
     </ProjectReference>
   </ItemGroup>

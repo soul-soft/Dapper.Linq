@@ -14,11 +14,11 @@ namespace UnitTest
         public void Initialize()
         {
             //配置数据源为mysql
-            SessionFactory.DataSource = () => new MySqlConnection("server=127.0.0.1;user id=root;password=1024;database=test;");
+            SessionFactory.AddDataSource("mysql1", () => new MySqlConnection("server=127.0.0.1;user id=root;password=1024;database=test;"));
+            SessionFactory.AddDataSource("mysql2", () => new MySqlConnection("server=127.0.0.1;user id=root;password=1024;database=test;"));
             //下划线不铭感
-            SessionFactory.MatchNamesWithUnderscores = true;
             //Session使用静态代理,记录会话日志,生产模式设置false
-            SessionFactory.SessionProxy = true;
+            SessionFactory.StaticProxy = true;
         }
         [TestMethod]
         public void TestMethod1()
@@ -115,11 +115,11 @@ namespace UnitTest
             /*****************动态查询*******************/
             var query = new WhereQuery<Student>();
             query
-                .And(a => a.Name.Like("%aa%"))
+                .And(a => a.Name.Like("aa"))
                 .Or(a => a.Id > 0)
                 .Or(a => a.Id < 10)
                 .Or(a => a.Id.In(new[] { 1, 2, 3 }))
-                .And(a => 1 > 2 ? a.Name.Like("cc%") : a.Id > 100);
+                .And(a => a.Name.NotLike("aa"));
             var res = sesion.From<Student>().Where(query).Exists();
             var rows6 = sesion.From<Student>().Where(a=>a.Id==29).DeleteAsync();
             /*****************会话日志*******************/

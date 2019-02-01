@@ -50,10 +50,10 @@ namespace Dapper.Common
             {
                 throw new Exception(string.Format("参数:{0}不能null", key));
             }
-            //if (CurrentOperator == "LIKE" || CurrentOperator == "NOT LIKE")
-            //{
-            //    value = "%" + value.ToString() + "%";
-            //}
+            if (CurrentOperator == "LIKE"|| CurrentOperator=="NOT LIKE")
+            {
+                value = "%" + value.ToString() + "%";
+            }
             WhereExpression.Append(key);
             Param.Add(key, value);
         }
@@ -86,14 +86,14 @@ namespace Dapper.Common
             {
                 if ((!item.Equals(expressionList.FindAll(f => string.IsNullOrEmpty(f.StringWhere)).First())) && item.ExpressType != ExpressionType.Default)
                 {
-                    WhereExpression.AppendFormat(" {0} ", WhereOperator.GetOperator(item.ExpressType ?? 0));
+                    WhereExpression.AppendFormat(" {0} ", WhereType.GetOperator(item.ExpressType ?? 0));
                 }               
                 if (!string.IsNullOrEmpty(item.StringWhere))
                 {
                     WhereExpression.Append(item.StringWhere);
                     continue;
                 }
-                Visit(item.Expression);               
+                Visit(item.LambdaWhere);               
                
             }
             return WhereExpression.ToString();
@@ -103,10 +103,10 @@ namespace Dapper.Common
         #region Visiit
         protected override Expression VisitMethodCall(MethodCallExpression node)
         {
-            if (node.Arguments.Count == 3 && WhereOperator.Methods.Contains(node.Method.Name) && node.Method.Name.Contains("Between"))
+            if (node.Arguments.Count == 3 && WhereType.Methods.Contains(node.Method.Name) && node.Method.Name.Contains("Between"))
             {
                 WhereExpression.Append("(");
-                CurrentOperator = WhereOperator.GetOperator(node.Method.Name);
+                CurrentOperator = WhereType.GetOperator(node.Method.Name);
                 Visit(node.Arguments[0]);
                 WhereExpression.AppendFormat(" {0} ", CurrentOperator);
                 Visit(node.Arguments[1]);
@@ -114,20 +114,20 @@ namespace Dapper.Common
                 Visit(node.Arguments[2]);
                 WhereExpression.Append(")");
             }
-            else if (node.Arguments.Count == 2 && WhereOperator.Methods.Contains(node.Method.Name))
+            else if (node.Arguments.Count == 2 && WhereType.Methods.Contains(node.Method.Name))
             {
                 WhereExpression.Append("(");
                 Visit(node.Arguments[0]);
-                CurrentOperator = WhereOperator.GetOperator(node.Method.Name);
+                CurrentOperator = WhereType.GetOperator(node.Method.Name);
                 WhereExpression.AppendFormat(" {0} ", CurrentOperator);
                 Visit(node.Arguments[1]);
                 WhereExpression.Append(")");
             }
-            else if (node.Arguments.Count == 1 && WhereOperator.Methods.Contains(node.Method.Name))
+            else if (node.Arguments.Count == 1 && WhereType.Methods.Contains(node.Method.Name))
             {
                 WhereExpression.Append("(");
                 Visit(node.Arguments[0]);
-                CurrentOperator = WhereOperator.GetOperator(node.Method.Name);
+                CurrentOperator = WhereType.GetOperator(node.Method.Name);
                 WhereExpression.AppendFormat(" {0} ", CurrentOperator);
                 WhereExpression.Append(")");
             }
@@ -142,7 +142,7 @@ namespace Dapper.Common
         {
             WhereExpression.Append("(");
             Visit(node.Left);
-            CurrentOperator = WhereOperator.GetOperator(node.NodeType);
+            CurrentOperator = WhereType.GetOperator(node.NodeType);
             WhereExpression.AppendFormat(" {0} ", CurrentOperator);
             Visit(node.Right);
             WhereExpression.Append(")");
@@ -177,7 +177,7 @@ namespace Dapper.Common
         {
             if (node.NodeType == ExpressionType.Not)
             {
-                WhereExpression.Append(WhereOperator.GetOperator(node.NodeType));
+                WhereExpression.Append(WhereType.GetOperator(node.NodeType));
                 Visit(node.Operand);
             }
             else

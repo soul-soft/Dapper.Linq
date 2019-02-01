@@ -13,7 +13,7 @@ namespace Dapper.Common
     public class WhereExpression
     {
         public string StringWhere { get; set; }
-        public Expression Expression { get; set; }
+        public Expression LambdaWhere { get; set; }
         public ExpressionType? ExpressType { get; set; }
     }
     /// <summary>
@@ -31,7 +31,7 @@ namespace Dapper.Common
             Expressions.Add(new WhereExpression()
             {
                 ExpressType = ExpressionType.AndAlso,
-                Expression = expression,
+                LambdaWhere = expression,
             });
         }
         /// <summary>
@@ -48,7 +48,7 @@ namespace Dapper.Common
             Expressions.Add(new WhereExpression()
             {
                 ExpressType = ExpressionType.AndAlso,
-                Expression = expression,
+                LambdaWhere = expression,
             });
             return this;
         }
@@ -86,7 +86,7 @@ namespace Dapper.Common
                 Expressions.Add(new WhereExpression()
                 {
                     ExpressType = ExpressionType.AndAlso,
-                    Expression = expression,
+                    LambdaWhere = expression,
                 });
             }
             return this;
@@ -101,7 +101,7 @@ namespace Dapper.Common
             Expressions.Add(new WhereExpression()
             {
                 ExpressType = ExpressionType.OrElse,
-                Expression = expression,
+                LambdaWhere = expression,
             });
             return this;
         }
@@ -138,7 +138,7 @@ namespace Dapper.Common
                 Expressions.Add(new WhereExpression()
                 {
                     ExpressType = ExpressionType.OrElse,
-                    Expression = expression,
+                    LambdaWhere = expression,
                 });
             }
             return this;
@@ -148,7 +148,7 @@ namespace Dapper.Common
             Expressions.Add(new WhereExpression()
             {
                 ExpressType = ExpressionType.Not,
-                Expression = expression,
+                LambdaWhere = expression,
             });
             return this;
         }
