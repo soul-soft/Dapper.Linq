@@ -84,7 +84,7 @@ namespace Dapper.Common
             Param = param;
             foreach (var item in expressionList)
             {
-                if ((!item.Equals(expressionList.FindAll(f => string.IsNullOrEmpty(f.StringWhere)).First())) && item.ExpressType != ExpressionType.Default)
+                if ((!item.Equals(expressionList.First())) && item.ExpressType != ExpressionType.Default)
                 {
                     WhereExpression.AppendFormat(" {0} ", WhereType.GetOperator(item.ExpressType ?? 0));
                 }               

@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2012/06/nuspec.xsd">
   <metadata>
     <id>Dapper.Common</id>
-    <version>1.2.2</version>
+    <version>1.2.3</version>
     <authors>chaeyeon</authors>
     <owners>chaeyeon</owners>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
@@ -20,6 +20,6 @@
     </frameworkAssemblies>
   </metadata>
   <files>
-    <file src="C:\Dapper.Common\Dapper.Common\bin\Release\net45\Dapper.Common.dll" target="lib\net45\Dapper.Common.dll" />
+    <file src="C:\Dapper.Common\Dapper.Common\bin\Debug\net45\Dapper.Common.dll" target="lib\net45\Dapper.Common.dll" />
   </files>
 </package>

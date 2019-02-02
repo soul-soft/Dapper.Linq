@@ -126,5 +126,17 @@ namespace UnitTest
             var aa = sesion.Logger();
 
         }
+
+        [TestMethod]
+        public void TestMethod2()
+        {
+            var query = new WhereQuery<Student>();
+            query.And(a => a.Id.In(new int[] { 1, 2, 3 }));
+            query
+                .And("age in (select age from student)");
+            query.And(a => a.Id.In(new int[] { 1, 2, 3 }));
+            var session = SessionFactory.GetSession();
+            var exist = session.From<Student>().Where(query).Select();
+        }
     }
 }
