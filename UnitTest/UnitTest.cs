@@ -132,10 +132,8 @@ namespace UnitTest
         [TestMethod]
         public void TestMethod2()
         {
-            var query1 = new WhereQuery<Student>();
             var session = SessionFactory.GetSession();
-
-            var exist = session.From<Student>()
+            var list = session.From<Student>()
                 .GroupBy(s => new
                 {
                     s.Age,
@@ -147,19 +145,6 @@ namespace UnitTest
                     s.Age ,
                     Nsme = DbFun.Date_Add(s.CreateTime, "INTERVAL 1 DAY")
                 });
-            //Stopwatch st = new Stopwatch();
-            //var aa = "";
-            //var a1 = new { Name="aa"};
-            //var hash = new Dictionary<string, object>();
-            //st.Start();
-            //for (int i = 0; i < 20000; i++)
-            //{
-            //    var query = new WhereQuery<Student>();
-            //    query.And(a => a.Name.In(new int[] { 1,2,3,4}.ToList().FindAll(f=>f>3)));
-            //    var param = new DynamicParameters();
-            //     aa = new WhereVisitor<Student>().Build(ref param,query.Expressions);
-            //}
-            //st.Stop();
            
         }
     }
