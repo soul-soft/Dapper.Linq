@@ -132,11 +132,8 @@ namespace UnitTest
         {
             var query = new WhereQuery<Student>();
             query.And(a => a.Id.In(new int[] { 1, 2, 3 }));
-            query
-                .And("age in (select age from student)");
-            query.And(a => a.Id.In(new int[] { 1, 2, 3 }));
             var session = SessionFactory.GetSession();
-            var exist = session.From<Student>().Where(query).Select();
+            var exist = session.From<Student>().Where(query).Select(s=>new { Age=MysqlFunc.Sum(s.Age)});
         }
     }
 }

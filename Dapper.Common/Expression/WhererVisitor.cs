@@ -103,33 +103,36 @@ namespace Dapper.Common
         #region Visiit
         protected override Expression VisitMethodCall(MethodCallExpression node)
         {
-            if (node.Arguments.Count == 3 && WhereType.Methods.Contains(node.Method.Name) && node.Method.Name.Contains("Between"))
+            if (node.Method.DeclaringType == typeof(WhereType))
             {
-                WhereExpression.Append("(");
-                CurrentOperator = WhereType.GetOperator(node.Method.Name);
-                Visit(node.Arguments[0]);
-                WhereExpression.AppendFormat(" {0} ", CurrentOperator);
-                Visit(node.Arguments[1]);
-                WhereExpression.AppendFormat(" AND ");
-                Visit(node.Arguments[2]);
-                WhereExpression.Append(")");
-            }
-            else if (node.Arguments.Count == 2 && WhereType.Methods.Contains(node.Method.Name))
-            {
-                WhereExpression.Append("(");
-                Visit(node.Arguments[0]);
-                CurrentOperator = WhereType.GetOperator(node.Method.Name);
-                WhereExpression.AppendFormat(" {0} ", CurrentOperator);
-                Visit(node.Arguments[1]);
-                WhereExpression.Append(")");
-            }
-            else if (node.Arguments.Count == 1 && WhereType.Methods.Contains(node.Method.Name))
-            {
-                WhereExpression.Append("(");
-                Visit(node.Arguments[0]);
-                CurrentOperator = WhereType.GetOperator(node.Method.Name);
-                WhereExpression.AppendFormat(" {0} ", CurrentOperator);
-                WhereExpression.Append(")");
+                if (node.Arguments.Count == 3 && node.Method.Name.Contains("Between"))
+                {
+                    WhereExpression.Append("(");
+                    CurrentOperator = WhereType.GetOperator(node.Method.Name);
+                    Visit(node.Arguments[0]);
+                    WhereExpression.AppendFormat(" {0} ", CurrentOperator);
+                    Visit(node.Arguments[1]);
+                    WhereExpression.AppendFormat(" AND ");
+                    Visit(node.Arguments[2]);
+                    WhereExpression.Append(")");
+                }
+                else if (node.Arguments.Count == 2)
+                {
+                    WhereExpression.Append("(");
+                    Visit(node.Arguments[0]);
+                    CurrentOperator = WhereType.GetOperator(node.Method.Name);
+                    WhereExpression.AppendFormat(" {0} ", CurrentOperator);
+                    Visit(node.Arguments[1]);
+                    WhereExpression.Append(")");
+                }
+                else if (node.Arguments.Count == 1)
+                {
+                    WhereExpression.Append("(");
+                    Visit(node.Arguments[0]);
+                    CurrentOperator = WhereType.GetOperator(node.Method.Name);
+                    WhereExpression.AppendFormat(" {0} ", CurrentOperator);
+                    WhereExpression.Append(")");
+                }
             }
             else
             {
@@ -192,6 +195,10 @@ namespace Dapper.Common
             SetValue(value);
             return node;
         }
+        //protected override Expression VisitNew(NewExpression node)
+        //{
+        //    return base.VisitNew(node);
+        //}
         #endregion
 
         #region Utils

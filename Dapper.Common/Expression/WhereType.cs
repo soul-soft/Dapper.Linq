@@ -10,13 +10,13 @@ namespace Dapper.Common
 {
     public static class WhereType
     {
-        #region Cache
-        public static List<string> Methods = new List<string>();
-        static WhereType()
-        {
-            Methods = typeof(WhereType).GetMethods().Select(m => m.Name).ToList();
-        }
-        #endregion
+        //#region Cache
+        //public static List<string> Methods = new List<string>();
+        //static WhereType()
+        //{
+        //    Methods = typeof(WhereType).GetMethods().Select(m => m.Name).ToList();
+        //}
+        //#endregion
 
         #region In
         /// <summary>
