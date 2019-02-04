@@ -181,4 +181,31 @@
         var res = sesion.From<Student>().Where(query).Exists();
         /*****************会话日志*******************/
         var aa = sesion.Logger();
-
+    四、自定义函数
+        var session = SessionFactory.GetSession();
+        var list = session.From<Student>()
+            .GroupBy(s => new
+            {
+                s.Age,
+                Nsme = DbFun.Date_Add(s.CreateTime, "INTERVAL 1 DAY")
+            })
+            .Having(s=> DbFun.Max(DbFun.Date_Add(s.CreateTime, "INTERVAL 1 DAY")) > new DateTime(2019,2,4))
+            .Select<dynamic>(s=> new
+            {
+                s.Age ,
+                Nsme = DbFun.Date_Add(s.CreateTime, "INTERVAL 1 DAY")
+            });
+        public static  class DbFun
+        {
+       
+            [Function]
+            public static DateTime Max(ValueType max)
+            {
+                return DateTime.Now;
+            }
+            [Function]//指定为数据库函数[KeyParameter]表示关键字
+            public static DateTime? Date_Add(DateTime? date,[KeyParameter] string foramt)
+            {
+                return date;
+            }
+        }
