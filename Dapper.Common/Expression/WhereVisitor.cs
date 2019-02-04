@@ -12,7 +12,7 @@ namespace Dapper.Common
     /// <summary>
     /// 数据库表达式构建
     /// </summary>
-    public class WhererVisitor : ExpressionVisitor
+    public class WhereVisitor<T> : ExpressionVisitor
     {
         #region Props
         /// <summary>
@@ -78,7 +78,7 @@ namespace Dapper.Common
         /// <typeparam name="T"></typeparam>
         /// <param name="expressionList"></param>
         /// <returns></returns>
-        public string Build<T>(ref DynamicParameters param, List<WhereExpression> expressionList)
+        public string Build(ref DynamicParameters param, List<WhereExpression> expressionList)
         {
             ClassType = typeof(T);
             Param = param;
@@ -134,6 +134,11 @@ namespace Dapper.Common
                     WhereExpression.Append(")");
                 }
             }
+            else if(node.Method.GetCustomAttributes(typeof(FunctionAttribute),true).Length>0)
+            {
+                WhereExpression.Append(new FunVisitor<T>().Build(node));
+                SetName("",node.Method.Name);
+            }
             else
             {
                 var value = Expression.Lambda(node).Compile().DynamicInvoke();
@@ -155,7 +160,7 @@ namespace Dapper.Common
         {
             if (node.Expression != null && node.Expression.NodeType == ExpressionType.Parameter)
             {
-                SetName(GetColumnName(ClassType, node), GetFieldName(node));
+                SetName(GetColumnName(node), node.Member.Name);
             }
             else
             {
@@ -183,6 +188,11 @@ namespace Dapper.Common
                 WhereExpression.Append(WhereType.GetOperator(node.NodeType));
                 Visit(node.Operand);
             }
+            else if (node.Operand.NodeType == ExpressionType.New)
+            {
+                var value = Expression.Lambda(node).Compile().DynamicInvoke();
+                SetValue(value);
+            }
             else
             {
                 Visit(node.Operand);
@@ -195,47 +205,49 @@ namespace Dapper.Common
             SetValue(value);
             return node;
         }
-        //protected override Expression VisitNew(NewExpression node)
-        //{
-        //    return base.VisitNew(node);
-        //}
+        protected override Expression VisitNew(NewExpression node)
+        {
+            var value = Expression.Lambda(node).Compile().DynamicInvoke();
+            SetValue(value);
+            return node;
+        }
         #endregion
 
         #region Utils
-        /// <summary>
-        /// 获取成员名称
-        /// </summary>
-        /// <param name="type"></param>
-        /// <param name="expression"></param>
-        /// <returns></returns>
-        public static string GetFieldName(Expression expression)
-        {
-            var name = string.Empty;
-            if (expression is LambdaExpression)
-            {
-                expression = (expression as LambdaExpression).Body;
-            }
-            if (expression is MemberExpression)
-            {
-                name = (expression as MemberExpression).Member.Name;
-            }
-            else if (expression is UnaryExpression)
-            {
-                name = ((expression as UnaryExpression).Operand as MemberExpression).Member.Name;
-            }
-            else
-            {
-                throw new Exception("Not Cast MemberExpression");
-            }
-            return name;
-        }
+        ///// <summary>
+        ///// 获取成员名称
+        ///// </summary>
+        ///// <param name="type"></param>
+        ///// <param name="expression"></param>
+        ///// <returns></returns>
+        //public static string GetFieldName(Expression expression)
+        //{
+        //    var name = string.Empty;
+        //    if (expression is LambdaExpression)
+        //    {
+        //        expression = (expression as LambdaExpression).Body;
+        //    }
+        //    if (expression is MemberExpression)
+        //    {
+        //        name = (expression as MemberExpression).Member.Name;
+        //    }
+        //    else if (expression is UnaryExpression)
+        //    {
+        //        name = ((expression as UnaryExpression).Operand as MemberExpression).Member.Name;
+        //    }
+        //    else
+        //    {
+        //        throw new Exception("Not Cast MemberExpression");
+        //    }
+        //    return name;
+        //}
         /// <summary>
         /// 获取字段名
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="expression"></param>
         /// <returns></returns>
-        public static string GetColumnName(Type type, Expression expression)
+        public static string GetColumnName(Expression expression)
         {
             var name = string.Empty;
             if (expression is LambdaExpression)
@@ -254,7 +266,7 @@ namespace Dapper.Common
             {
                 throw new Exception("Not Cast MemberExpression");
             }
-            return TypeMapper.GetColumnName(type, name);
+            return TypeMapper.GetColumnName(typeof(T), name);
         }
         /// <summary>
         /// 获取字段名
@@ -264,7 +276,7 @@ namespace Dapper.Common
         /// <returns></returns>
         public static string GetColumnName<T>(Expression expression)
         {
-            return GetColumnName(typeof(T), expression);
+            return GetColumnName(expression);
         }
         /// <summary>
         /// 获取字段名列表

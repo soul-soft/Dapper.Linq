@@ -21,7 +21,6 @@ namespace UnitTest
         /// <summary>
         /// 对应字段ME_NAME,通过Column校正为Name,
         /// </summary>
-        [Column("NAME", false)]
         public string Name { get; set; }
         /// <summary>
         /// 对应数据字段AGE无需校正

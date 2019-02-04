@@ -16,11 +16,23 @@ namespace Dapper.Common
         /// <returns></returns>
         List<T> Select(string columns = "*");
         /// <summary>
+        /// Select
+        /// </summary>
+        /// <param name="columns"></param>
+        /// <returns></returns>
+        List<G> Select<G>(string columns = "*");
+        /// <summary>
         /// SelectAsync
         /// </summary>
         /// <param name="columns"></param>
         /// <returns></returns>
         Task<IEnumerable<T>> SelectAsync(string columns = "*");
+        /// <summary>
+        /// SelectAsync
+        /// </summary>
+        /// <param name="columns"></param>
+        /// <returns></returns>
+        Task<IEnumerable<G>> SelectAsync<G>(string columns = "*");
         /// <summary>
         /// Select
         /// </summary>
@@ -28,11 +40,23 @@ namespace Dapper.Common
         /// <returns></returns>
         List<T> Select(Expression<Func<T, object>> expression);
         /// <summary>
+        /// Select
+        /// </summary>
+        /// <param name="expression"></param>
+        /// <returns></returns>
+        List<G> Select<G>(Expression<Func<T, object>> expression);
+        /// <summary>
         /// SelectAsync
         /// </summary>
         /// <param name="expression"></param>
         /// <returns></returns>
-        Task<IEnumerable<T>> SelectAsync(Expression<Func<T, object>> expression);    
+        Task<IEnumerable<T>> SelectAsync(Expression<Func<T, object>> expression);
+        /// <summary>
+        /// SelectAsync
+        /// </summary>
+        /// <param name="expression"></param>
+        /// <returns></returns>
+        Task<IEnumerable<G>> SelectAsync<G>(Expression<Func<T, object>> expression);
         /// <summary>
         /// Single
         /// </summary>
@@ -40,11 +64,23 @@ namespace Dapper.Common
         /// <returns></returns>
         T Single(string columns = "*");
         /// <summary>
+        /// Single
+        /// </summary>
+        /// <param name="columns"></param>
+        /// <returns></returns>
+        G Single<G>(string columns = "*");
+        /// <summary>
         /// SingleAsync
         /// </summary>
         /// <param name="columns"></param>
         /// <returns></returns>
         Task<IEnumerable<T>> SingleAsync(string columns = "*");
+        /// <summary>
+        /// SingleAsync
+        /// </summary>
+        /// <param name="columns"></param>
+        /// <returns></returns>
+        Task<IEnumerable<G>> SingleAsync<G>(string columns = "*");
         /// <summary>
         /// Single
         /// </summary>
@@ -52,11 +88,23 @@ namespace Dapper.Common
         /// <returns></returns>
         T Single(Expression<Func<T, object>> expression);
         /// <summary>
+        /// Single
+        /// </summary>
+        /// <param name="expression"></param>
+        /// <returns></returns>
+        G Single<G>(Expression<Func<T, object>> expression);
+        /// <summary>
         /// SingleAsync
         /// </summary>
         /// <param name="expression"></param>
         /// <returns></returns>
         Task<IEnumerable<T>> SingleAsync(Expression<Func<T, object>> expression);
+        /// <summary>
+        /// SingleAsync
+        /// </summary>
+        /// <param name="expression"></param>
+        /// <returns></returns>
+        Task<IEnumerable<G>> SingleAsync<G>(Expression<Func<T, object>> expression);
         /// <summary>
         /// Count
         /// </summary>

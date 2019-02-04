@@ -109,6 +109,17 @@ namespace Dapper.Common
             return list;
         }
         /// <summary>
+        /// 查询数据
+        /// </summary>
+        /// <param name="columns">字段列表</param>
+        /// <returns></returns>
+        public List<G> Select<G>(string columns = "*")
+        {
+            var sql = SelectBuild(columns);
+            var list = Session.Query<G>(sql, Param, CommandType.Text).ToList();
+            return list;
+        }
+        /// <summary>
         /// 异步查询
         /// </summary>
         /// <param name="columns"></param>
@@ -120,13 +131,34 @@ namespace Dapper.Common
             return task;
         }
         /// <summary>
+        /// 异步查询
+        /// </summary>
+        /// <param name="columns"></param>
+        /// <returns></returns>
+        public Task<IEnumerable<G>> SelectAsync<G>(string columns = "*")
+        {
+            var sql = SelectBuild(columns);
+            var task = Session.QueryAsync<G>(sql, Param, CommandType.Text);
+            return task;
+        }
+        /// <summary>
         /// 查询数据:指定字段列表
         /// </summary>
         /// <param name="expression">字段列表</param>
         /// <returns></returns>
         public List<T> Select(Expression<Func<T, object>> expression)
         {
-            var data = Select(string.Join(",", WhererVisitor.GetColumnWithNames(expression)));
+            var data = Select(new FunVisitor<T>().Build(expression));            
+            return data;
+        }
+        /// <summary>
+        /// 查询数据:指定字段列表
+        /// </summary>
+        /// <param name="expression">字段列表</param>
+        /// <returns></returns>
+        public List<G> Select<G>(Expression<Func<T, object>> expression)
+        {
+            var data = Select<G>(new FunVisitor<T>().Build(expression));
             return data;
         }
         /// <summary>
@@ -136,7 +168,17 @@ namespace Dapper.Common
         /// <returns></returns>
         public Task<IEnumerable<T>> SelectAsync(Expression<Func<T, object>> expression)
         {
-            var data = SelectAsync(string.Join(",", WhererVisitor.GetColumnWithNames(expression)));
+            var data = SelectAsync(string.Join(",", WhereVisitor<T>.GetColumnWithNames(expression)));
+            return data;
+        }
+        /// <summary>
+        /// 异步查询:指定字段列表
+        /// </summary>
+        /// <param name="expression"></param>
+        /// <returns></returns>
+        public Task<IEnumerable<G>> SelectAsync<G>(Expression<Func<T, object>> expression)
+        {
+            var data = SelectAsync<G>(string.Join(",", WhereVisitor<T>.GetColumnWithNames(expression)));
             return data;
         }
         /// <summary>
@@ -150,6 +192,30 @@ namespace Dapper.Common
             var sql = SelectBuild(columns);
             var data = Session.Query<T>(sql, Param).SingleOrDefault();
             return data;
+        }
+        /// <summary>
+        /// 查询单个数据
+        /// </summary>
+        /// <param name="columns">字段列表</param>
+        /// <returns></returns>
+        public G Single<G>(string columns = "*")
+        {
+            Limit(1);
+            var sql = SelectBuild(columns);
+            var data = Session.Query<G>(sql, Param).SingleOrDefault();
+            return data;
+        }
+        /// <summary>
+        /// 异步查询单个数据
+        /// </summary>
+        /// <param name="columns"></param>
+        /// <returns></returns>
+        public Task<IEnumerable<G>> SingleAsync<G>(string columns = "*")
+        {
+            Limit(1);
+            var sql = SelectBuild(columns);
+            var task = Session.QueryAsync<G>(sql, Param);
+            return task;
         }
         /// <summary>
         /// 异步查询单个数据
@@ -170,7 +236,17 @@ namespace Dapper.Common
         /// <returns></returns>
         public T Single(Expression<Func<T, object>> expression)
         {
-            var data = Single(string.Join(",", WhererVisitor.GetColumnWithNames<T>(expression)));
+            var data = Single(new FunVisitor<T>().Build(expression));
+            return data;
+        }
+        /// <summary>
+        /// 查询单个数据:指定查询列
+        /// </summary>
+        /// <param name="expression">字段列表</param>
+        /// <returns></returns>
+        public G Single<G>(Expression<Func<T, object>> expression)
+        {
+            var data = Single<G>(new FunVisitor<T>().Build(expression));
             return data;
         }
         /// <summary>
@@ -180,7 +256,17 @@ namespace Dapper.Common
         /// <returns></returns>
         public Task<IEnumerable<T>> SingleAsync(Expression<Func<T, object>> expression)
         {
-            var task = SingleAsync(string.Join(",", WhererVisitor.GetColumnWithNames<T>(expression)));
+            var task = SingleAsync(new FunVisitor<T>().Build(expression));
+            return task;
+        }
+        /// <summary>
+        /// 异步查询单个实体:指定查询列
+        /// </summary>
+        /// <param name="expression"></param>
+        /// <returns></returns>
+        public Task<IEnumerable<G>> SingleAsync<G>(Expression<Func<T, object>> expression)
+        {
+            var task = SingleAsync<G>(new FunVisitor<T>().Build(expression));
             return task;
         }
         #endregion
@@ -622,7 +708,7 @@ namespace Dapper.Common
         {
             if (query.Count > 0)
             {
-                _where.Append(new WhererVisitor().Build<T>(ref Param, query.Expressions));
+                _where.Append(new WhereVisitor<T>().Build(ref Param, query.Expressions));
             }
             return this;
         }
@@ -736,7 +822,7 @@ namespace Dapper.Common
         /// <returns></returns>
         public IFrom<T> Set(Expression<Func<T, object>> expression, object value)
         {
-            var column = WhererVisitor.GetColumnName<T>(expression.Body);
+            var column = WhereVisitor<T>.GetColumnName<T>(expression.Body);
             var field = TypeMapper.GetFieldName<T>(column);
             _set.AppendFormat("{0}{1} = @{2}", _set.Length == 0 ? "" : ",", column, TypeMapper.GetFieldName<T>(column));
             Param.Add("@" + field, value);
@@ -764,7 +850,7 @@ namespace Dapper.Common
         /// <returns></returns>
         public IFrom<T> Set(Expression<Func<T, bool>> expression)
         {
-            var setsql = new WhererVisitor().Build<T>(ref Param, new WhereQuery<T>().And(expression).Expressions);
+            var setsql = new WhereVisitor<T>().Build(ref Param, new WhereQuery<T>().And(expression).Expressions);
             Set(setsql.Substring(1,setsql.Length-2));
             return this;
         }
@@ -798,7 +884,7 @@ namespace Dapper.Common
         /// <returns></returns>
         public IFrom<T> GroupBy(Expression<Func<T, object>> expression)
         {
-            GroupBy(string.Format("{0}", string.Join(",", WhererVisitor.GetColumnNames(expression))));
+            GroupBy(new FunVisitor<T>().Build(expression,false));
             return this;
         }
         private StringBuilder _having = new StringBuilder();
@@ -822,7 +908,7 @@ namespace Dapper.Common
         {
             if (expression.Count > 0)
             {
-                _having.Append(new WhererVisitor().Build<T>(ref Param, expression.Expressions));
+                _having.Append(new WhereVisitor<T>().Build(ref Param, expression.Expressions));
             }
             return this;
         }
@@ -847,7 +933,7 @@ namespace Dapper.Common
         /// <returns></returns>
         public IFrom<T> Desc(Expression<Func<T, object>> orderBy)
         {
-            var name = WhererVisitor.GetColumnName<T>(orderBy.Body);
+            var name = WhereVisitor<T>.GetColumnName<T>(orderBy.Body);
             OrderBy(string.Format("{0} DESC", name));
             return this;
         }
@@ -872,7 +958,7 @@ namespace Dapper.Common
         /// <returns></returns>
         public IFrom<T> Asc(Expression<Func<T, object>> orderBy)
         {
-            var name = WhererVisitor.GetColumnName<T>(orderBy.Body);
+            var name = WhereVisitor<T>.GetColumnName<T>(orderBy.Body);
             OrderBy(string.Format("{0} ASC", name));
             return this;
         }
