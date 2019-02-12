@@ -133,19 +133,22 @@ namespace UnitTest
         public void TestMethod2()
         {
             var session = SessionFactory.GetSession();
-            var list = session.From<Student>()
-                .GroupBy(s => new
+            var list = session.From<ShopAddr>()
+                .Desc(s=> DbFun.Dist_len(121.606626, 29.915962, s.Lng, s.Lat))
+               .Select<dynamic>(s=>new
                 {
-                    s.Age,
-                    Nsme = DbFun.Date_Add(s.CreateTime, "INTERVAL 1 DAY")
-                })
-                .Having(s=> DbFun.Max(DbFun.Date_Add(s.CreateTime, "INTERVAL 1 DAY")) > new DateTime(2019,2,4))
-                .Select<dynamic>(s=> new
-                {
-                    s.Age ,
-                    Nsme = DbFun.Date_Add(s.CreateTime, "INTERVAL 1 DAY")
+                    Len=DbFun.Dist_len(121.606626, 29.915962,s.Lng,s.Lat),
+                    s.ShopNo
                 });
            
         }
+    }
+    [Table("SHOP_ADDR")]
+    public class ShopAddr
+    {
+        [Column("SHOP_NO")]
+        public string ShopNo { get; set; }
+        public double? Lng { get; set; }
+        public double? Lat { get; set; }
     }
 }

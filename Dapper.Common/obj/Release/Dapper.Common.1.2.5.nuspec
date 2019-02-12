@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2012/06/nuspec.xsd">
   <metadata>
     <id>Dapper.Common</id>
-    <version>1.2.4</version>
+    <version>1.2.5</version>
     <authors>chaeyeon</authors>
     <owners>chaeyeon</owners>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>

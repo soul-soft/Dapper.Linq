@@ -933,7 +933,7 @@ namespace Dapper.Common
         /// <returns></returns>
         public IFrom<T> Desc(Expression<Func<T, object>> orderBy)
         {
-            var name = WhereVisitor<T>.GetColumnName<T>(orderBy.Body);
+            var name = new FunVisitor<T>().Build(orderBy, false);
             OrderBy(string.Format("{0} DESC", name));
             return this;
         }
@@ -958,7 +958,7 @@ namespace Dapper.Common
         /// <returns></returns>
         public IFrom<T> Asc(Expression<Func<T, object>> orderBy)
         {
-            var name = WhereVisitor<T>.GetColumnName<T>(orderBy.Body);
+            var name = new FunVisitor<T>().Build(orderBy, false);
             OrderBy(string.Format("{0} ASC", name));
             return this;
         }

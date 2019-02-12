@@ -37,3 +37,4 @@ C:\Dapper.Common\Dapper.Common\obj\Release\net45\Dapper.Common.csproj.CopyComple
 C:\Dapper.Common\Dapper.Common\obj\Release\net45\Dapper.Common.dll
 C:\Dapper.Common\Dapper.Common\obj\Release\net45\Dapper.Common.pdb
 C:\Dapper.Common\Dapper.Common\obj\Release\net45\Dapper.Common.csprojAssemblyReference.cache
+D:\GitHub\Dapper.Common\Dapper.Common\obj\Release\net45\Dapper.Common.csprojAssemblyReference.cache

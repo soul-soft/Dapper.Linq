@@ -20,6 +20,6 @@
     </frameworkAssemblies>
   </metadata>
   <files>
-    <file src="D:\GitHub\Dapper.Common\Dapper.Common\bin\Release\net45\Dapper.Common.dll" target="lib\net45\Dapper.Common.dll" />
+    <file src="D:\GitHub\Dapper.Common\Dapper.Common\bin\Debug\net45\Dapper.Common.dll" target="lib\net45\Dapper.Common.dll" />
   </files>
 </package>

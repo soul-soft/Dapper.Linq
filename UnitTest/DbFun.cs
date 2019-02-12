@@ -20,5 +20,10 @@ namespace UnitTest
         {
             return date;
         }
+        [Function]
+        public static double Dist_len(double? lng1,double? lat1 , double? lng2, double? lat2)
+        {
+            return 0;
+        }
     }
 }
