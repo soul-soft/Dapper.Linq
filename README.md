@@ -195,6 +195,21 @@
                 s.Age ,
                 Nsme = DbFun.Date_Add(s.CreateTime, "INTERVAL 1 DAY")
             });
+         var list = session.From<Student>()
+              .Where(a=>a.Age>0&&DbFun.Replace(a.Name,"a","")== "dmin")
+              .GroupBy(s=>new 
+              {
+                s.Name,
+                Date = Dbfun.Date(s.CreateTime)
+              })
+              .Select<dynamic>(s=>new
+              {
+                  s.Name,
+                  Date = DbFun.Date(s.CreateTime),
+                  Count = DbFun.Count(1),
+                  Tommory = DbFun.Date_Add(s.CreateTime, "INTERVAL 1 DAY"),
+                  SumAge = DbFun.Sum(s.Age)
+              });
         public static  class DbFun
         {
        
