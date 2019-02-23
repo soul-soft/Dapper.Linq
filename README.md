@@ -81,7 +81,7 @@
         public DateTime? CreateTime { get; set; }
     }
     三、常用API
-         var sesion = SessionFactory.GetSession();
+         var sesion = SessionFactory.GetSession("mysql");//默认获取第一个数据源
         /*****************INSERT*******************/
         //Dapper
         var row1 = sesion.Execute("insert into student(Age,ME_NAME)values(@Age,@MeName)", new { Age = 20, MeName = "Dapper" });
@@ -137,7 +137,9 @@
             //如果第一个条件为true，则更新MeName为entity.Name
             .Set(!string.IsNullOrEmpty(entity.Name), a => a.Name, entity.Name)
             //Age在原来的基础上加20
-            .Set(a => a.Age.Eq(a.Age + entity.Age))
+            .Set(a => a.Age,a=>a.Age + 100)
+            //调用数据库函数
+            .Set(a => a.Age,a=>Dbfun.Replace(a.Name,"a","Ad"))
             //条件ID=30
             .Where(a => a.Id == 30)
             //要执行的操作
@@ -173,11 +175,11 @@
         /*****************动态查询*******************/
         var query = new WhereQuery<Student>();
         query
-            .And(a => a.Name.Like("%aa%"))
+            .And(a => a.Name.Like("aa"))//会自动在前后加%
             .Or(a => a.Id > 0)
             .Or(a => a.Id < 10)
             .Or(a => a.Id.In(new[] { 1, 2, 3 }))
-            .And(a => 1 > 2 ? a.Name.Like("cc%") : a.Id > 100);
+            .And(a => 1 > 2 ? a.Name.Like("cc") : a.Id > 100);
         var res = sesion.From<Student>().Where(query).Exists();
         /*****************会话日志*******************/
         var aa = sesion.Logger();
