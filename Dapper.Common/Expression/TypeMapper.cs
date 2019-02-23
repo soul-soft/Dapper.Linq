@@ -91,7 +91,7 @@ namespace Dapper.Common
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
-        public static List<DbTable.DbColumn> GetColumns<T>()
+        public static List<DbTable.DbColumn> GetDbColumn<T>()
         {
             return Cache(typeof(T)).Columns;
         }
@@ -104,16 +104,7 @@ namespace Dapper.Common
         {
             return Cache(typeof(T)).Columns.Select(c => c.ColumnName).ToArray();
         }
-        /// <summary>
-        /// 通过属性名列表获取字段名列表
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="fileds"></param>
-        /// <returns></returns>
-        public static string[] GetColumnNames<T>(List<string> fileds)
-        {
-            return Cache(typeof(T)).Columns.FindAll(f => fileds.Contains(f.FieldName)).Select(c => c.ColumnName).ToArray();
-        }
+     
         /// <summary>
         /// 通过字段名获取属性名
         /// </summary>
@@ -134,7 +125,6 @@ namespace Dapper.Common
         {
             return Cache(typeof(T)).Columns.Select(c => c.FieldName).ToArray();
         }
-
         /// <summary>
         /// 获取标识列的属性名
         /// </summary>

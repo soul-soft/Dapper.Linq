@@ -16,6 +16,10 @@ namespace Dapper.Common
     {
         #region Props
         /// <summary>
+        /// 表达式参数
+        /// </summary>
+        private DynamicParameters Param = null;
+        /// <summary>
         /// 表达式字符串
         /// </summary>
         private StringBuilder FunExpression = new StringBuilder();
@@ -26,11 +30,15 @@ namespace Dapper.Common
         /// <summary>
         /// 是否为关键字
         /// </summary>
-        private bool KeyParameter { get; set; }   
+        private bool KeyParameter { get; set; }
         /// <summary>
-        /// 是否为创建表达式
+        /// 当前操作符
         /// </summary>
-        private bool NewExpression { get; set; }
+        private string CurrentOperator { get; set; }
+        /// <summary>
+        /// 是否是常量
+        /// </summary>
+        private bool IsConstant { get; set; }
         #endregion
 
         #region Method
@@ -40,9 +48,21 @@ namespace Dapper.Common
         /// <param name="value"></param>
         private void SetValue(object value)
         {
-            var key = string.Format("{1}{0}{1}", value==null?"NULL":value.ToString(),KeyParameter||value is ValueType?"":"'");
-            KeyParameter = false;
-            FunExpression.Append(key);            
+            if (KeyParameter)
+            {
+                FunExpression.AppendFormat("{0}", value);
+                KeyParameter = false;
+            }
+            else if (IsConstant)
+            {
+                FunExpression.AppendFormat("{1}{0}{1}", value, value.GetType().IsValueType ? "" : "'");
+                IsConstant = false;
+            }
+            else
+            {
+                FunExpression.Append(string.Format("@{0}_{1}", "param", Param.ParameterNames.Count()));
+                Param.Add(string.Format("@{0}_{1}", "param", Param.ParameterNames.Count()), value);
+            }
         }
         /// <summary>
         /// 构建表达式字段
@@ -54,22 +74,16 @@ namespace Dapper.Common
             FunExpression.Append(columnName);
         }
         /// <summary>
-        /// 构建表达式
+        /// 构建函数表达式,及参数
         /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="expressionList"></param>
+        /// <param name="param"></param>
+        /// <param name="expression"></param>
+        /// <param name="alias"></param>
         /// <returns></returns>
-        public string Build(Expression<Func<T, object>> expression, bool alias=true)
+        public string Build(ref DynamicParameters param, Expression expression, bool alias = true)
         {
-            NewExpression = true;
+            Param = param;
             Alias = alias;
-            Visit(expression.Body);
-            return FunExpression.ToString();
-        }
-        public string Build(Expression expression)
-        {
-            NewExpression = false;
-            Alias = false;
             Visit(expression);
             return FunExpression.ToString();
         }
@@ -78,27 +92,69 @@ namespace Dapper.Common
         #region Visiit
         protected override Expression VisitMethodCall(MethodCallExpression node)
         {
-            FunExpression.AppendFormat("{0}(", node.Method.Name.ToUpper());
-            var parameters = node.Method.GetParameters();
-            for (var i=0; i<node.Arguments.Count;i++)
+            if (node.Method.DeclaringType == typeof(WhereType))
             {
-                if (parameters[i].GetCustomAttributes(typeof(KeyParameterAttribute),true).Length>0)
+                if (node.Arguments.Count == 3 && node.Method.Name.Contains("Between"))
                 {
-                    KeyParameter = true;
+                    FunExpression.Append("(");
+                    CurrentOperator = WhereType.GetOperator(node.Method.Name);
+                    Visit(node.Arguments[0]);
+                    FunExpression.AppendFormat(" {0} ", CurrentOperator);
+                    Visit(node.Arguments[1]);
+                    FunExpression.AppendFormat(" AND ");
+                    Visit(node.Arguments[2]);
+                    FunExpression.Append(")");
                 }
-                Visit(node.Arguments[i]);
-                if (i+1<node.Arguments.Count)
+                else if (node.Arguments.Count == 2)
                 {
-                    FunExpression.Append(",");
+                    FunExpression.Append("(");
+                    Visit(node.Arguments[0]);
+                    CurrentOperator = WhereType.GetOperator(node.Method.Name);
+                    FunExpression.AppendFormat(" {0} ", CurrentOperator);
+                    Visit(node.Arguments[1]);
+                    FunExpression.Append(")");
+                }
+                else if (node.Arguments.Count == 1)
+                {
+                    FunExpression.Append("(");
+                    Visit(node.Arguments[0]);
+                    CurrentOperator = WhereType.GetOperator(node.Method.Name);
+                    FunExpression.AppendFormat(" {0} ", CurrentOperator);
+                    FunExpression.Append(")");
                 }
             }
-            FunExpression.Append(")");
+            else if (node.Method.GetCustomAttributes(typeof(FunctionAttribute), true).Length > 0)
+            {
+                FunExpression.AppendFormat("{0}(", node.Method.Name.ToUpper());
+                var parameters = node.Method.GetParameters();
+                for (var i = 0; i < node.Arguments.Count; i++)
+                {
+                    if (parameters[i].GetCustomAttributes(typeof(KeyParameterAttribute), true).Length > 0)
+                    {
+                        KeyParameter = true;
+                    }
+                    Visit(node.Arguments[i]);
+                    if (i + 1 < node.Arguments.Count)
+                    {
+                        FunExpression.Append(",");
+                    }
+                }
+                FunExpression.Append(")");
+            }
+            else
+            {
+                var value = Expression.Lambda(node).Compile().DynamicInvoke();
+                SetValue(value);
+            }
+
             return node;
         }
         protected override Expression VisitBinary(BinaryExpression node)
         {
             FunExpression.Append("(");
             Visit(node.Left);
+            CurrentOperator = WhereType.GetOperator(node.NodeType);
+            FunExpression.AppendFormat(" {0} ", CurrentOperator);
             Visit(node.Right);
             FunExpression.Append(")");
             return node;
@@ -119,6 +175,7 @@ namespace Dapper.Common
         }
         protected override Expression VisitConstant(ConstantExpression node)
         {
+            IsConstant = true;
             SetValue(node.Value);
             return node;
         }
@@ -146,23 +203,19 @@ namespace Dapper.Common
             var value = Expression.Lambda(node).Compile().DynamicInvoke();
             SetValue(value);
             return node;
-        }
+        }      
         protected override Expression VisitNew(NewExpression node)
         {
-            if (NewExpression)
+            for (var i = 0; i < node.Arguments.Count; i++)
             {
-                NewExpression = false;
-                for (var i = 0; i < node.Arguments.Count; i++)
+                Visit(node.Arguments[i]);
+                if (Alias)
                 {
-                    Visit(node.Arguments[i]);
-                    if (Alias)
-                    {
-                        FunExpression.AppendFormat(" AS {0}", node.Members[i].Name);
-                    }
-                    if (i+1<node.Arguments.Count)
-                    {
-                        FunExpression.Append(",");
-                    }
+                    FunExpression.AppendFormat(" AS {0}", node.Members[i].Name);
+                }
+                if (i + 1 < node.Arguments.Count)
+                {
+                    FunExpression.Append(",");
                 }
             }
             return node;
@@ -196,7 +249,7 @@ namespace Dapper.Common
                 throw new Exception("Not Cast MemberExpression");
             }
             return TypeMapper.GetColumnName<T>(name);
-        }       
+        }
         #endregion
 
     }

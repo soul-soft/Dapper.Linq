@@ -20,7 +20,7 @@ namespace Dapper.Common
         /// <summary>
         /// 会话日志
         /// </summary>
-        public List<SessionLogger> Loggers { get; set; }
+        private List<SessionLogger> Loggers { get; set; }
         /// <summary>
         /// 构造器
         /// </summary>
@@ -378,26 +378,26 @@ namespace Dapper.Common
             builder.AppendFormat("=========================== {0} ===========================\n", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
             foreach (var item in Loggers)
             {
-                builder.AppendFormat("Method:{0}\n", item.Text);
-                builder.AppendFormat("Time:{0}\n", item.Time.ToString("yyyy-MM-dd HH:mm:ss"));
-                builder.AppendFormat("Watch:{0}\n", item.Watch);
+                builder.AppendFormat("\r\nMethod:{0}\r\n", item.Text);
+                builder.AppendFormat("Time:{0}\r\n", item.Time.ToString("yyyy-MM-dd HH:mm:ss"));
+                builder.AppendFormat("Watch:{0}\r\n", item.Watch);
                 if (item.Row!=null)
                 {
-                    builder.AppendFormat("Change:{0}\n", item.Row);
+                    builder.AppendFormat("Change:{0}\r\n", item.Row);
                 }
                 builder.AppendFormat("Execute:");
                 var logger = item.ParamToFormat();
                 if (!string.IsNullOrEmpty(logger))
                 {
-                    builder.AppendFormat("\n{0}", logger);
+                    builder.AppendFormat("\r\n{0}", logger);
                 }
                 if (!string.IsNullOrEmpty(item.Sql))
                 {
-                    builder.AppendFormat("{0};\n", item.Sql);
+                    builder.AppendFormat("{0};", item.Sql);
                 }
-                builder.Append("\n");
+                builder.Append("\r\n");
             }
-            builder.AppendFormat("===========================================================================\n");
+            builder.AppendFormat("\r\n===========================================================================\r\n");
             return builder.ToString();
         }
         #endregion

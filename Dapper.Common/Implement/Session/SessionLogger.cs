@@ -9,7 +9,7 @@ using Dapper;
 
 namespace Dapper.Common
 {
-    public class SessionLogger
+    internal class SessionLogger
     {
         public string Sql { get; set; }
         public object Param { get; set; }

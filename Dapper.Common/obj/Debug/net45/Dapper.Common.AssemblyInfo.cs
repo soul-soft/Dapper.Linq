@@ -14,11 +14,11 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("chaeyeon")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyDescriptionAttribute("linq to sql,function,in,like,between")]
-[assembly: System.Reflection.AssemblyFileVersionAttribute("1.2.4.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.2.4")]
+[assembly: System.Reflection.AssemblyFileVersionAttribute("1.2.6.5")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.2.6.5")]
 [assembly: System.Reflection.AssemblyProductAttribute("Dapper.Common")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Dapper.Common")]
-[assembly: System.Reflection.AssemblyVersionAttribute("1.2.4.0")]
+[assembly: System.Reflection.AssemblyVersionAttribute("1.2.6.5")]
 
 // 由 MSBuild WriteCodeFragment 类生成。
 

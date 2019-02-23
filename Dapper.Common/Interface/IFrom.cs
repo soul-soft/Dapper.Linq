@@ -20,7 +20,7 @@ namespace Dapper.Common
         /// </summary>
         /// <param name="columns"></param>
         /// <returns></returns>
-        List<G> Select<G>(string columns = "*");
+        List<TResult> Select<TResult>(string columns = "*");
         /// <summary>
         /// SelectAsync
         /// </summary>
@@ -32,7 +32,7 @@ namespace Dapper.Common
         /// </summary>
         /// <param name="columns"></param>
         /// <returns></returns>
-        Task<IEnumerable<G>> SelectAsync<G>(string columns = "*");
+        Task<IEnumerable<TResult>> SelectAsync<TResult>(string columns = "*");
         /// <summary>
         /// Select
         /// </summary>
@@ -44,7 +44,7 @@ namespace Dapper.Common
         /// </summary>
         /// <param name="expression"></param>
         /// <returns></returns>
-        List<G> Select<G>(Expression<Func<T, object>> expression);
+        List<TResult> Select<TResult>(Expression<Func<T, TResult>> expression);
         /// <summary>
         /// SelectAsync
         /// </summary>
@@ -56,7 +56,7 @@ namespace Dapper.Common
         /// </summary>
         /// <param name="expression"></param>
         /// <returns></returns>
-        Task<IEnumerable<G>> SelectAsync<G>(Expression<Func<T, object>> expression);
+        Task<IEnumerable<TResult>> SelectAsync<TResult>(Expression<Func<T, TResult>> expression);
         /// <summary>
         /// Single
         /// </summary>
@@ -68,7 +68,7 @@ namespace Dapper.Common
         /// </summary>
         /// <param name="columns"></param>
         /// <returns></returns>
-        G Single<G>(string columns = "*");
+        TResult Single<TResult>(string columns = "*");
         /// <summary>
         /// SingleAsync
         /// </summary>
@@ -80,7 +80,7 @@ namespace Dapper.Common
         /// </summary>
         /// <param name="columns"></param>
         /// <returns></returns>
-        Task<IEnumerable<G>> SingleAsync<G>(string columns = "*");
+        Task<IEnumerable<TResult>> SingleAsync<TResult>(string columns = "*");
         /// <summary>
         /// Single
         /// </summary>
@@ -92,7 +92,7 @@ namespace Dapper.Common
         /// </summary>
         /// <param name="expression"></param>
         /// <returns></returns>
-        G Single<G>(Expression<Func<T, object>> expression);
+        TResult Single<TResult>(Expression<Func<T, TResult>> expression);
         /// <summary>
         /// SingleAsync
         /// </summary>
@@ -104,7 +104,7 @@ namespace Dapper.Common
         /// </summary>
         /// <param name="expression"></param>
         /// <returns></returns>
-        Task<IEnumerable<G>> SingleAsync<G>(Expression<Func<T, object>> expression);
+        Task<IEnumerable<TResult>> SingleAsync<TResult>(Expression<Func<T, TResult>> expression);
         /// <summary>
         /// Count
         /// </summary>
@@ -157,10 +157,22 @@ namespace Dapper.Common
         /// <returns></returns>
         int Update();
         /// <summary>
+        /// Condition Update
+        /// </summary>
+        /// <param name="condition"></param>
+        /// <returns></returns>
+        int Update(bool condition);
+        /// <summary>
         /// UpdateAsync
         /// </summary>
         /// <returns></returns>
         Task<int> UpdateAsync();
+        /// <summary>
+        /// Condition Update
+        /// </summary>
+        /// <param name="condition"></param>
+        /// <returns></returns>
+        Task<int> UpdateAsync(bool condition);
         /// <summary>
         /// Update
         /// </summary>
@@ -270,14 +282,14 @@ namespace Dapper.Common
         /// <param name="condition"></param>
         /// <param name="param"></param>
         /// <returns></returns>
-        IFrom<T> AddParam(bool condition,object param);
+        IFrom<T> AddParam(bool condition, object param);
         /// <summary>
         /// Set custom sql
         /// </summary>
         /// <param name="column"></param>
         /// <param name="value"></param>
         /// <returns></returns>
-        IFrom<T> Set(string column);
+        IFrom<T> Set(string column, object value);
         /// <summary>
         /// Condition Set custom sql
         /// </summary>
@@ -285,7 +297,7 @@ namespace Dapper.Common
         /// <param name="column"></param>
         /// <param name="value"></param>
         /// <returns></returns>
-        IFrom<T> Set(bool condition, string column);
+        IFrom<T> Set(bool condition, string column, object value);
         /// <summary>
         /// Set columns
         /// </summary>
@@ -306,7 +318,7 @@ namespace Dapper.Common
         /// </summary>
         /// <param name="column"></param>
         /// <returns></returns>
-        IFrom<T> Set(Expression<Func<T, bool>> column);
+        IFrom<T> Set(Expression<Func<T, object>> column, Expression<Func<T, object>> value);
         /// <summary>
         /// Condition Lambda Set
         /// </summary>
@@ -314,7 +326,7 @@ namespace Dapper.Common
         /// <param name="column"></param>
         /// <param name="value"></param>
         /// <returns></returns>
-        IFrom<T> Set(bool condition, Expression<Func<T, bool>> column);
+        IFrom<T> Set(bool condition, Expression<Func<T, object>> column, Expression<Func<T, object>> value);
         /// <summary>
         /// GroupBy
         /// </summary>

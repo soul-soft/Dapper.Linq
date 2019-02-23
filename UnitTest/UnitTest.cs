@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Linq.Expressions;
 using Dapper;
 using Dapper.Common;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -16,7 +17,6 @@ namespace UnitTest
         public void Initialize()
         {
             //配置数据源为mysql
-            SessionFactory.AddDataSource("mysql1", () => new MySqlConnection("server=127.0.0.1;user id=root;password=1024;database=test;"));
             SessionFactory.AddDataSource("mysql2", () => new MySqlConnection("server=127.0.0.1;user id=root;password=1024;database=test;"));
             //下划线不铭感
             //Session使用静态代理,记录会话日志,生产模式设置false
@@ -78,10 +78,8 @@ namespace UnitTest
                 Name = "admin"
             };
             var row6 = sesion.From<Student>()
-                //如果第一个条件为true，则更新MeName为entity.Name
-                .Set(!string.IsNullOrEmpty(entity.Name), a=>a.Name.Eq("hahah"))
                 //Age在原来的基础上加20
-                .Set(a => a.Age.Eq(a.Age+100))
+                .Set(a => a.Age, a => a.Age + 1)
                 //条件ID=30
                 .Where(a => a.Id == 1)
                 //要执行的操作
@@ -98,7 +96,7 @@ namespace UnitTest
             var student = sesion.From<Student>().Single();
             var list1 = sesion.From<Student>().Select();
             //复杂查询
-            list = sesion.From<Student>()
+            var afff = sesion.From<Student>()
                 //查询条件
                 .Where(a => a.Age > 20 && a.Id.In(new int[] { 1, 2, 3 }.ToList()))
                 //排序
@@ -123,7 +121,7 @@ namespace UnitTest
                 .Or(a => a.Id.In(new[] { 1, 2, 3 }))
                 .And(a => a.Name.NotLike("aa"));
             var res = sesion.From<Student>().Where(query).Exists();
-            var rows6 = sesion.From<Student>().Where(a=>a.Id==29).DeleteAsync();
+            var rows6 = sesion.From<Student>().Where(a => a.Id == 29).DeleteAsync();
             /*****************会话日志*******************/
             var aa = sesion.Logger();
 
@@ -132,15 +130,23 @@ namespace UnitTest
         [TestMethod]
         public void TestMethod2()
         {
-            var session = SessionFactory.GetSession();
-            var list = session.From<ShopAddr>()
-                .Desc(s=> DbFun.Dist_len(121.606626, 29.915962, s.Lng, s.Lat))
-               .Select<dynamic>(s=>new
-                {
-                    Len=DbFun.Dist_len(121.606626, 29.915962,s.Lng,s.Lat),
-                    s.ShopNo
-                });
-           
+            var entity = new Student()
+            {
+                Age = 20,
+                Name = "admin"
+            };
+            var session = SessionFactory.GetSession("mysql2");
+            var list = session.From<Student>()
+                  .Where(a=>a.Age>0&&DbFun.Replace(a.Name,"a","")== "dmin")
+                  .Select<dynamic>(s=>new
+                  {
+                      s.Name,
+                      Date = DbFun.Date(s.CreateTime),
+                      Count = DbFun.Count(1),
+                      Tommory = DbFun.Date_Add(s.CreateTime, "INTERVAL 1 DAY"),
+                      SumAge = DbFun.Sum(s.Age)
+                  });
+
         }
     }
     [Table("SHOP_ADDR")]

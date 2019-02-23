@@ -48,7 +48,7 @@
     "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder": {}
   },
   "project": {
-    "version": "1.2.5",
+    "version": "1.2.6.5",
     "restore": {
       "projectUniqueName": "D:\\GitHub\\Dapper.Common\\Dapper.Common\\Dapper.Common.csproj",
       "projectName": "Dapper.Common",

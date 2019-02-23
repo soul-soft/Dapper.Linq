@@ -136,7 +136,7 @@ namespace Dapper.Common
             }
             else if(node.Method.GetCustomAttributes(typeof(FunctionAttribute),true).Length>0)
             {
-                WhereExpression.Append(new FunVisitor<T>().Build(node));
+                WhereExpression.Append(new FunVisitor<T>().Build(ref Param,node));
                 SetName("",node.Method.Name);
             }
             else
@@ -180,7 +180,7 @@ namespace Dapper.Common
             var value = Expression.Lambda(node).Compile().DynamicInvoke();
             SetValue(value);
             return node;
-        }
+        }     
         protected override Expression VisitUnary(UnaryExpression node)
         {
             if (node.NodeType == ExpressionType.Not)
@@ -213,34 +213,7 @@ namespace Dapper.Common
         }
         #endregion
 
-        #region Utils
-        ///// <summary>
-        ///// 获取成员名称
-        ///// </summary>
-        ///// <param name="type"></param>
-        ///// <param name="expression"></param>
-        ///// <returns></returns>
-        //public static string GetFieldName(Expression expression)
-        //{
-        //    var name = string.Empty;
-        //    if (expression is LambdaExpression)
-        //    {
-        //        expression = (expression as LambdaExpression).Body;
-        //    }
-        //    if (expression is MemberExpression)
-        //    {
-        //        name = (expression as MemberExpression).Member.Name;
-        //    }
-        //    else if (expression is UnaryExpression)
-        //    {
-        //        name = ((expression as UnaryExpression).Operand as MemberExpression).Member.Name;
-        //    }
-        //    else
-        //    {
-        //        throw new Exception("Not Cast MemberExpression");
-        //    }
-        //    return name;
-        //}
+        #region Utils      
         /// <summary>
         /// 获取字段名
         /// </summary>
@@ -267,41 +240,7 @@ namespace Dapper.Common
                 throw new Exception("Not Cast MemberExpression");
             }
             return TypeMapper.GetColumnName(typeof(T), name);
-        }
-        /// <summary>
-        /// 获取字段名
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="expression"></param>
-        /// <returns></returns>
-        public static string GetColumnName<T>(Expression expression)
-        {
-            return GetColumnName(expression);
-        }
-        /// <summary>
-        /// 获取字段名列表
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="express"></param>
-        /// <returns></returns>
-        public static List<string> GetColumnNames<T>(Expression<Func<T, object>> express)
-        {
-            var props = express.Body.Type.GetProperties().Select(s => s.Name);
-            var columns = TypeMapper.GetColumnNames<T>(props.ToList());
-            return columns.ToList();
-        }
-        /// <summary>
-        /// 返回字段名并进行映射
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="express"></param>
-        /// <returns></returns>
-        public static List<string> GetColumnWithNames<T>(Expression<Func<T, object>> express)
-        {
-            var props = express.Body.Type.GetProperties().Select(s => s.Name);
-            
-            return props.Select(s=>string.Format("{0} AS {1}",TypeMapper.GetColumnName<T>(s),s)).ToList();
-        }
+        }               
         #endregion
 
     }
