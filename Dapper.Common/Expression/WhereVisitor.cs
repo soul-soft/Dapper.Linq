@@ -12,7 +12,7 @@ namespace Dapper.Common
     /// <summary>
     /// 数据库表达式构建
     /// </summary>
-    public class WhereVisitor<T> : ExpressionVisitor
+    internal class WhereVisitor<T> : ExpressionVisitor
     {
         #region Props
         /// <summary>
@@ -24,17 +24,13 @@ namespace Dapper.Common
         /// </summary>
         private DynamicParameters Param = new DynamicParameters();
         /// <summary>
-        /// 类型
-        /// </summary>
-        private Type ClassType { get; set; }
-        /// <summary>
         /// 字段栈
         /// </summary>
-        private Stack<string> Names = new Stack<string>();
+        private Stack<string> Fields = new Stack<string>();
         /// <summary>
         /// 当前运算符
         /// </summary>
-        private string CurrentOperator=null;
+        private string Operator { get; set; }
         #endregion
 
         #region Method
@@ -44,13 +40,13 @@ namespace Dapper.Common
         /// <param name="value"></param>
         private void SetValue(object value)
         {
-            var name = Names.Pop();
-            var key = string.Format("@{0}_{1}", name, Param.ParameterNames.Count());
+            var field = Fields.Pop();
+            var key = string.Format("@{0}_{1}", field, Param.ParameterNames.Count());
             if (value == null)
             {
                 throw new Exception(string.Format("参数:{0}不能null", key));
             }
-            if (CurrentOperator == "LIKE"|| CurrentOperator=="NOT LIKE")
+            if (Operator == "LIKE" || Operator == "NOT LIKE")
             {
                 value = "%" + value.ToString() + "%";
             }
@@ -60,16 +56,16 @@ namespace Dapper.Common
         /// <summary>
         /// 构建表达式字段
         /// </summary>
-        /// <param name="columnName"></param>
-        /// <param name="memberName"></param>
-        private void SetName(string columnName, string memberName)
+        /// <param name="column"></param>
+        /// <param name="field"></param>
+        private void SetName(string column, string field)
         {
-            WhereExpression.Append(columnName);
-            Names.Push(memberName);
-            if (CurrentOperator == "BETWEEN" || CurrentOperator == "NOT BETWEEN")
+            WhereExpression.Append(column);
+            Fields.Push(field);
+            if (Operator == "BETWEEN" || Operator == "NOT BETWEEN")
             {
-                Names.Push(memberName + "_Min");
-                Names.Push(memberName + "_Max");
+                Fields.Push(field + "_Min");
+                Fields.Push(field + "_Max");
             }
         }
         /// <summary>
@@ -80,21 +76,20 @@ namespace Dapper.Common
         /// <returns></returns>
         public string Build(ref DynamicParameters param, List<WhereExpression> expressionList)
         {
-            ClassType = typeof(T);
             Param = param;
             foreach (var item in expressionList)
             {
                 if ((!item.Equals(expressionList.First())) && item.ExpressType != ExpressionType.Default)
                 {
                     WhereExpression.AppendFormat(" {0} ", WhereType.GetOperator(item.ExpressType ?? 0));
-                }               
+                }
                 if (!string.IsNullOrEmpty(item.StringWhere))
                 {
                     WhereExpression.Append(item.StringWhere);
                     continue;
                 }
-                Visit(item.LambdaWhere);               
-               
+                Visit(item.LambdaWhere);
+
             }
             return WhereExpression.ToString();
         }
@@ -108,9 +103,9 @@ namespace Dapper.Common
                 if (node.Arguments.Count == 3 && node.Method.Name.Contains("Between"))
                 {
                     WhereExpression.Append("(");
-                    CurrentOperator = WhereType.GetOperator(node.Method.Name);
+                    Operator = WhereType.GetOperator(node.Method.Name);
                     Visit(node.Arguments[0]);
-                    WhereExpression.AppendFormat(" {0} ", CurrentOperator);
+                    WhereExpression.AppendFormat(" {0} ", Operator);
                     Visit(node.Arguments[1]);
                     WhereExpression.AppendFormat(" AND ");
                     Visit(node.Arguments[2]);
@@ -120,8 +115,8 @@ namespace Dapper.Common
                 {
                     WhereExpression.Append("(");
                     Visit(node.Arguments[0]);
-                    CurrentOperator = WhereType.GetOperator(node.Method.Name);
-                    WhereExpression.AppendFormat(" {0} ", CurrentOperator);
+                    Operator = WhereType.GetOperator(node.Method.Name);
+                    WhereExpression.AppendFormat(" {0} ", Operator);
                     Visit(node.Arguments[1]);
                     WhereExpression.Append(")");
                 }
@@ -129,15 +124,15 @@ namespace Dapper.Common
                 {
                     WhereExpression.Append("(");
                     Visit(node.Arguments[0]);
-                    CurrentOperator = WhereType.GetOperator(node.Method.Name);
-                    WhereExpression.AppendFormat(" {0} ", CurrentOperator);
+                    Operator = WhereType.GetOperator(node.Method.Name);
+                    WhereExpression.AppendFormat(" {0} ", Operator);
                     WhereExpression.Append(")");
                 }
             }
-            else if(node.Method.GetCustomAttributes(typeof(FunctionAttribute),true).Length>0)
+            else if (node.Method.GetCustomAttributes(typeof(FunctionAttribute), true).Length > 0)
             {
-                WhereExpression.Append(new FunVisitor<T>().Build(ref Param,node));
-                SetName("",node.Method.Name);
+                WhereExpression.Append(new FunVisitor<T>().Build(ref Param, node, false));
+                SetName("", node.Method.Name);
             }
             else
             {
@@ -150,8 +145,8 @@ namespace Dapper.Common
         {
             WhereExpression.Append("(");
             Visit(node.Left);
-            CurrentOperator = WhereType.GetOperator(node.NodeType);
-            WhereExpression.AppendFormat(" {0} ", CurrentOperator);
+            Operator = WhereType.GetOperator(node.NodeType);
+            WhereExpression.AppendFormat(" {0} ", Operator);
             Visit(node.Right);
             WhereExpression.Append(")");
             return node;
@@ -160,7 +155,7 @@ namespace Dapper.Common
         {
             if (node.Expression != null && node.Expression.NodeType == ExpressionType.Parameter)
             {
-                SetName(GetColumnName(node), node.Member.Name);
+                SetName(GetColumn(node), node.Member.Name);
             }
             else
             {
@@ -180,7 +175,7 @@ namespace Dapper.Common
             var value = Expression.Lambda(node).Compile().DynamicInvoke();
             SetValue(value);
             return node;
-        }     
+        }
         protected override Expression VisitUnary(UnaryExpression node)
         {
             if (node.NodeType == ExpressionType.Not)
@@ -220,7 +215,7 @@ namespace Dapper.Common
         /// <typeparam name="T"></typeparam>
         /// <param name="expression"></param>
         /// <returns></returns>
-        public static string GetColumnName(Expression expression)
+        public static string GetColumn(Expression expression)
         {
             var name = string.Empty;
             if (expression is LambdaExpression)
@@ -239,8 +234,8 @@ namespace Dapper.Common
             {
                 throw new Exception("Not Cast MemberExpression");
             }
-            return TypeMapper.GetColumnName(typeof(T), name);
-        }               
+            return TypeMapper.GetColumnName<T>(name);
+        }
         #endregion
 
     }

@@ -6,23 +6,23 @@ using System.Threading.Tasks;
 
 namespace Dapper.Common
 {
-    public static class TypeMapper
+    internal static class TypeMapper
     {
         #region Cache
 
         /// <summary>
         /// 映射缓存
         /// </summary>
-        static Dictionary<Type, DbTable> Tables = new Dictionary<Type, DbTable>();
+        static Dictionary<Type, DbTable> CacheTables = new Dictionary<Type, DbTable>();
 
         /// <summary>
         /// 缓存策略
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
-        private static DbTable Cache(Type type)
+        private static DbTable MapperCache(Type type)
         {
-            if (!Tables.ContainsKey(type))
+            if (!CacheTables.ContainsKey(type))
             {
                 var table = new DbTable();
 
@@ -32,25 +32,31 @@ namespace Dapper.Common
                 #endregion
 
                 #region 如果存在字段注解则使用字段注解配置，否则使用属性名，并将第一个属性作为标识列
-                var props = type.GetProperties();
-                foreach (var prop in props)
+                var properties = type.GetProperties();
+                foreach (var property in properties)
                 {
-                    var propAttrs = prop.GetCustomAttributes(typeof(ColumnAttribute), false);
-                    var name =  propAttrs.Length > 0 ? (propAttrs[0] as ColumnAttribute).Name : prop.Name;
-                    var isIdentity = propAttrs.Length > 0 && !table.Columns.Exists(e=>e.Identity) && (propAttrs[0] as ColumnAttribute).Identity ? true : prop == props.First();
-                    table.Columns.Add(new DbTable.DbColumn()
+                    var attributes = property.GetCustomAttributes(typeof(ColumnAttribute), false);
+                    ColumnAttribute attribute = attributes.Length > 0 ? (ColumnAttribute)attributes[0] : null;
+                    if (attribute!=null&&attribute.Remove)
                     {
-                        FieldName = prop.Name,
-                        Identity = isIdentity,
-                        ColumnName = name,
+                        continue;
+                    }
+                    var propertyName = attribute == null ? property.Name : attribute.Name;
+                    var isIdentity = attribute != null && attribute.PrimaryKey ? true : property == properties.First();
+
+                    table.Columns.Add(new DbColumn()
+                    {
+                        FieldName = property.Name,
+                        PrimaryKey = isIdentity,
+                        ColumnName = propertyName,
                     });
                 }
                 #endregion
 
-                Tables.Add(type, table);
+                CacheTables.Add(type, table);
 
             }
-            return Tables[type];
+            return CacheTables[type];
         }
 
         #endregion
@@ -64,7 +70,7 @@ namespace Dapper.Common
         /// <returns></returns>
         public static string GetTableName<T>()
         {
-            return Cache(typeof(T)).TableName;
+            return MapperCache(typeof(T)).TableName;
         }
         /// <summary>
         /// 获取列名
@@ -74,26 +80,16 @@ namespace Dapper.Common
         /// <returns></returns>
         public static string GetColumnName<T>(string fieldName)
         {
-            return Cache(typeof(T)).Columns.Find(f => f.FieldName == fieldName).ColumnName;
-        }
-        /// <summary>
-        /// 获取列名
-        /// </summary>
-        /// <param name="type"></param>
-        /// <param name="fieldName"></param>
-        /// <returns></returns>
-        public static string GetColumnName(Type type, string fieldName)
-        {
-            return Cache(type).Columns.Find(f => f.FieldName == fieldName).ColumnName;
+            return MapperCache(typeof(T)).Columns.Find(f => f.FieldName == fieldName).ColumnName;
         }
         /// <summary>
         /// 获取列定义
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
-        public static List<DbTable.DbColumn> GetDbColumn<T>()
+        public static List<DbColumn> GetDbColumn<T>()
         {
-            return Cache(typeof(T)).Columns;
+            return MapperCache(typeof(T)).Columns;
         }
         /// <summary>
         /// 获取所有列名
@@ -102,9 +98,9 @@ namespace Dapper.Common
         /// <returns></returns>
         public static string[] GetColumnNames<T>()
         {
-            return Cache(typeof(T)).Columns.Select(c => c.ColumnName).ToArray();
+            return MapperCache(typeof(T)).Columns.Select(c => c.ColumnName).ToArray();
         }
-     
+
         /// <summary>
         /// 通过字段名获取属性名
         /// </summary>
@@ -113,7 +109,7 @@ namespace Dapper.Common
         /// <returns></returns>
         public static string GetFieldName<T>(string column)
         {
-            return Cache(typeof(T)).Columns.Find(f => f.ColumnName == column).FieldName;
+            return MapperCache(typeof(T)).Columns.Find(f => f.ColumnName == column).FieldName;
         }
 
         /// <summary>
@@ -123,7 +119,7 @@ namespace Dapper.Common
         /// <returns></returns>
         public static string[] GetFieldNames<T>()
         {
-            return Cache(typeof(T)).Columns.Select(c => c.FieldName).ToArray();
+            return MapperCache(typeof(T)).Columns.Select(c => c.FieldName).ToArray();
         }
         /// <summary>
         /// 获取标识列的属性名
@@ -132,22 +128,22 @@ namespace Dapper.Common
         /// <returns></returns>
         public static string GetIdentityFieldName<T>()
         {
-            return Cache(typeof(T)).Columns.Find(f => f.Identity == true).FieldName;
+            return MapperCache(typeof(T)).Columns.Find(f => f.PrimaryKey == true).FieldName;
         }
         #endregion
 
         #region Model
-        public class DbTable
+        internal class DbColumn
+        {
+            public string FieldName { get; set; }
+            public string ColumnName { get; set; }
+            public bool PrimaryKey { get; set; }
+        }
+        internal class DbTable
         {
             public string TableName { get; set; }
 
             public List<DbColumn> Columns = new List<DbColumn>();
-            public class DbColumn
-            {
-                public string FieldName { get; set; }
-                public string ColumnName { get; set; }
-                public bool Identity { get; set; }
-            }
         }
         #endregion
     }

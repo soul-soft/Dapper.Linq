@@ -6,15 +6,21 @@ namespace Dapper.Common
     public class ColumnAttribute:Attribute
     {
         public string Name { get; set; }
-        public bool Identity { get; set; }
+        public bool PrimaryKey { get; set; }
+        public bool Remove { get; set; }
         public ColumnAttribute()
         {
 
         }
-        public ColumnAttribute(string name,bool identity=false)
+        public ColumnAttribute(string columnName,bool primaryKey=false)
         {
-            Name = name;
-            Identity = identity;
+            Name = columnName;
+            PrimaryKey = primaryKey;
+            Remove = false;
+        }
+        public ColumnAttribute(bool remove)
+        {
+            Remove = true;
         }
     }
 }

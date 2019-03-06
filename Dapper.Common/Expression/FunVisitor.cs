@@ -12,13 +12,13 @@ namespace Dapper.Common
     /// <summary>
     /// 数据库表达式构建
     /// </summary>
-    public class FunVisitor<T> : ExpressionVisitor
+    internal class FunVisitor<T> : ExpressionVisitor
     {
         #region Props
         /// <summary>
         /// 表达式参数
         /// </summary>
-        private DynamicParameters Param = null;
+        private DynamicParameters Param { get; set; }
         /// <summary>
         /// 表达式字符串
         /// </summary>
@@ -34,7 +34,7 @@ namespace Dapper.Common
         /// <summary>
         /// 当前操作符
         /// </summary>
-        private string CurrentOperator { get; set; }
+        private string Operator { get; set; }
         /// <summary>
         /// 是否是常量
         /// </summary>
@@ -60,18 +60,18 @@ namespace Dapper.Common
             }
             else
             {
-                FunExpression.Append(string.Format("@{0}_{1}", "param", Param.ParameterNames.Count()));
-                Param.Add(string.Format("@{0}_{1}", "param", Param.ParameterNames.Count()), value);
+                var name = string.Format("@{0}_{1}", "param", Param.ParameterNames.Count());
+                FunExpression.Append(name);
+                Param.Add(name, value);
             }
         }
         /// <summary>
         /// 构建表达式字段
         /// </summary>
-        /// <param name="columnName"></param>
-        /// <param name="memberName"></param>
-        private void SetName(string columnName)
+        /// <param name="column"></param>
+        private void SetName(string column)
         {
-            FunExpression.Append(columnName);
+            FunExpression.Append(column);
         }
         /// <summary>
         /// 构建函数表达式,及参数
@@ -97,9 +97,9 @@ namespace Dapper.Common
                 if (node.Arguments.Count == 3 && node.Method.Name.Contains("Between"))
                 {
                     FunExpression.Append("(");
-                    CurrentOperator = WhereType.GetOperator(node.Method.Name);
+                    Operator = WhereType.GetOperator(node.Method.Name);
                     Visit(node.Arguments[0]);
-                    FunExpression.AppendFormat(" {0} ", CurrentOperator);
+                    FunExpression.AppendFormat(" {0} ", Operator);
                     Visit(node.Arguments[1]);
                     FunExpression.AppendFormat(" AND ");
                     Visit(node.Arguments[2]);
@@ -109,8 +109,8 @@ namespace Dapper.Common
                 {
                     FunExpression.Append("(");
                     Visit(node.Arguments[0]);
-                    CurrentOperator = WhereType.GetOperator(node.Method.Name);
-                    FunExpression.AppendFormat(" {0} ", CurrentOperator);
+                    Operator = WhereType.GetOperator(node.Method.Name);
+                    FunExpression.AppendFormat(" {0} ", Operator);
                     Visit(node.Arguments[1]);
                     FunExpression.Append(")");
                 }
@@ -118,8 +118,8 @@ namespace Dapper.Common
                 {
                     FunExpression.Append("(");
                     Visit(node.Arguments[0]);
-                    CurrentOperator = WhereType.GetOperator(node.Method.Name);
-                    FunExpression.AppendFormat(" {0} ", CurrentOperator);
+                    Operator = WhereType.GetOperator(node.Method.Name);
+                    FunExpression.AppendFormat(" {0} ", Operator);
                     FunExpression.Append(")");
                 }
             }
@@ -153,8 +153,8 @@ namespace Dapper.Common
         {
             FunExpression.Append("(");
             Visit(node.Left);
-            CurrentOperator = WhereType.GetOperator(node.NodeType);
-            FunExpression.AppendFormat(" {0} ", CurrentOperator);
+            Operator = WhereType.GetOperator(node.NodeType);
+            FunExpression.AppendFormat(" {0} ", Operator);
             Visit(node.Right);
             FunExpression.Append(")");
             return node;
@@ -163,7 +163,7 @@ namespace Dapper.Common
         {
             if (node.Expression != null && node.Expression.NodeType == ExpressionType.Parameter)
             {
-                SetName(GetColumnName(node));
+                SetName(GetColumn(node));
             }
             else
             {
@@ -203,6 +203,22 @@ namespace Dapper.Common
             var value = Expression.Lambda(node).Compile().DynamicInvoke();
             SetValue(value);
             return node;
+        }
+        protected override Expression VisitMemberInit(MemberInitExpression node)
+        {
+            for (var i = 0; i < node.Bindings.Count; i++)
+            {
+                Visit(((MemberAssignment)node.Bindings[i]).Expression);
+                if (Alias)
+                {
+                    FunExpression.AppendFormat(" AS {0}", node.Bindings[i].Member.Name);
+                }
+                if (i + 1 < node.Bindings.Count)
+                {
+                    FunExpression.Append(",");
+                }
+            }
+            return node;
         }      
         protected override Expression VisitNew(NewExpression node)
         {
@@ -229,7 +245,7 @@ namespace Dapper.Common
         /// <typeparam name="T"></typeparam>
         /// <param name="expression"></param>
         /// <returns></returns>
-        public static string GetColumnName(Expression expression)
+        public static string GetColumn(Expression expression)
         {
             var name = string.Empty;
             if (expression is LambdaExpression)
