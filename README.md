@@ -183,9 +183,10 @@
         var res = sesion.From<Student>().Where(query).Exists();
         /*****************会话日志*******************/
         var aa = sesion.Logger();
+    
     四、自定义函数
-        var session = SessionFactory.GetSession();
-        var list = session.From<Student>()
+           
+      var list = session.From<Student>()
             .GroupBy(s => new
             {
                 s.Age,
@@ -197,6 +198,7 @@
                 s.Age ,
                 Nsme = DbFun.Date_Add(s.CreateTime, "INTERVAL 1 DAY")
             });
+            
          var list = session.From<Student>()
               .Where(a=>a.Age>0&&DbFun.Replace(a.Name,"a","")== "dmin")
               .GroupBy(s=>new 
@@ -212,6 +214,7 @@
                   Tommory = DbFun.Date_Add(s.CreateTime, "INTERVAL 1 DAY"),
                   SumAge = DbFun.Sum(s.Age)
               });
+        //该类由用户自定义，函数请使用[Function]Attribute,关键字参数，必须是常数用[KeyParameter]标识
         public static  class DbFun
         {
        
