@@ -9,9 +9,14 @@ namespace Dapper.Common
     /// <summary>
     /// 事物会话基础对象
     /// </summary>
-    public class Session : ISession
+    internal class Session : ISession
     {
         #region Constructor
+        /// <summary>
+        /// 创建数会话
+        /// </summary>
+        /// <param name="connection"></param>
+        /// <param name="dataSourceType"></param>
         public Session(IDbConnection connection,DataSourceType dataSourceType)
         {
             Connection = connection;
@@ -32,7 +37,7 @@ namespace Dapper.Common
         /// <summary>
         /// 会话状态
         /// </summary>
-        public SessionState State { get; set; }
+        public SessionState State { get; private set; }
         /// <summary>
         /// 数据源类型
         /// </summary>
@@ -48,6 +53,11 @@ namespace Dapper.Common
         #endregion
 
         #region SqlFrom
+        /// <summary>
+        /// 返回构建sql的对象
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
         public IFrom<T> From<T>() where T : class, new()
         {
             if (DataSourceType==DataSourceType.MYSQL)
@@ -205,10 +215,24 @@ namespace Dapper.Common
         #endregion
 
         #region ExecuteReader
+        /// <summary>
+        /// ExecuteReader
+        /// </summary>
+        /// <param name="sql"></param>
+        /// <param name="param"></param>
+        /// <param name="text"></param>
+        /// <returns></returns>
         public IDataReader ExecuteReader(string sql, object param = null, CommandType text = CommandType.Text)
         {
             return Connection.ExecuteReader(sql, param, Transaction, Timeout, text);
         }
+        /// <summary>
+        /// ExecuteReaderAsync
+        /// </summary>
+        /// <param name="sql"></param>
+        /// <param name="param"></param>
+        /// <param name="text"></param>
+        /// <returns></returns>
 
         public Task<IDataReader> ExecuteReaderAsync(string sql, object param = null, CommandType text = CommandType.Text)
         {
@@ -217,7 +241,6 @@ namespace Dapper.Common
         #endregion
 
         #region ADO.NET
-
         /// <summary>
         /// 开启会话
         /// </summary>
@@ -272,9 +295,18 @@ namespace Dapper.Common
         #endregion
 
         #region Logger
+        /// <summary>
+        /// 输出会话日志
+        /// </summary>
+        /// <returns></returns>
         public string Logger()
         {
             return "Please Set SessionFactory.StaticProxy = true";
+        }
+
+        public void Dispose()
+        {
+            this.Close();   
         }
         #endregion
 

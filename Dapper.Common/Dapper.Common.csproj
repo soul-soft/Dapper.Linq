@@ -2,17 +2,21 @@
 
   <PropertyGroup>
     <PackageId>Dapper.Common</PackageId>
-    <PackageTags>Dapper,Linq To Sql</PackageTags>
+    <PackageTags>dapper,linq to sql</PackageTags>
     <Title>Dapper.Common</Title>
     <TargetFrameworks>net45;netstandard2.0</TargetFrameworks>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>1.3.1</Version>
+    <Version>1.3.3</Version>
     <PackageProjectUrl>https://github.com/1448376744/Dapper.Common</PackageProjectUrl>
     <Description>dapper,linq to sql,function,in,like,between</Description>
     <Authors>chaeyeon</Authors>
-    <AssemblyVersion>1.2.3.1</AssemblyVersion>
-    <FileVersion>1.2.3.1</FileVersion>
+    <AssemblyVersion>1.3.3.0</AssemblyVersion>
+    <FileVersion>1.3.3.0</FileVersion>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net45|AnyCPU'">
+    <DocumentationFile>D:\GitHub\Dapper.Common\Dapper.Common\Dapper.Common.xml</DocumentationFile>
   </PropertyGroup>
   
   <ItemGroup Condition=" '$(TargetFramework)' == 'net45' ">
@@ -25,7 +29,6 @@
 
   <ItemGroup Condition=" '$(TargetFramework)' == 'netstandard2.0' ">   
     <PackageReference Include="Dapper" Version="1.60.1" />
-    <PackageReference Include="Microsoft.CSharp" Version="4.5.0" />
   </ItemGroup>
   
 </Project>

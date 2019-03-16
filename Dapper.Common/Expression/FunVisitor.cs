@@ -18,7 +18,7 @@ namespace Dapper.Common
         /// <summary>
         /// 表达式参数
         /// </summary>
-        private DynamicParameters Param { get; set; }
+        private Dictionary<string, object> Param { get; set; }
         /// <summary>
         /// 表达式字符串
         /// </summary>
@@ -60,7 +60,7 @@ namespace Dapper.Common
             }
             else
             {
-                var name = string.Format("@{0}_{1}", "param", Param.ParameterNames.Count());
+                var name = string.Format("@{0}_{1}", "param", Param.Count);
                 FunExpression.Append(name);
                 Param.Add(name, value);
             }
@@ -80,7 +80,7 @@ namespace Dapper.Common
         /// <param name="expression"></param>
         /// <param name="alias"></param>
         /// <returns></returns>
-        public string Build(ref DynamicParameters param, Expression expression, bool alias = true)
+        internal string Build(Dictionary<string, object> param, Expression expression, bool alias = true)
         {
             Param = param;
             Alias = alias;
@@ -219,7 +219,7 @@ namespace Dapper.Common
                 }
             }
             return node;
-        }      
+        }
         protected override Expression VisitNew(NewExpression node)
         {
             for (var i = 0; i < node.Arguments.Count; i++)
@@ -242,10 +242,9 @@ namespace Dapper.Common
         /// <summary>
         /// 获取字段名
         /// </summary>
-        /// <typeparam name="T"></typeparam>
         /// <param name="expression"></param>
         /// <returns></returns>
-        public static string GetColumn(Expression expression)
+        internal static string GetColumn(Expression expression)
         {
             var name = string.Empty;
             if (expression is LambdaExpression)

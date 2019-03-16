@@ -18,7 +18,7 @@ namespace Dapper.Common
         /// </summary>
         public readonly static List<DataSource> DataSources = new List<DataSource>(32);
         /// <summary>
-        /// 静态代理
+        /// 是否开启静态代理来记录日志和计时
         /// </summary>
         public static bool StaticProxy { get; set; }
         /// <summary>
@@ -31,7 +31,7 @@ namespace Dapper.Common
         /// <summary>
         /// 获取会话
         /// </summary>
-        /// <param name="name"></param>
+        /// <param name="name">数据源</param>
         /// <returns></returns>
         public static ISession GetSession(string name = null)
         {
@@ -59,11 +59,11 @@ namespace Dapper.Common
         /// <summary>
         /// 获取数据库连接
         /// </summary>
-        /// <param name="dataSourceName"></param>
+        /// <param name="name">数据源</param>
         /// <returns></returns>
-        public static IDbConnection GetConnection(string dataSourceName = null)
+        public static IDbConnection GetConnection(string name = null)
         {
-            return GetDataSource(dataSourceName).Source();
+            return GetDataSource(name).Source();
         }
         /// <summary>
         /// 获取数据源
@@ -75,14 +75,32 @@ namespace Dapper.Common
             return string.IsNullOrEmpty(name) ? DataSources.First() : DataSources.Find(f => f.Name == name);
         }
     }
+    /// <summary>
+    /// 数据源
+    /// </summary>
     public class DataSource
     {
+        /// <summary>
+        /// 数据源名称
+        /// </summary>
         public string Name { get; set; }
+        /// <summary>
+        /// 数据库类型
+        /// </summary>
         public DataSourceType Type { get; set; }
+        /// <summary>
+        /// 数据源
+        /// </summary>
         public Func<IDbConnection> Source { get; set; }
     }
+    /// <summary>
+    /// 数据源类型
+    /// </summary>
     public enum DataSourceType
     {
+        /// <summary>
+        /// Mysql数据库
+        /// </summary>
         MYSQL = 0,
     }
 }

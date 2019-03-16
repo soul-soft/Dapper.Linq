@@ -60,3 +60,4 @@ C:\Dapper.Common\UnitTest\obj\Release\UnitTest.csproj.CoreCompileInputs.cache
 C:\Dapper.Common\UnitTest\obj\Release\UnitTest.csproj.CopyComplete
 C:\Dapper.Common\UnitTest\obj\Release\UnitTest.dll
 C:\Dapper.Common\UnitTest\obj\Release\UnitTest.pdb
+D:\GitHub\Dapper.Common\UnitTest\bin\Release\Dapper.dll

@@ -31,10 +31,10 @@ C:\Dapper.Common\Dapper.Common\obj\Release\net45\Dapper.Common.csprojAssemblyRef
 D:\GitHub\Dapper.Common\Dapper.Common\bin\Release\net45\Dapper.Common.dll
 D:\GitHub\Dapper.Common\Dapper.Common\bin\Release\net45\Dapper.Common.pdb
 D:\GitHub\Dapper.Common\Dapper.Common\bin\Release\net45\Dapper.dll
+D:\GitHub\Dapper.Common\Dapper.Common\obj\Release\net45\Dapper.Common.csprojAssemblyReference.cache
 D:\GitHub\Dapper.Common\Dapper.Common\obj\Release\net45\Dapper.Common.csproj.CoreCompileInputs.cache
 D:\GitHub\Dapper.Common\Dapper.Common\obj\Release\net45\Dapper.Common.AssemblyInfoInputs.cache
 D:\GitHub\Dapper.Common\Dapper.Common\obj\Release\net45\Dapper.Common.AssemblyInfo.cs
 D:\GitHub\Dapper.Common\Dapper.Common\obj\Release\net45\Dapper.Common.csproj.CopyComplete
 D:\GitHub\Dapper.Common\Dapper.Common\obj\Release\net45\Dapper.Common.dll
 D:\GitHub\Dapper.Common\Dapper.Common\obj\Release\net45\Dapper.Common.pdb
-D:\GitHub\Dapper.Common\Dapper.Common\obj\Release\net45\Dapper.Common.csprojAssemblyReference.cache

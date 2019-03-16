@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Linq.Expressions;
+using Common.Model;
 using Dapper;
 using Dapper.Common;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -21,7 +22,7 @@ namespace UnitTest
                 .Add(new DataSource()
                 {
                     Name = "mysql2",
-                    Source = () => new MySqlConnection("server=127.0.0.1;user id=root;password=1024;database=test;"),
+                    Source = () => new MySqlConnection("server=127.0.0.1;user id=root;password=1024;database=test;"),//() => new MySqlConnection("server=127.0.0.1;user id=root;password=1024;database=test;"),
                     Type = DataSourceType.MYSQL,
                 });
             //下划线不铭感
@@ -33,12 +34,38 @@ namespace UnitTest
         public void TestMethod2()
         {
             var session = SessionFactory.GetSession();
-            session.Open(false);
-            session.From<Student>().Select(s=>new Student()
+            try
             {
-                Age=s.Age,
-                Name=s.Name
-            });
+                //var age = 100;
+                session.Open(false);
+                var id1 = 53;
+                var stopwatch1 = new Stopwatch();
+                stopwatch1.Start();
+               var list1 = session.From<Student>()
+                    .Where(a => a.Id == id1)
+                    .Select();
+                stopwatch1.Stop();
+                var id2 = 53;
+                var stopwatch2 = new Stopwatch();
+                stopwatch2.Start();
+                var list2 = session.From<Student>()
+                   .Where(a => a.Id == id2)
+                   .Select();
+                stopwatch2.Stop();
+                var id3 = 53;
+                var stopwatch3 = new Stopwatch();
+                stopwatch3.Start();
+                var list3 = session.From<Student>()
+                   .Where(a => a.Id == id3)
+                   .Select();
+                stopwatch3.Stop();
+
+            }
+            catch (Exception e)
+            {
+
+                throw e;
+            }
             session.Commit();
         }
     }

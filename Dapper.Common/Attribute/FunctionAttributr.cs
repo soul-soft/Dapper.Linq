@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace Dapper.Common
 {
     /// <summary>
-    /// 数据库函数
+    /// 数据库函数:标识函数为数据库函数
     /// </summary>
     [AttributeUsage(AttributeTargets.Method)]
     public class FunctionAttribute:Attribute
@@ -15,7 +15,7 @@ namespace Dapper.Common
 
     }
     /// <summary>
-    /// 关键字参数
+    /// 关键字参数：标识该参数为关键字
     /// </summary>
     [AttributeUsage(AttributeTargets.Parameter)]
     public class KeyParameterAttribute:Attribute

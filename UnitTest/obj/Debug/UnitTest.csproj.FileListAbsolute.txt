@@ -54,6 +54,7 @@ D:\GitHub\Dapper.Common\UnitTest\bin\Debug\Microsoft.VisualStudio.TestPlatform.T
 D:\GitHub\Dapper.Common\UnitTest\bin\Debug\Microsoft.VisualStudio.TestPlatform.TestFramework.Extensions.dll
 D:\GitHub\Dapper.Common\UnitTest\bin\Debug\MySql.Data.dll
 D:\GitHub\Dapper.Common\UnitTest\bin\Debug\Dapper.Common.pdb
+D:\GitHub\Dapper.Common\UnitTest\bin\Debug\Dapper.Common.xml
 D:\GitHub\Dapper.Common\UnitTest\bin\Debug\Microsoft.VisualStudio.TestPlatform.TestFramework.xml
 D:\GitHub\Dapper.Common\UnitTest\bin\Debug\Microsoft.VisualStudio.TestPlatform.TestFramework.Extensions.xml
 D:\GitHub\Dapper.Common\UnitTest\obj\Debug\UnitTest.csprojAssemblyReference.cache

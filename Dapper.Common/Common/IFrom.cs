@@ -7,60 +7,55 @@ using System.Threading.Tasks;
 
 namespace Dapper.Common
 {
+    /// <summary>
+    /// SQL构建对象
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
     public interface IFrom<T> where T : class, new()
     {
         /// <summary>
-        /// Select
+        /// Select：返回列表
         /// </summary>
         /// <param name="columns"></param>
         /// <returns></returns>
         List<T> Select(string columns = "*");
         /// <summary>
-        /// Select
+        /// Select:返回列表
         /// </summary>
-        /// <param name="columns"></param>
+        /// <param name="columns">字段列表</param>
         /// <returns></returns>
-        List<TResult> Select<TResult>(string columns = "*");
+        List<TReturn> Select<TReturn>(string columns = "*");
         /// <summary>
-        /// SelectAsync
+        /// SelectAsync:异步返回列表
         /// </summary>
-        /// <param name="columns"></param>
+        /// <param name="columns">字段列表</param>
         /// <returns></returns>
         Task<IEnumerable<T>> SelectAsync(string columns = "*");
         /// <summary>
-        /// SelectAsync
+        /// SelectAsync:异步返一个新的类型
+        /// 不支持匿名类型
         /// </summary>
-        /// <param name="columns"></param>
+        /// <param name="columns">字段列表</param>
         /// <returns></returns>
-        Task<IEnumerable<TResult>> SelectAsync<TResult>(string columns = "*");
+        Task<IEnumerable<TReturn>> SelectAsync<TReturn>(string columns = "*");      
         /// <summary>
-        /// Select
+        /// Select：返回一个新的类型
+        /// 不支持匿名类型
         /// </summary>
-        /// <param name="expression"></param>
+        /// <param name="expression">字段列表</param>
         /// <returns></returns>
-        List<T> Select(Expression<Func<T, object>> expression);
+        List<TReturn> Select<TReturn>(Expression<Func<T, TReturn>> expression);
         /// <summary>
-        /// Select
+        /// SelectAsync：返回一个新的类型
+        /// 不支持匿名类型
         /// </summary>
-        /// <param name="expression"></param>
+        /// <param name="expression">字段列表</param>
         /// <returns></returns>
-        List<TResult> Select<TResult>(Expression<Func<T, TResult>> expression);
+        Task<IEnumerable<TReturn>> SelectAsync<TReturn>(Expression<Func<T, TReturn>> expression);
         /// <summary>
-        /// SelectAsync
+        /// Single：返回单个实体
         /// </summary>
-        /// <param name="expression"></param>
-        /// <returns></returns>
-        Task<IEnumerable<T>> SelectAsync(Expression<Func<T, object>> expression);
-        /// <summary>
-        /// SelectAsync
-        /// </summary>
-        /// <param name="expression"></param>
-        /// <returns></returns>
-        Task<IEnumerable<TResult>> SelectAsync<TResult>(Expression<Func<T, TResult>> expression);
-        /// <summary>
-        /// Single
-        /// </summary>
-        /// <param name="columns"></param>
+        /// <param name="columns">字段列表</param>
         /// <returns></returns>
         T Single(string columns = "*");
         /// <summary>
@@ -68,350 +63,288 @@ namespace Dapper.Common
         /// </summary>
         /// <param name="columns"></param>
         /// <returns></returns>
-        TResult Single<TResult>(string columns = "*");
+        TReturn Single<TReturn>(string columns = "*");
         /// <summary>
         /// SingleAsync
         /// </summary>
-        /// <param name="columns"></param>
+        /// <param name="columns">字段列表</param>
         /// <returns></returns>
         Task<IEnumerable<T>> SingleAsync(string columns = "*");
         /// <summary>
         /// SingleAsync
         /// </summary>
-        /// <param name="columns"></param>
+        /// <param name="columns">字段列表</param>
         /// <returns></returns>
-        Task<IEnumerable<TResult>> SingleAsync<TResult>(string columns = "*");
+        Task<IEnumerable<TReturn>> SingleAsync<TReturn>(string columns = "*");
         /// <summary>
         /// Single
         /// </summary>
-        /// <param name="expression"></param>
+        /// <param name="expression">字段列表</param>
         /// <returns></returns>
-        T Single(Expression<Func<T, object>> expression);
-        /// <summary>
-        /// Single
-        /// </summary>
-        /// <param name="expression"></param>
-        /// <returns></returns>
-        TResult Single<TResult>(Expression<Func<T, TResult>> expression);
+        TReturn Single<TReturn>(Expression<Func<T, TReturn>> expression);
         /// <summary>
         /// SingleAsync
         /// </summary>
-        /// <param name="expression"></param>
+        /// <param name="expression">字段列表</param>
         /// <returns></returns>
-        Task<IEnumerable<T>> SingleAsync(Expression<Func<T, object>> expression);
+        Task<IEnumerable<TReturn>> SingleAsync<TReturn>(Expression<Func<T, TReturn>> expression);
         /// <summary>
-        /// SingleAsync
-        /// </summary>
-        /// <param name="expression"></param>
-        /// <returns></returns>
-        Task<IEnumerable<TResult>> SingleAsync<TResult>(Expression<Func<T, TResult>> expression);
-        /// <summary>
-        /// Count
+        /// Count：返回满足Where条件的记录数
         /// </summary>
         /// <returns></returns>
         int Count();
         /// <summary>
-        /// Exists
+        /// Exists：判断满足Where条件的记录数是否存在
         /// </summary>
-        /// <returns></returns>
+        /// <returns>个数</returns>
         bool Exists();
         /// <summary>
-        /// Insert
+        /// Insert：新增实体
         /// </summary>
-        /// <param name="entity"></param>
-        /// <returns></returns>
+        /// <param name="entity">实体</param>
+        /// <returns>bool</returns>
         int Insert(T entity);
         /// <summary>
-        /// 异步插入
+        /// 异步：新增实体
         /// </summary>
-        /// <param name="entity"></param>
-        /// <returns></returns>
+        /// <param name="entity">实体</param>
+        /// <returns>影响行数</returns>
         Task<int> InsertAsync(T entity);
         /// <summary>
-        /// InsertById
+        /// 新增实体：返回自增列
         /// </summary>
-        /// <param name="entity"></param>
-        /// <returns></returns>
+        /// <param name="entity">实体</param>
+        /// <returns>返回自增列</returns>
         int InsertById(T entity);
         /// <summary>
-        /// InsertByIdAsync
+        /// 异步新增实体：返回自增列
         /// </summary>
-        /// <param name="entity"></param>
-        /// <returns></returns>
+        /// <param name="entity">实体</param>
+        /// <returns>返回自增列</returns>
         Task<int> InsertByIdAsync(T entity);
         /// <summary>
-        /// Insert
+        /// 批量新增
         /// </summary>
-        /// <param name="entitys"></param>
-        /// <returns></returns>
+        /// <param name="entitys">实体集合</param>
+        /// <returns>影响行数</returns>
         int Insert(IEnumerable<T> entitys);
         /// <summary>
-        /// InsertAsync
+        /// 异步批量新增
         /// </summary>
-        /// <param name="entitys"></param>
-        /// <returns></returns>
+        /// <param name="entitys">实体集合</param>
+        /// <returns>影响行数</returns>
         Task<int> InsertAsync(IEnumerable<T> entitys);
         /// <summary>
-        /// Update
+        /// 执行更新
         /// </summary>
-        /// <returns></returns>
+        /// <returns>影响行数</returns>
         int Update();
         /// <summary>
-        /// Condition Update
+        /// 异步：执行更新
         /// </summary>
-        /// <param name="condition"></param>
-        /// <returns></returns>
-        int Update(bool condition);
-        /// <summary>
-        /// UpdateAsync
-        /// </summary>
-        /// <returns></returns>
+        /// <returns>影响行数</returns>
         Task<int> UpdateAsync();
         /// <summary>
-        /// Condition Update
-        /// </summary>
-        /// <param name="condition"></param>
-        /// <returns></returns>
-        Task<int> UpdateAsync(bool condition);
-        /// <summary>
-        /// Update
+        /// 根据主键更新实体
         /// </summary>
         /// <param name="entity"></param>
-        /// <returns></returns>
+        /// <returns>影响行数</returns>
         int Update(T entity);
         /// <summary>
-        /// UpdateAsync
+        /// 异步：根据主键更新实体
         /// </summary>
         /// <param name="entity"></param>
-        /// <returns></returns>
+        /// <returns>影响行数</returns>
         Task<int> UpdateAsync(T entity);
         /// <summary>
-        /// Update
+        /// 批量新增实体
         /// </summary>
-        /// <param name="entitys"></param>
-        /// <returns></returns>
+        /// <param name="entitys">实体集合</param>
+        /// <returns>影响行数</returns>
         int Update(IEnumerable<T> entitys);
         /// <summary>
-        /// UpdateAsync
+        /// 异步：根据主键批量修改实体
         /// </summary>
-        /// <param name="entitys"></param>
-        /// <returns></returns>
+        /// <param name="entitys">实体集合</param>
+        /// <returns>影响行数</returns>
         Task<int> UpdateAsync(IEnumerable<T> entitys);
         /// <summary>
-        /// Delete
+        /// 执行删除操作
         /// </summary>
-        /// <returns></returns>
+        /// <returns>影响行数</returns>
         int Delete();
         /// <summary>
-        /// DeleteAsync
+        /// 异步：执行删除操作
         /// </summary>
-        /// <returns></returns>
+        /// <returns>影响行数</returns>
         Task<int> DeleteAsync();
         /// <summary>
-        /// Delete
+        /// 去重
         /// </summary>
-        /// <param name="entity"></param>
-        /// <returns></returns>
-        int Delete(T entity);
-        /// <summary>
-        /// DeleteAsync
-        /// </summary>
-        /// <param name="entity"></param>
-        /// <returns></returns>
-        Task<int> DeleteAsync(T entity);
-        /// <summary>
-        /// Delete
-        /// </summary>
-        /// <param name="entitys"></param>
-        /// <returns></returns>
-        int Delete(IEnumerable<T> entitys);
-        /// <summary>
-        /// DeleteAsync
-        /// </summary>
-        /// <param name="entitys"></param>
-        /// <returns></returns>
-        Task<int> DeleteAsync(IEnumerable<T> entitys);
-        /// <summary>
-        /// Distinct
-        /// </summary>
-        /// <returns></returns>
+        /// <returns>影响行数</returns>
         IFrom<T> Distinct();
-        /// <summary>
-        /// Skip
-        /// </summary>
-        /// <param name="index"></param>
-        /// <param name="count"></param>
-        /// <param name="total"></param>
-        /// <returns></returns>
-        IFrom<T> Skip(int index, int count, out int total);
-        /// <summary>
-        /// Where
-        /// </summary>
-        /// <param name="where"></param>
-        /// <param name="param"></param>
-        /// <returns></returns>
-        IFrom<T> Where(string where);
         /// <summary>
         /// 过滤
         /// </summary>
-        /// <param name="where"></param>
-        /// <returns></returns>
-        IFrom<T> Where(WhereQuery<T> where);
+        /// <param name="expression">表达式</param>
+        /// <returns>IFrom</returns>
+        IFrom<T> Where(string expression);
         /// <summary>
-        /// Where
+        ///过滤
         /// </summary>
-        /// <param name="where"></param>
-        /// <returns></returns>
-        IFrom<T> Where(Expression<Func<T, bool>> where);
+        /// <param name="whereQuery">动态表达式</param>
+        /// <returns>IFrom</returns>
+        IFrom<T> Where(WhereQuery<T> whereQuery);
         /// <summary>
-        /// Where
+        /// 过滤
         /// </summary>
-        /// <param name="condition"></param>
-        /// <param name="where"></param>
-        /// <returns></returns>
-        IFrom<T> Where(bool condition, Expression<Func<T, bool>> where);
+        /// <param name="whereQuery">动态表达式</param>
+        /// <returns>IFrom</returns>
+        IFrom<T> Where(Expression<Func<T, bool>> whereQuery);
         /// <summary>
-        /// Add Param
+        /// 条件过滤
         /// </summary>
-        /// <param name="param"></param>
-        /// <returns></returns>
-        IFrom<T> AddParam(object param);
+        /// <param name="condition">条件</param>
+        /// <param name="expression">表达式</param>
+        /// <returns>IFrom</returns>
+        IFrom<T> Where(bool condition, Expression<Func<T, bool>> expression);
         /// <summary>
-        /// Add Param
+        /// 更新列
         /// </summary>
-        /// <param name="condition"></param>
-        /// <param name="param"></param>
-        /// <returns></returns>
-        IFrom<T> AddParam(bool condition, object param);
-        /// <summary>
-        /// Set custom sql
-        /// </summary>
-        /// <param name="column"></param>
-        /// <param name="value"></param>
-        /// <returns></returns>
+        /// <param name="column">列</param>
+        /// <param name="value">值</param>
+        /// <returns>IFrom</returns>
         IFrom<T> Set(string column, object value);
         /// <summary>
-        /// Condition Set custom sql
+        /// 条件更新列
         /// </summary>
-        /// <param name="condition"></param>
-        /// <param name="column"></param>
-        /// <param name="value"></param>
-        /// <returns></returns>
+        /// <param name="condition">条件</param>
+        /// <param name="column">列</param>
+        /// <param name="value">值</param>
+        /// <returns>IFrom</returns>
         IFrom<T> Set(bool condition, string column, object value);
         /// <summary>
-        /// Set columns
+        /// 更新列
         /// </summary>
-        /// <param name="column"></param>
-        /// <param name="value"></param>
-        /// <returns></returns>
+        /// <param name="column">列</param>
+        /// <param name="value">值</param>
+        /// <returns>IFrom</returns>
         IFrom<T> Set(Expression<Func<T, object>> column, object value);
         /// <summary>
-        /// Condition Set custom sql
+        /// 条件更新列
         /// </summary>
-        /// <param name="condition"></param>
-        /// <param name="column"></param>
-        /// <param name="value"></param>
-        /// <returns></returns>
+        /// <param name="condition">条件</param>
+        /// <param name="column">列</param>
+        /// <param name="value">值</param>
+        /// <returns>IFrom</returns>
         IFrom<T> Set(bool condition, Expression<Func<T, object>> column, object value);
         /// <summary>
-        /// Lambda Set
+        /// 更新列
         /// </summary>
-        /// <param name="column"></param>
-        /// <returns></returns>
-        IFrom<T> Set(Expression<Func<T, object>> column, Expression<Func<T, object>> value);
+        /// <param name="column">列</param>
+        /// <param name="expression"></param>
+        /// <returns>IFrom</returns>
+        IFrom<T> Set(Expression<Func<T, object>> column, Expression<Func<T, object>> expression);
         /// <summary>
-        /// Condition Lambda Set
+        /// 条件更新列
         /// </summary>
-        /// <param name="condition"></param>
-        /// <param name="column"></param>
-        /// <param name="value"></param>
-        /// <returns></returns>
-        IFrom<T> Set(bool condition, Expression<Func<T, object>> column, Expression<Func<T, object>> value);
+        /// <param name="condition">条件</param>
+        /// <param name="column">列</param>
+        /// <param name="expression">表达式</param>
+        /// <returns>IFrom</returns>
+        IFrom<T> Set(bool condition, Expression<Func<T, object>> column, Expression<Func<T, object>> expression);
         /// <summary>
-        /// GroupBy
+        /// 分组
         /// </summary>
-        /// <param name="groupby"></param>
-        /// <returns></returns>
+        /// <param name="groupby">表达式</param>
+        /// <returns>IFrom</returns>
         IFrom<T> GroupBy(string groupby);
         /// <summary>
-        /// GroupBy
+        /// 分组
         /// </summary>
-        /// <param name="groupby"></param>
-        /// <returns></returns>
+        /// <param name="groupby">表达式</param>
+        /// <returns>IFrom</returns>
         IFrom<T> GroupBy(Expression<Func<T, object>> groupby);
         /// <summary>
-        /// Having
+        /// 分组之后筛选
         /// </summary>
-        /// <param name="having"></param>
-        /// <param name="param"></param>
-        /// <returns></returns>
+        /// <param name="having">表达式</param>
+        /// <returns>IFrom</returns>
         IFrom<T> Having(string having);
         /// <summary>
-        /// Having
+        /// 分组之后筛选
         /// </summary>
-        /// <param name="having"></param>
-        /// <returns></returns>
-        IFrom<T> Having(WhereQuery<T> having);
+        /// <param name="whereQuery">动态条件</param>
+        /// <returns>IFrom</returns>
+        IFrom<T> Having(WhereQuery<T> whereQuery);
         /// <summary>
-        /// Having
+        /// 分组之后筛选
         /// </summary>
-        /// <param name="having"></param>
-        /// <returns></returns>
-        IFrom<T> Having(Expression<Func<T, bool>> having);
+        /// <param name="expression">表达式</param>
+        /// <returns>IFrom</returns>
+        IFrom<T> Having(Expression<Func<T, bool>> expression);
         /// <summary>
-        /// Desc
+        /// 倒叙排序
         /// </summary>
-        /// <param name="orderBy"></param>
-        /// <returns></returns>
+        /// <param name="orderBy">表达式</param>
+        /// <returns>IFrom</returns>
         IFrom<T> Desc(Expression<Func<T, object>> orderBy);
         /// <summary>
-        /// Desc
+        /// 条件倒叙排序
         /// </summary>
-        /// <param name="condition"></param>
-        /// <param name="orderBy"></param>
-        /// <returns></returns>
+        /// <param name="condition">条件</param>
+        /// <param name="orderBy">表达式</param>
+        /// <returns>IFrom</returns>
         IFrom<T> Desc(bool condition, Expression<Func<T, object>> orderBy);
         /// <summary>
-        /// Asc
+        /// 升序
         /// </summary>
-        /// <param name="orderBy"></param>
-        /// <returns></returns>
+        /// <param name="orderBy">表达式</param>
+        /// <returns>IFrom</returns>
         IFrom<T> Asc(Expression<Func<T, object>> orderBy);
         /// <summary>
-        /// Asc
+        /// 条件升序
         /// </summary>
-        /// <param name="condition"></param>
-        /// <param name="orderBy"></param>
-        /// <returns></returns>
+        /// <param name="condition">条件</param>
+        /// <param name="orderBy">表达式</param>
+        /// <returns>IFrom</returns>
         IFrom<T> Asc(bool condition, Expression<Func<T, object>> orderBy);
         /// <summary>
-        /// OrderBy
+        /// 排序
         /// </summary>
-        /// <param name="orderBy"></param>
-        /// <returns></returns>
+        /// <param name="orderBy">表达式</param>
+        /// <returns>IFrom</returns>
         IFrom<T> OrderBy(string orderBy);
         /// <summary>
-        /// Take
+        /// 从index开始返回count条记录
         /// </summary>
-        /// <param name="index"></param>
-        /// <param name="count"></param>
-        /// <returns></returns>
-        IFrom<T> Take(int index, int count);
+        /// <param name="index">起始位置</param>
+        /// <param name="count">个数</param>
+        /// <returns>IFrom</returns>
+        IFrom<T> Skip(int index, int count);
         /// <summary>
-        /// Limit
+        /// 从0开始返回count条记录
         /// </summary>
-        /// <param name="count"></param>
-        /// <returns></returns>
-        IFrom<T> Take(int count);
+        /// <param name="count">个数</param>
+        /// <returns>IFrom</returns>
+        IFrom<T> Skip(int count);
         /// <summary>
-        /// XLock
+        /// 从index开始获取count条记录,并返回总个数
         /// </summary>
-        /// <returns></returns>
+        /// <param name="index">起始位置</param>
+        /// <param name="count">返回个数</param>
+        /// <param name="total">总个数</param>
+        /// <returns>IFrom</returns>
+        IFrom<T> Skip(int index, int count, out int total);
+        /// <summary>
+        /// 悲观锁
+        /// </summary>
+        /// <returns>IFrom</returns>
         IFrom<T> XLock();
         /// <summary>
-        /// XLock
+        /// 共享锁
         /// </summary>
-        /// <returns></returns>
+        /// <returns>IFrom</returns>
         IFrom<T> SLock();
     }
 }

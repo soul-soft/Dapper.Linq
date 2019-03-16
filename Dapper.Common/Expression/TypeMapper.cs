@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Dapper.Common
 {
@@ -15,11 +13,6 @@ namespace Dapper.Common
         /// </summary>
         static Dictionary<Type, DbTable> CacheTables = new Dictionary<Type, DbTable>();
 
-        /// <summary>
-        /// 缓存策略
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <returns></returns>
         private static DbTable MapperCache(Type type)
         {
             if (!CacheTables.ContainsKey(type))
@@ -42,7 +35,7 @@ namespace Dapper.Common
                         continue;
                     }
                     var propertyName = attribute == null ? property.Name : attribute.Name;
-                    var isIdentity = attribute != null && attribute.PrimaryKey ? true : property == properties.First();
+                    var isIdentity = attribute != null && attribute.IsPrimaryKey ? true : property == properties.First();
 
                     table.Columns.Add(new DbColumn()
                     {
@@ -56,6 +49,7 @@ namespace Dapper.Common
                 CacheTables.Add(type, table);
 
             }
+
             return CacheTables[type];
         }
 

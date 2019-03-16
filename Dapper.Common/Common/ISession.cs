@@ -10,22 +10,22 @@ using static Dapper.SqlMapper;
 namespace Dapper.Common
 {
     /// <summary>
-    /// 事物会话接口
+    /// 事物回话接口
     /// </summary>
-    public interface ISession
+    public interface ISession:IDisposable
     {
         #region SqlFrom
         /// <summary>
-        /// 返回一个通过模型构建SQL的对象
+        /// 返回一个构建SQL的对象
         /// </summary>
-        /// <typeparam name="T"></typeparam>
+        /// <typeparam name="TTable"></typeparam>
         /// <returns></returns>
-        IFrom<T> From<T>() where T : class, new();
+        IFrom<TTable> From<TTable>() where TTable : class, new();
         #endregion
 
         #region Execute
         /// <summary>
-        /// 执行SQL语句并返会影响行数
+        /// 执行SQL语句并返回影响行数
         /// </summary>
         /// <param name="sql"></param>
         /// <param name="param"></param>
@@ -34,7 +34,7 @@ namespace Dapper.Common
         int Execute(string sql, object param = null, CommandType text = CommandType.Text);
 
         /// <summary>
-        /// 异步执行SQL语句并返会影响行数
+        /// 异步执行SQL语句并返回影响行数
         /// </summary>
         /// <param name="sql"></param>
         /// <param name="param"></param>
@@ -101,7 +101,7 @@ namespace Dapper.Common
 
         #region Query
         /// <summary>
-        /// 执行SQL语句并返会查询结果
+        /// 执行SQL语句并返回查询结果
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="sql"></param>
@@ -120,14 +120,13 @@ namespace Dapper.Common
         /// <summary>
         /// 执行异步查询返回dynamic类型
         /// </summary>
-        /// <typeparam name="T"></typeparam>
         /// <param name="sql"></param>
         /// <param name="param"></param>
         /// <param name="text"></param>
         /// <returns></returns>
         Task<IEnumerable<dynamic>> QueryAsync(string sql, object param = null, CommandType text = CommandType.Text);
         /// <summary>
-        /// 异步执行SQL语句并返会查询结果
+        /// 异步执行SQL语句并返回查询结果
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="sql"></param>
@@ -155,7 +154,7 @@ namespace Dapper.Common
 
         #region ADO.NET
         /// <summary>
-        /// 开启会话
+        /// 开启回话
         /// </summary>
         /// <param name="autoCommit">是否自动提交</param>
         void Open(bool autoCommit);
@@ -164,7 +163,7 @@ namespace Dapper.Common
         /// </summary>
         void Commit();
         /// <summary>
-        /// 会滚事物
+        /// 回滚事物
         /// </summary>
         void Rollback();
         /// <summary>
@@ -176,11 +175,11 @@ namespace Dapper.Common
         /// </summary>
         int Timeout { get; set; }
         /// <summary>
-        /// 缓存
+        /// 查询缓存
         /// </summary>
         bool Buffered { get; set; }
         /// <summary>
-        /// 会话日志
+        /// 回话日志
         /// </summary>
         /// <returns></returns>
         string Logger();
@@ -189,24 +188,24 @@ namespace Dapper.Common
     }
 
     /// <summary>
-    /// 事物会话状态
+    /// 事物回话状态
     /// </summary>
     public enum SessionState
     {
         /// <summary>
-        /// 会话关闭
+        /// 回话关闭
         /// </summary>
         Closed = 0,
         /// <summary>
-        /// 会话开启
+        /// 回话开启
         /// </summary>
         Open = 1,
         /// <summary>
-        /// 会话关闭
+        /// 回话关闭
         /// </summary>
         Commit = 2,
         /// <summary>
-        /// 会话会滚
+        /// 回话回滚
         /// </summary>
         Rollback = 3
     }

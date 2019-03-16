@@ -8,6 +8,9 @@ using System.Threading.Tasks;
 
 namespace Dapper.Common
 {
+    /// <summary>
+    /// 运算符重载
+    /// </summary>
     public static class WhereType
     {
 
@@ -146,8 +149,8 @@ namespace Dapper.Common
         }
         #endregion
 
-        #region Merthod
-        public static string GetOperator(string method)
+        #region Method
+        internal static string GetOperator(string method)
         {
             var name = string.Empty;
             switch (method)
@@ -203,7 +206,7 @@ namespace Dapper.Common
             }
             return name;
         }
-        public static string GetOperator(ExpressionType node)
+        internal static string GetOperator(ExpressionType node)
         {
             var name = string.Empty;
             switch (node)

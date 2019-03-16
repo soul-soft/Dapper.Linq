@@ -22,7 +22,7 @@ namespace Dapper.Common
         /// <summary>
         /// 表达式参数
         /// </summary>
-        private DynamicParameters Param = new DynamicParameters();
+        private Dictionary<string, object> Param = new Dictionary<string, object>();
         /// <summary>
         /// 字段栈
         /// </summary>
@@ -41,7 +41,7 @@ namespace Dapper.Common
         private void SetValue(object value)
         {
             var field = Fields.Pop();
-            var key = string.Format("@{0}_{1}", field, Param.ParameterNames.Count());
+            var key = string.Format("@{0}_{1}", field, Param.Count);
             if (value == null)
             {
                 throw new Exception(string.Format("参数:{0}不能null", key));
@@ -71,17 +71,17 @@ namespace Dapper.Common
         /// <summary>
         /// 构建表达式
         /// </summary>
-        /// <typeparam name="T"></typeparam>
+        /// <param name="param"></param>
         /// <param name="expressionList"></param>
         /// <returns></returns>
-        public string Build(ref DynamicParameters param, List<WhereExpression> expressionList)
+        internal string Build(Dictionary<string, object> param, List<WhereExpression> expressionList)
         {
             Param = param;
             foreach (var item in expressionList)
             {
-                if ((!item.Equals(expressionList.First())) && item.ExpressType != ExpressionType.Default)
+                if ((!item.Equals(expressionList.First())))
                 {
-                    WhereExpression.AppendFormat(" {0} ", WhereType.GetOperator(item.ExpressType ?? 0));
+                    WhereExpression.AppendFormat(" {0} ", WhereType.GetOperator(item.ExpressType));
                 }
                 if (!string.IsNullOrEmpty(item.StringWhere))
                 {
@@ -131,7 +131,7 @@ namespace Dapper.Common
             }
             else if (node.Method.GetCustomAttributes(typeof(FunctionAttribute), true).Length > 0)
             {
-                WhereExpression.Append(new FunVisitor<T>().Build(ref Param, node, false));
+                WhereExpression.Append(new FunVisitor<T>().Build(Param, node, false));
                 SetName("", node.Method.Name);
             }
             else
@@ -208,14 +208,8 @@ namespace Dapper.Common
         }
         #endregion
 
-        #region Utils      
-        /// <summary>
-        /// 获取字段名
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="expression"></param>
-        /// <returns></returns>
-        public static string GetColumn(Expression expression)
+        #region Utils           
+        internal static string GetColumn(Expression expression)
         {
             var name = string.Empty;
             if (expression is LambdaExpression)
