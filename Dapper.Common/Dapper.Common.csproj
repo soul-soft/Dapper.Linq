@@ -19,11 +19,7 @@
     <DocumentationFile>D:\GitHub\Dapper.Common\Dapper.Common\Dapper.Common.xml</DocumentationFile>
   </PropertyGroup>
   
-  <ItemGroup Condition=" '$(TargetFramework)' == 'net45' ">
-    <Reference Include="System" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Data" />
-    <Reference Include="Microsoft.CSharp" />
+  <ItemGroup Condition=" '$(TargetFramework)' == 'net45' ">  
     <PackageReference Include="Dapper" Version="1.42.0" />
   </ItemGroup>
 

@@ -30,13 +30,12 @@ namespace Dapper.Common
                 {
                     var attributes = property.GetCustomAttributes(typeof(ColumnAttribute), false);
                     ColumnAttribute attribute = attributes.Length > 0 ? (ColumnAttribute)attributes[0] : null;
-                    if (attribute!=null&&attribute.Remove)
+                    if (attribute != null && attribute.Remove)
                     {
                         continue;
                     }
                     var propertyName = attribute == null ? property.Name : attribute.Name;
                     var isIdentity = attribute != null && attribute.IsPrimaryKey ? true : property == properties.First();
-
                     table.Columns.Add(new DbColumn()
                     {
                         FieldName = property.Name,

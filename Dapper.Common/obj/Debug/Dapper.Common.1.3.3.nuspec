@@ -18,11 +18,6 @@
         <dependency id="Dapper" version="1.60.1" exclude="Build,Analyzers" />
       </group>
     </dependencies>
-    <frameworkAssemblies>
-      <frameworkAssembly assemblyName="System.Core" targetFramework=".NETFramework4.5" />
-      <frameworkAssembly assemblyName="System.Data" targetFramework=".NETFramework4.5" />
-      <frameworkAssembly assemblyName="System" targetFramework=".NETFramework4.5" />
-    </frameworkAssemblies>
   </metadata>
   <files>
     <file src="D:\GitHub\Dapper.Common\Dapper.Common\bin\Debug\net45\Dapper.Common.dll" target="lib\net45\Dapper.Common.dll" />
