@@ -14,7 +14,8 @@
             });
             //获取会话
             var session = SessionFactory.GetSession();
-
+            //打印日志
+            var logger = session.Logger();
         二、Insert
             //插入单个
             var row = Session.From<Member>().Insert(member);
@@ -69,4 +70,24 @@
             {
                  return 0;
             }
-
+        七、事物操作
+            ISession session = Session.GetSession("mysql");
+            try
+            {
+                sesion.open(false);//开启事务，关闭自动提交
+                var row = Session.From<Member>().Insert(member);
+                session.Commit();//提交事务
+            }
+            catch(Exception e)
+            {
+                //回滚事务
+                session.Rollback();
+            }
+            finally
+            {
+                if(session != null)
+                {
+                    session.Close();//关闭链接
+                }
+            }
+            
