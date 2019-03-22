@@ -1,4 +1,5 @@
 ﻿using System;
+using Dapper.Common;
 using Dapper.Common.Example;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -7,6 +8,7 @@ namespace UnitTestProject1
     [TestClass]
     public class UnitTest1
     {
+        ISession Session { get; set; }
         [TestInitialize]
         public void Initialize()
         {
@@ -25,5 +27,6 @@ namespace UnitTestProject1
                 NickName = "Dapper"
             }).ToJson();
         }
+      
     }
 }

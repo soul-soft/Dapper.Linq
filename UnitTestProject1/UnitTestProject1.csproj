@@ -49,6 +49,7 @@
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="MysqlFunction.cs" />
     <Compile Include="UnitTest1.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -59,6 +60,10 @@
     <ProjectReference Include="..\Dapper.Common.Example\Dapper.Common.Example.csproj">
       <Project>{e2142795-efd8-455b-a748-ebbb6781abe4}</Project>
       <Name>Dapper.Common.Example</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Dapper.Common\Dapper.Common.csproj">
+      <Project>{26B19CBC-786F-4AB0-B74D-EF767B3D295C}</Project>
+      <Name>Dapper.Common</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets" Condition="Exists('$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets')" />
