@@ -483,11 +483,6 @@ namespace Dapper.Common
             builder.AppendFormat("\r\n===========================================================================\r\n");
             return builder.ToString();
         }
-
-        public void Dispose()
-        {
-            Close();
-        }
         #endregion
 
     }

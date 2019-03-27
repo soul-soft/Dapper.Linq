@@ -303,11 +303,6 @@ namespace Dapper.Common
         {
             return "Please Set SessionFactory.StaticProxy = true";
         }
-
-        public void Dispose()
-        {
-            this.Close();
-        }
         #endregion
 
     }

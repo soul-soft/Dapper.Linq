@@ -28,3 +28,4 @@ D:\GitHub\Dapper.Common\Dapper.Common\obj\Debug\net45\Dapper.Common.AssemblyInfo
 D:\GitHub\Dapper.Common\Dapper.Common\obj\Debug\net45\Dapper.Common.csproj.CopyComplete
 D:\GitHub\Dapper.Common\Dapper.Common\obj\Debug\net45\Dapper.Common.dll
 D:\GitHub\Dapper.Common\Dapper.Common\obj\Debug\net45\Dapper.Common.pdb
+D:\GitHub\Dapper.Common\Dapper.Common\obj\Debug\net45\Dapper.Common.csprojAssemblyReference.cache

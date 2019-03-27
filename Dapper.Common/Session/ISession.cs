@@ -12,7 +12,7 @@ namespace Dapper.Common
     /// <summary>
     /// 事物回话接口
     /// </summary>
-    public interface ISession:IDisposable
+    public interface ISession
     {
         #region SqlFrom
         /// <summary>
