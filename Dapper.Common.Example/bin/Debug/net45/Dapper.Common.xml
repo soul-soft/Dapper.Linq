@@ -972,19 +972,19 @@
             <param name="expression"></param>
             <returns></returns>
         </member>
-        <member name="F:Dapper.Common.TypeMapper.CacheTables">
+        <member name="F:Dapper.Common.Mapper.CacheTables">
             <summary>
             映射缓存
             </summary>
         </member>
-        <member name="M:Dapper.Common.TypeMapper.GetTableName``1">
+        <member name="M:Dapper.Common.Mapper.GetTableName``1">
             <summary>
             获取表名
             </summary>
             <typeparam name="T"></typeparam>
             <returns></returns>
         </member>
-        <member name="M:Dapper.Common.TypeMapper.GetColumnName``1(System.String)">
+        <member name="M:Dapper.Common.Mapper.GetColumnName``1(System.String)">
             <summary>
             获取列名
             </summary>
@@ -992,21 +992,21 @@
             <param name="fieldName"></param>
             <returns></returns>
         </member>
-        <member name="M:Dapper.Common.TypeMapper.GetDbColumn``1">
+        <member name="M:Dapper.Common.Mapper.GetDbColumn``1">
             <summary>
             获取列定义
             </summary>
             <typeparam name="T"></typeparam>
             <returns></returns>
         </member>
-        <member name="M:Dapper.Common.TypeMapper.GetColumnNames``1">
+        <member name="M:Dapper.Common.Mapper.GetColumnNames``1">
             <summary>
             获取所有列名
             </summary>
             <typeparam name="T"></typeparam>
             <returns></returns>
         </member>
-        <member name="M:Dapper.Common.TypeMapper.GetFieldName``1(System.String)">
+        <member name="M:Dapper.Common.Mapper.GetFieldName``1(System.String)">
             <summary>
             通过字段名获取属性名
             </summary>
@@ -1014,14 +1014,14 @@
             <param name="column"></param>
             <returns></returns>
         </member>
-        <member name="M:Dapper.Common.TypeMapper.GetFieldNames``1">
+        <member name="M:Dapper.Common.Mapper.GetFieldNames``1">
             <summary>
             获取所有属性名
             </summary>
             <typeparam name="T"></typeparam>
             <returns></returns>
         </member>
-        <member name="M:Dapper.Common.TypeMapper.GetIdentityFieldName``1">
+        <member name="M:Dapper.Common.Mapper.GetIdentityFieldName``1">
             <summary>
             获取标识列的属性名
             </summary>

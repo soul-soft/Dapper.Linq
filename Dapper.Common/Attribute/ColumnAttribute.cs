@@ -11,33 +11,33 @@ namespace Dapper.Common
         /// <summary>
         /// 字段名称
         /// </summary>
-        public string Name { get; set; }
+        public string ColumnName { get; set; }
         /// <summary>
         /// 是否为主键
         /// </summary>
-        public bool IsPrimaryKey { get; set; }
+        public bool PrimaryKey { get; set; }
         /// <summary>
         /// 是否移除字段,如果表中不存在该列则设置为true
         /// </summary>
-        public bool Remove { get; set; }
+        public bool IsColumn { get; set; }
         /// <summary>
         /// 字段映射
         /// </summary>
         /// <param name="name">字段名</param>
-        /// <param name="isPrimarykey">是否为主键</param>
-        public ColumnAttribute(string name,bool isPrimarykey=false)
+        /// <param name="primaryKey">是否为主键</param>
+        public ColumnAttribute(string name,bool primaryKey=false)
         {
-            Name = name;
-            IsPrimaryKey = isPrimarykey;
-            Remove = false;
+            ColumnName = name;
+            PrimaryKey = primaryKey;
+            IsColumn = false;
         }
         /// <summary>
         /// 移除字段
         /// </summary>
-        /// <param name="remove">是否移除</param>
-        public ColumnAttribute(bool remove)
+        /// <param name="isColumn">是否移除</param>
+        public ColumnAttribute(bool isColumn)
         {
-            Remove = true;
+            IsColumn = true;
         }
     }
 }

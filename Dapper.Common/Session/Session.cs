@@ -259,10 +259,11 @@ namespace Dapper.Common
         /// </summary>
         public void Commit()
         {
-            if (Transaction != null && State == SessionState.Open)
+            if (Transaction != null)
             {
                 Transaction.Commit();
                 State = SessionState.Commit;
+                Transaction = null;
             }
         }
         /// <summary>
@@ -270,10 +271,11 @@ namespace Dapper.Common
         /// </summary>
         public void Rollback()
         {
-            if (Transaction != null && State == SessionState.Open)
+            if (Transaction != null)
             {
                 Transaction.Rollback();
                 State = SessionState.Rollback;
+                Transaction = null;
             }
         }
         /// <summary>
@@ -284,11 +286,13 @@ namespace Dapper.Common
             if (Transaction != null)
             {
                 Transaction.Dispose();
+                Transaction = null;
             }
-            if (Connection != null && State != SessionState.Closed)
+            if (Connection != null)
             {
                 Connection.Close();
                 Connection.Dispose();
+                Connection = null;
             }
             State = SessionState.Closed;
         }

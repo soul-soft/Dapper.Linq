@@ -7,21 +7,21 @@ namespace  Dapper.Common.Example
 {
 
 	/// <summary>
-    /// 
-	/// 更新时间：2019-03-22 18:49:50
+    /// 会员
+	/// 更新时间：2019-04-01 10:08:11
     /// </summary>
 	public partial class MemberModel :MvcModel
 	{
 				
 		/// <summary>
 		/// 
-		/// ColumnType：int(11) IsNull：NO Default：0
+		/// ColumnType：int(11) IsNull：NO Default：NULL
 		/// JsName:id
 		/// </summary>
 		public int? Id { get; set; }
 			
 		/// <summary>
-		/// 
+		/// 用户CODE
 		/// ColumnType：varchar(50) IsNull：YES Default：NULL
 		/// JsName:nickName
 		/// </summary>
@@ -29,24 +29,31 @@ namespace  Dapper.Common.Example
 			
 		/// <summary>
 		/// 
-		/// ColumnType：int(11) IsNull：YES Default：NULL
+		/// ColumnType：varchar(50) IsNull：YES Default：NULL
 		/// JsName:gander
 		/// </summary>
-		public int? Gander { get; set; }
+		public string Gander { get; set; }
 			
 		/// <summary>
-		/// 
-		/// ColumnType：varchar(50) IsNull：YES Default：NULL
+		/// 昵称
+		/// ColumnType：varchar(225) IsNull：YES Default：NULL
 		/// JsName:account
 		/// </summary>
 		public string Account { get; set; }
 			
 		/// <summary>
-		/// 
-		/// ColumnType：varchar(50) IsNull：YES Default：NULL
+		/// 头像
+		/// ColumnType：varchar(225) IsNull：YES Default：NULL
 		/// JsName:password
 		/// </summary>
 		public string Password { get; set; }
+			
+		/// <summary>
+		/// 余额
+		/// ColumnType：decimal(18,2) IsNull：YES Default：NULL
+		/// JsName:balance
+		/// </summary>
+		public decimal? Balance { get; set; }
 			
 		/// <summary>
 		/// 
@@ -64,6 +71,7 @@ namespace  Dapper.Common.Example
     			Gander = this.Gander,
     			Account = this.Account,
     			Password = this.Password,
+    			Balance = this.Balance,
     			CreateTime = this.CreateTime,
     		};
 		}
@@ -72,7 +80,7 @@ namespace  Dapper.Common.Example
 	}
 	/// <summary>
     /// 
-	/// 更新时间：2019-03-22 18:49:50
+	/// 更新时间：2019-04-01 10:08:11
     /// </summary>
 	public partial class MemberOrderModel :MvcModel
 	{
@@ -117,6 +125,46 @@ namespace  Dapper.Common.Example
 		}
 
 		public WhereQuery<MemberOrder> Query = new WhereQuery<MemberOrder>();
+	}
+	/// <summary>
+    /// 
+	/// 更新时间：2019-04-01 10:08:11
+    /// </summary>
+	public partial class OrderModel :MvcModel
+	{
+				
+		/// <summary>
+		/// 
+		/// ColumnType：int(11) IsNull：NO Default：NULL
+		/// JsName:id
+		/// </summary>
+		public int? Id { get; set; }
+			
+		/// <summary>
+		/// 
+		/// ColumnType：int(11) IsNull：YES Default：NULL
+		/// JsName:orderId
+		/// </summary>
+		public int? OrderId { get; set; }
+			
+		/// <summary>
+		/// 
+		/// ColumnType：int(11) IsNull：YES Default：NULL
+		/// JsName:orderItemId
+		/// </summary>
+		public int? OrderItemId { get; set; }
+			
+		public Order NewInstance()
+		{
+			return new Order()
+			{
+    			Id = this.Id,
+    			OrderId = this.OrderId,
+    			OrderItemId = this.OrderItemId,
+    		};
+		}
+
+		public WhereQuery<Order> Query = new WhereQuery<Order>();
 	}
 
 }

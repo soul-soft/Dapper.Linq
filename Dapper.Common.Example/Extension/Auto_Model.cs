@@ -6,7 +6,7 @@ namespace Dapper.Common.Example
 {
     public partial class Member
     {
-        [Column(remove:true)]
+        [Column(isColumn:true)]
         public List<MemberOrder> Orders { get; set; }
     }
 }

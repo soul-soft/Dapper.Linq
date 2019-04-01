@@ -20,7 +20,7 @@
 	var connection = new MySqlConnection(connectionString);
 	DefaultTypeMap.MatchNamesWithUnderscores = true;
 	var queryTables = string.Format("SELECT TABLE_NAME,TABLE_TYPE,TABLE_COMMENT from INFORmation_schema.TABLES WHERE TABLE_SCHEMA='{0}'", connection.Database);
-	var queryColumns = string.Format("SELECT TABLE_NAME,COLUMN_NAME,COLUMN_COMMENT,COLUMN_DEFAULT,IS_NULLABLE,DATA_TYPE,COLUMN_TYPE,EXTRA FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA='{0}'", connection.Database);
+	var queryColumns = string.Format("SELECT TABLE_NAME,COLUMN_NAME,COLUMN_COMMENT,COLUMN_DEFAULT,IS_NULLABLE,DATA_TYPE,COLUMN_TYPE,COLUMN_KEY FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA='{0}'", connection.Database);
 	var tables = connection.Query<TableInfo>(queryTables).ToList();
 	var columns = connection.Query<ColumnInfo>(queryColumns).ToList();	
 #>
@@ -81,7 +81,7 @@ namespace  Dapper.Common.Example
         public string IsNullable { get; set; }
         public string ColumnType { get; set; }
         public string DataType { get; set; }
-        public string Extra { get; set; }
+        public string ColumnKey { get; set; }
     }
     public static class Utils
     {

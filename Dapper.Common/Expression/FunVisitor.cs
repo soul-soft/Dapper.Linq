@@ -263,7 +263,7 @@ namespace Dapper.Common
             {
                 throw new Exception("Not Cast MemberExpression");
             }
-            return TypeMapper.GetColumnName<T>(name);
+            return Mapper.GetColumnName<T>(name);
         }
         #endregion
 

@@ -17,7 +17,7 @@ namespace Dapper.Common
         /// </summary>
         public MysqlFrom()
         {
-            FromSql = TypeMapper.GetTableName<T>();
+            FromSql = Mapper.GetTableName<T>();
         }
         #endregion
 
@@ -66,7 +66,7 @@ namespace Dapper.Common
         /// <returns></returns>
         private string SelectBuild(string columns = "*")
         {
-            columns = columns == "*" ? string.Join(",", TypeMapper.GetDbColumn<T>().Select(s => string.Format("{0} AS {1}", s.ColumnName, s.FieldName))) : columns;
+            columns = columns == "*" ? string.Join(",", Mapper.GetDbColumn<T>().Select(s => string.Format("{0} AS {1}", s.ColumnName, s.FieldName))) : columns;
             columns = (_distinct != null ? _distinct + " " : "") + columns;
             QuerySql.AppendFormat("SELECT {0} FROM {1}", columns, FromSql);
             if (_where.Length > 0)
@@ -276,14 +276,6 @@ namespace Dapper.Common
             {
                 SkipSql.AppendFormat(" WHERE {0}", _where);
             }
-            if (_groupBy.Length > 0)
-            {
-                SkipSql.AppendFormat(" GROUP BY {0}", _groupBy);
-            }
-            if (_having.Length > 0)
-            {
-                SkipSql.AppendFormat(" HAVING {0}", _having);
-            }
             string existsSql = string.Format("SELECT EXISTS ({0})", SkipSql);
             var count = Session.ExecuteScalar<int>(existsSql, Param, CommandType.Text);
             return count >= 1;
@@ -293,8 +285,8 @@ namespace Dapper.Common
         #region Insert
         private string InsertBuild()
         {
-            var colums = TypeMapper.GetColumnNames<T>();
-            var fields = TypeMapper.GetFieldNames<T>();
+            var colums = Mapper.GetColumnNames<T>();
+            var fields = Mapper.GetFieldNames<T>();
             InsertSql.AppendFormat("INSERT INTO {0} ({1}) VALUES ({2})", FromSql, string.Join(",", colums), string.Join(",", fields.Select(c => c = '@' + c).ToArray()));
             return InsertSql.ToString();
         }
@@ -400,12 +392,12 @@ namespace Dapper.Common
             }
             else
             {
-                var colums = TypeMapper.GetDbColumn<T>();
+                var colums = Mapper.GetDbColumn<T>();
                 UpdateSql.AppendFormat("UPDATE {0} SET {1}", FromSql, string.Join(",", colums.FindAll(f => f.PrimaryKey == false).Select(s => s.ColumnName + " = @" + s.FieldName)));
             }
             if (condition)
             {
-                UpdateSql.AppendFormat(" WHERE {0} = @{0}", TypeMapper.GetIdentityFieldName<T>());
+                UpdateSql.AppendFormat(" WHERE {0} = @{0}", Mapper.GetIdentityFieldName<T>());
             }
             else if (_where.Length > 0)
             {
@@ -507,7 +499,7 @@ namespace Dapper.Common
             }
             else if (condition)
             {
-                DeleteSql.AppendFormat(" WHERE {0} = @{0}", TypeMapper.GetIdentityFieldName<T>());
+                DeleteSql.AppendFormat(" WHERE {0} = @{0}", Mapper.GetIdentityFieldName<T>());
             }
             return DeleteSql.ToString();
         }
@@ -683,8 +675,8 @@ namespace Dapper.Common
         /// <returns></returns>
         public IFrom<T> Set(string column, object value)
         {
-            var field = TypeMapper.GetFieldName<T>(column);
-            _set.AppendFormat("{0}{1} = @{2}", _set.Length == 0 ? "" : ",", column, TypeMapper.GetFieldName<T>(column));
+            var field = Mapper.GetFieldName<T>(column);
+            _set.AppendFormat("{0}{1} = @{2}", _set.Length == 0 ? "" : ",", column, Mapper.GetFieldName<T>(column));
             Param.Add("@" + field, value);
             return this;
         }

@@ -166,25 +166,7 @@ namespace Dapper.Common
                     break;
                 case "NotLike":
                     name = "NOT LIKE";
-                    break;              
-                case "Gt":
-                    name = ">";
-                    break;
-                case "Ge":
-                    name = ">=";
-                    break;
-                case "Lt":
-                    name = "<";
-                    break;
-                case "Le":
-                    name = "<=";
-                    break;
-                case "Ne":
-                    name = "<>";
-                    break;
-                case "Eq":
-                    name = "=";
-                    break;
+                    break;                         
                 case "IsNull":
                     name = "IS NULL";
                     break;
@@ -241,7 +223,7 @@ namespace Dapper.Common
                 case ExpressionType.Add:
                     name = "+";
                     break;
-                case ExpressionType.SubtractChecked:
+                case ExpressionType.Subtract:
                     name = "-";
                     break;
                 case ExpressionType.Multiply:
