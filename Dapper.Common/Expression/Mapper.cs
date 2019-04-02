@@ -30,7 +30,7 @@ namespace Dapper.Common
                 {
                     var attributes = property.GetCustomAttributes(typeof(ColumnAttribute), false);
                     ColumnAttribute attribute = attributes.Length > 0 ? (ColumnAttribute)attributes[0] : null;
-                    if (attribute != null && attribute.IsColumn)
+                    if (attribute != null && !attribute.IsColumn)
                     {
                         continue;
                     }

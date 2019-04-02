@@ -29,7 +29,7 @@ namespace Dapper.Common
         {
             ColumnName = name;
             PrimaryKey = primaryKey;
-            IsColumn = false;
+            IsColumn = true;
         }
         /// <summary>
         /// 移除字段

@@ -1,6 +1,7 @@
 D:\GitHub\Dapper.Common\Dapper.Common\bin\Release\netstandard2.0\Dapper.Common.deps.json
 D:\GitHub\Dapper.Common\Dapper.Common\bin\Release\netstandard2.0\Dapper.Common.dll
 D:\GitHub\Dapper.Common\Dapper.Common\bin\Release\netstandard2.0\Dapper.Common.pdb
+D:\GitHub\Dapper.Common\Dapper.Common\obj\Release\netstandard2.0\Dapper.Common.csprojAssemblyReference.cache
 D:\GitHub\Dapper.Common\Dapper.Common\obj\Release\netstandard2.0\Dapper.Common.csproj.CoreCompileInputs.cache
 D:\GitHub\Dapper.Common\Dapper.Common\obj\Release\netstandard2.0\Dapper.Common.AssemblyInfoInputs.cache
 D:\GitHub\Dapper.Common\Dapper.Common\obj\Release\netstandard2.0\Dapper.Common.AssemblyInfo.cs
