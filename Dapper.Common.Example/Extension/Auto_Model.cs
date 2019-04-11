@@ -1,8 +1,10 @@
-﻿using System;
+﻿using Dapper.Common;
+using Standard.Model;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Dapper.Common.Example
+namespace Standard.Model
 {
     public partial class Member
     {

@@ -2,6 +2,7 @@
 using Dapper.Common;
 using Dapper.Common.Example;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Standard.Model;
 
 namespace UnitTestProject1
 {
@@ -31,6 +32,7 @@ namespace UnitTestProject1
                 NickName = "Dapper"
             }).ToJson();
         }
+
       
     }
 }

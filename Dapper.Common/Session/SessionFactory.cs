@@ -18,10 +18,6 @@ namespace Dapper.Common
         /// </summary>
         public readonly static List<DataSource> DataSources = new List<DataSource>(32);
         /// <summary>
-        /// 是否开启静态代理来记录日志和计时
-        /// </summary>
-        public static bool StaticProxy { get; set; }
-        /// <summary>
         /// 直接设置Dapper下划线匹配
         /// </summary>
         static SessionFactory()
@@ -38,7 +34,7 @@ namespace Dapper.Common
             ISession session = null;
             var dataSource = GetDataSource(name);
             var connection = dataSource.Source();
-            if (StaticProxy)
+            if (dataSource.StaticProxy)
             {
                 session = new SessionProxy(new Session(dataSource.Source(),dataSource.Type))
                 {
@@ -92,6 +88,10 @@ namespace Dapper.Common
         /// 数据源
         /// </summary>
         public Func<IDbConnection> Source { get; set; }
+        /// <summary>
+        /// 是否使用代理
+        /// </summary>
+        public bool StaticProxy { get; set; }
     }
     /// <summary>
     /// 数据源类型

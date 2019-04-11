@@ -11,18 +11,17 @@ namespace Dapper.Common.Example
         private static IInterceptor TransactionIntercept = new TransactionIntercept();
         public static void ConfigDataSource(string connectionString)
         {
-            //开启静态代理
-            SessionFactory.StaticProxy = true;
             //配置数据源
             SessionFactory.DataSources.Add(new DataSource()
             {
                 Source = () => new MySql.Data.MySqlClient.MySqlConnection(connectionString),
-                Name="mysql",
-                Type=DataSourceType.MYSQL,
+                Name = "mysql",
+                Type = DataSourceType.MYSQL,
+                StaticProxy = true,
             });
         }
 
-        public static T GetService<T>()where T : class
+        public static T GetService<T>() where T : class
         {
             return ProxyGenerator.CreateClassProxy<T>(TransactionIntercept);
         }

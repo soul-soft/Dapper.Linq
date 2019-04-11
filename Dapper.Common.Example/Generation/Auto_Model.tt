@@ -27,7 +27,7 @@
 using System;
 using Dapper.Common;
 
-namespace Dapper.Common.Example
+namespace Standard.Model
 {
 
 <#foreach(var table in tables){#>
@@ -46,7 +46,7 @@ namespace Dapper.Common.Example
 		/// ColumnType：<#=column.ColumnType#>, IsNull：<#=column.IsNullable#>, Default：<#=column.ColumnDefault??"NULL"#>
 		/// JsName:<#=Utils.Camel(column.ColumnName)#>
 		/// </summary>
-		[Column("<#=column.ColumnName#>",<#=column.ColumnKey=="PRI"?"true":"false"#>)]
+		[Column("<#=column.ColumnName#>",<#=column.ColumnKey=="PRI"?"ColumnKey.Primary":"ColumnKey.None"#>)]
 		public <#=Utils.GetCSharpType(column.DataType)#> <#=Utils.Pascal(column.ColumnName)#> { get; set; }
 	<#}#>}
 <#}#>

@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 
 namespace Dapper.Common
 {
+
+
     /// <summary>
     /// 事物会话基础对象
     /// </summary>

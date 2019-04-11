@@ -9,33 +9,38 @@
             属性映射到字段
             </summary>
         </member>
-        <member name="P:Dapper.Common.ColumnAttribute.Name">
+        <member name="P:Dapper.Common.ColumnAttribute.ColumnName">
             <summary>
             字段名称
             </summary>
         </member>
-        <member name="P:Dapper.Common.ColumnAttribute.IsPrimaryKey">
+        <member name="P:Dapper.Common.ColumnAttribute.ColumnKey">
             <summary>
             是否为主键
             </summary>
         </member>
-        <member name="P:Dapper.Common.ColumnAttribute.Remove">
+        <member name="P:Dapper.Common.ColumnAttribute.IsColumn">
             <summary>
             是否移除字段,如果表中不存在该列则设置为true
             </summary>
         </member>
-        <member name="M:Dapper.Common.ColumnAttribute.#ctor(System.String,System.Boolean)">
+        <member name="M:Dapper.Common.ColumnAttribute.#ctor(System.String,Dapper.Common.ColumnKey)">
             <summary>
             字段映射
             </summary>
             <param name="name">字段名</param>
-            <param name="isPrimarykey">是否为主键</param>
+            <param name="primaryKey">是否为主键</param>
         </member>
         <member name="M:Dapper.Common.ColumnAttribute.#ctor(System.Boolean)">
             <summary>
             移除字段
             </summary>
-            <param name="remove">是否移除</param>
+            <param name="isColumn">是否移除</param>
+        </member>
+        <member name="T:Dapper.Common.ColumnKey">
+            <summary>
+            列索引
+            </summary>
         </member>
         <member name="T:Dapper.Common.FunctionAttribute">
             <summary>
@@ -182,14 +187,14 @@
             <param name="entity">实体</param>
             <returns>影响行数</returns>
         </member>
-        <member name="M:Dapper.Common.IFrom`1.InsertById(`0)">
+        <member name="M:Dapper.Common.IFrom`1.InsertReturnId(`0)">
             <summary>
             新增实体：返回自增列
             </summary>
             <param name="entity">实体</param>
             <returns>返回自增列</returns>
         </member>
-        <member name="M:Dapper.Common.IFrom`1.InsertByIdAsync(`0)">
+        <member name="M:Dapper.Common.IFrom`1.InsertReturnIdAsync(`0)">
             <summary>
             异步新增实体：返回自增列
             </summary>
@@ -275,7 +280,7 @@
             <param name="expression">表达式</param>
             <returns>IFrom</returns>
         </member>
-        <member name="M:Dapper.Common.IFrom`1.Where(Dapper.Common.WhereQuery{`0})">
+        <member name="M:Dapper.Common.IFrom`1.Where(Dapper.Common.Queryable{`0})">
              <summary>
             过滤
              </summary>
@@ -369,7 +374,7 @@
             <param name="having">表达式</param>
             <returns>IFrom</returns>
         </member>
-        <member name="M:Dapper.Common.IFrom`1.Having(Dapper.Common.WhereQuery{`0})">
+        <member name="M:Dapper.Common.IFrom`1.Having(Dapper.Common.Queryable{`0})">
             <summary>
             分组之后筛选
             </summary>
@@ -455,6 +460,32 @@
             共享锁
             </summary>
             <returns>IFrom</returns>
+        </member>
+        <member name="F:Dapper.Common.Mapper.CacheTables">
+            <summary>
+            映射缓存
+            </summary>
+        </member>
+        <member name="M:Dapper.Common.Mapper.GetTableName``1">
+            <summary>
+            获取表名
+            </summary>
+            <typeparam name="T"></typeparam>
+            <returns></returns>
+        </member>
+        <member name="M:Dapper.Common.Mapper.GetColumnList``1">
+            <summary>
+            获取列定义
+            </summary>
+            <typeparam name="T"></typeparam>
+            <returns></returns>
+        </member>
+        <member name="M:Dapper.Common.Mapper.GetColumn``1(System.Func{Dapper.Common.Mapper.DbColumn,System.Boolean})">
+            <summary>
+            获取标识列的属性名
+            </summary>
+            <typeparam name="T"></typeparam>
+            <returns></returns>
         </member>
         <member name="M:Dapper.Common.MysqlFrom`1.#ctor">
             <summary>
@@ -626,14 +657,14 @@
             <param name="entity"></param>
             <returns></returns>
         </member>
-        <member name="M:Dapper.Common.MysqlFrom`1.InsertById(`0)">
+        <member name="M:Dapper.Common.MysqlFrom`1.InsertReturnId(`0)">
             <summary>
             插入实体,并返回identity
             </summary>
             <param name="entity"></param>
             <returns></returns>
         </member>
-        <member name="M:Dapper.Common.MysqlFrom`1.InsertByIdAsync(`0)">
+        <member name="M:Dapper.Common.MysqlFrom`1.InsertReturnIdAsync(`0)">
             <summary>
             异步插入实体,并返回identity
             </summary>
@@ -752,7 +783,7 @@
             <param name="where"></param>
             <returns></returns>
         </member>
-        <member name="M:Dapper.Common.MysqlFrom`1.Where(Dapper.Common.WhereQuery{`0})">
+        <member name="M:Dapper.Common.MysqlFrom`1.Where(Dapper.Common.Queryable{`0})">
             <summary>
             Where
             </summary>
@@ -858,7 +889,7 @@
             <param name="hiving"></param>
             <returns></returns>
         </member>
-        <member name="M:Dapper.Common.MysqlFrom`1.Having(Dapper.Common.WhereQuery{`0})">
+        <member name="M:Dapper.Common.MysqlFrom`1.Having(Dapper.Common.Queryable{`0})">
             <summary>
             分组筛选
             </summary>
@@ -909,167 +940,48 @@
             <param name="orderBy"></param>
             <returns></returns>
         </member>
-        <member name="T:Dapper.Common.FunVisitor`1">
-            <summary>
-            数据库表达式构建
-            </summary>
-        </member>
-        <member name="P:Dapper.Common.FunVisitor`1.Param">
-            <summary>
-            表达式参数
-            </summary>
-        </member>
-        <member name="F:Dapper.Common.FunVisitor`1.FunExpression">
-            <summary>
-            表达式字符串
-            </summary>
-        </member>
-        <member name="P:Dapper.Common.FunVisitor`1.Alias">
-            <summary>
-            别名
-            </summary>
-        </member>
-        <member name="P:Dapper.Common.FunVisitor`1.KeyParameter">
-            <summary>
-            是否为关键字
-            </summary>
-        </member>
-        <member name="P:Dapper.Common.FunVisitor`1.Operator">
-            <summary>
-            当前操作符
-            </summary>
-        </member>
-        <member name="P:Dapper.Common.FunVisitor`1.IsConstant">
-            <summary>
-            是否是常量
-            </summary>
-        </member>
-        <member name="M:Dapper.Common.FunVisitor`1.SetValue(System.Object)">
-            <summary>
-            构建表达式参数
-            </summary>
-            <param name="value"></param>
-        </member>
-        <member name="M:Dapper.Common.FunVisitor`1.SetName(System.String)">
-            <summary>
-            构建表达式字段
-            </summary>
-            <param name="column"></param>
-        </member>
-        <member name="M:Dapper.Common.FunVisitor`1.Build(System.Collections.Generic.Dictionary{System.String,System.Object},System.Linq.Expressions.Expression,System.Boolean)">
-            <summary>
-            构建函数表达式,及参数
-            </summary>
-            <param name="param"></param>
-            <param name="expression"></param>
-            <param name="alias"></param>
-            <returns></returns>
-        </member>
-        <member name="M:Dapper.Common.FunVisitor`1.GetColumn(System.Linq.Expressions.Expression)">
-            <summary>
-            获取字段名
-            </summary>
-            <param name="expression"></param>
-            <returns></returns>
-        </member>
-        <member name="F:Dapper.Common.Mapper.CacheTables">
-            <summary>
-            映射缓存
-            </summary>
-        </member>
-        <member name="M:Dapper.Common.Mapper.GetTableName``1">
-            <summary>
-            获取表名
-            </summary>
-            <typeparam name="T"></typeparam>
-            <returns></returns>
-        </member>
-        <member name="M:Dapper.Common.Mapper.GetColumnName``1(System.String)">
-            <summary>
-            获取列名
-            </summary>
-            <typeparam name="T"></typeparam>
-            <param name="fieldName"></param>
-            <returns></returns>
-        </member>
-        <member name="M:Dapper.Common.Mapper.GetDbColumn``1">
-            <summary>
-            获取列定义
-            </summary>
-            <typeparam name="T"></typeparam>
-            <returns></returns>
-        </member>
-        <member name="M:Dapper.Common.Mapper.GetColumnNames``1">
-            <summary>
-            获取所有列名
-            </summary>
-            <typeparam name="T"></typeparam>
-            <returns></returns>
-        </member>
-        <member name="M:Dapper.Common.Mapper.GetFieldName``1(System.String)">
-            <summary>
-            通过字段名获取属性名
-            </summary>
-            <typeparam name="T"></typeparam>
-            <param name="column"></param>
-            <returns></returns>
-        </member>
-        <member name="M:Dapper.Common.Mapper.GetFieldNames``1">
-            <summary>
-            获取所有属性名
-            </summary>
-            <typeparam name="T"></typeparam>
-            <returns></returns>
-        </member>
-        <member name="M:Dapper.Common.Mapper.GetIdentityFieldName``1">
-            <summary>
-            获取标识列的属性名
-            </summary>
-            <typeparam name="T"></typeparam>
-            <returns></returns>
-        </member>
-        <member name="T:Dapper.Common.WhereExpression">
+        <member name="T:Dapper.Common.QueryableExpression">
             <summary>
             表达式模型
             </summary>
         </member>
-        <member name="T:Dapper.Common.WhereQuery`1">
+        <member name="T:Dapper.Common.Queryable`1">
             <summary>
             数据库表达式
             </summary>
             <typeparam name="T"></typeparam>
         </member>
-        <member name="M:Dapper.Common.WhereQuery`1.#ctor">
+        <member name="M:Dapper.Common.Queryable`1.#ctor">
             <summary>
             创建动态表达式对象
             </summary>
         </member>
-        <member name="M:Dapper.Common.WhereQuery`1.#ctor(System.Linq.Expressions.Expression{System.Func{`0,System.Boolean}})">
+        <member name="M:Dapper.Common.Queryable`1.#ctor(System.Linq.Expressions.Expression{System.Func{`0,System.Boolean}})">
             <summary>
             创建动态表达式对象
             </summary>
             <param name="expression"></param>
         </member>
-        <member name="F:Dapper.Common.WhereQuery`1.Expressions">
+        <member name="F:Dapper.Common.Queryable`1.Expressions">
             <summary>
             表达式列表
             </summary>
         </member>
-        <member name="M:Dapper.Common.WhereQuery`1.And(System.Linq.Expressions.Expression{System.Func{`0,System.Boolean}})">
+        <member name="M:Dapper.Common.Queryable`1.And(System.Linq.Expressions.Expression{System.Func{`0,System.Boolean}})">
             <summary>
             And运算
             </summary>
             <param name="expression"></param>
             <returns></returns>
         </member>
-        <member name="M:Dapper.Common.WhereQuery`1.And(System.String)">
+        <member name="M:Dapper.Common.Queryable`1.And(System.String)">
             <summary>
             And
             </summary>
             <param name="expression"></param>
             <returns></returns>
         </member>
-        <member name="M:Dapper.Common.WhereQuery`1.And(System.Boolean,System.String)">
+        <member name="M:Dapper.Common.Queryable`1.And(System.Boolean,System.String)">
             <summary>
             And
             </summary>
@@ -1077,7 +989,7 @@
             <param name="expression"></param>
             <returns></returns>
         </member>
-        <member name="M:Dapper.Common.WhereQuery`1.And(System.Boolean,System.Linq.Expressions.Expression{System.Func{`0,System.Boolean}})">
+        <member name="M:Dapper.Common.Queryable`1.And(System.Boolean,System.Linq.Expressions.Expression{System.Func{`0,System.Boolean}})">
             <summary>
             条件And运算
             </summary>
@@ -1085,21 +997,21 @@
             <param name="expression"></param>
             <returns></returns>
         </member>
-        <member name="M:Dapper.Common.WhereQuery`1.Or(System.Linq.Expressions.Expression{System.Func{`0,System.Boolean}})">
+        <member name="M:Dapper.Common.Queryable`1.Or(System.Linq.Expressions.Expression{System.Func{`0,System.Boolean}})">
             <summary>
             逻辑或
             </summary>
             <param name="expression"></param>
             <returns></returns>
         </member>
-        <member name="M:Dapper.Common.WhereQuery`1.Or(System.String)">
+        <member name="M:Dapper.Common.Queryable`1.Or(System.String)">
             <summary>
             逻辑或
             </summary>
             <param name="expression"></param>
             <returns></returns>
         </member>
-        <member name="M:Dapper.Common.WhereQuery`1.Or(System.Boolean,System.String)">
+        <member name="M:Dapper.Common.Queryable`1.Or(System.Boolean,System.String)">
             <summary>
             逻辑或
             </summary>
@@ -1107,7 +1019,7 @@
             <param name="expression"></param>
             <returns></returns>
         </member>
-        <member name="M:Dapper.Common.WhereQuery`1.Or(System.Boolean,System.Linq.Expressions.Expression{System.Func{`0,System.Boolean}})">
+        <member name="M:Dapper.Common.Queryable`1.Or(System.Boolean,System.Linq.Expressions.Expression{System.Func{`0,System.Boolean}})">
             <summary>
             逻辑Or运算
             </summary>
@@ -1115,29 +1027,14 @@
             <param name="expression"></param>
             <returns></returns>
         </member>
-        <member name="M:Dapper.Common.WhereQuery`1.Not(System.Linq.Expressions.Expression{System.Func{`0,System.Boolean}})">
+        <member name="M:Dapper.Common.Queryable`1.Not(System.Linq.Expressions.Expression{System.Func{`0,System.Boolean}})">
             <summary>
             逻辑非
             </summary>
             <param name="expression"></param>
             <returns></returns>
         </member>
-        <member name="M:Dapper.Common.WhereQuery`1.Not(System.Boolean,System.Linq.Expressions.Expression{System.Func{`0,System.Boolean}})">
-            <summary>
-            逻辑非
-            </summary>
-            <param name="condition"></param>
-            <param name="expression"></param>
-            <returns></returns>
-        </member>
-        <member name="M:Dapper.Common.WhereQuery`1.Not(System.String)">
-            <summary>
-            逻辑非
-            </summary>
-            <param name="expression"></param>
-            <returns></returns>
-        </member>
-        <member name="M:Dapper.Common.WhereQuery`1.Not(System.Boolean,System.String)">
+        <member name="M:Dapper.Common.Queryable`1.Not(System.Boolean,System.Linq.Expressions.Expression{System.Func{`0,System.Boolean}})">
             <summary>
             逻辑非
             </summary>
@@ -1145,17 +1042,32 @@
             <param name="expression"></param>
             <returns></returns>
         </member>
-        <member name="P:Dapper.Common.WhereQuery`1.Count">
+        <member name="M:Dapper.Common.Queryable`1.Not(System.String)">
+            <summary>
+            逻辑非
+            </summary>
+            <param name="expression"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Dapper.Common.Queryable`1.Not(System.Boolean,System.String)">
+            <summary>
+            逻辑非
+            </summary>
+            <param name="condition"></param>
+            <param name="expression"></param>
+            <returns></returns>
+        </member>
+        <member name="P:Dapper.Common.Queryable`1.Count">
             <summary>
             表达式个数
             </summary>
         </member>
-        <member name="T:Dapper.Common.WhereType">
+        <member name="T:Dapper.Common.ConditionType">
             <summary>
             运算符重载
             </summary>
         </member>
-        <member name="M:Dapper.Common.WhereType.In(System.ValueType,System.Collections.IEnumerable)">
+        <member name="M:Dapper.Common.ConditionType.In(System.ValueType,System.Collections.IEnumerable)">
             <summary>
             In查询
             </summary>
@@ -1163,7 +1075,7 @@
             <param name="array"></param>
             <returns></returns>
         </member>
-        <member name="M:Dapper.Common.WhereType.NotIn(System.ValueType,System.Collections.IEnumerable)">
+        <member name="M:Dapper.Common.ConditionType.NotIn(System.ValueType,System.Collections.IEnumerable)">
             <summary>
             Not In查询
             </summary>
@@ -1171,7 +1083,7 @@
             <param name="array"></param>
             <returns></returns>
         </member>
-        <member name="M:Dapper.Common.WhereType.In(System.String,System.Collections.IEnumerable)">
+        <member name="M:Dapper.Common.ConditionType.In(System.String,System.Collections.IEnumerable)">
             <summary>
             In查询
             </summary>
@@ -1179,7 +1091,7 @@
             <param name="array"></param>
             <returns></returns>
         </member>
-        <member name="M:Dapper.Common.WhereType.NotIn(System.String,System.Collections.IEnumerable)">
+        <member name="M:Dapper.Common.ConditionType.NotIn(System.String,System.Collections.IEnumerable)">
             <summary>
             Not In查询
             </summary>
@@ -1187,7 +1099,7 @@
             <param name="array"></param>
             <returns></returns>
         </member>
-        <member name="M:Dapper.Common.WhereType.Like(System.String,System.String)">
+        <member name="M:Dapper.Common.ConditionType.Like(System.String,System.String)">
             <summary>
             Like查询
             </summary>
@@ -1195,7 +1107,7 @@
             <param name="param2"></param>
             <returns></returns>
         </member>
-        <member name="M:Dapper.Common.WhereType.NotLike(System.String,System.String)">
+        <member name="M:Dapper.Common.ConditionType.NotLike(System.String,System.String)">
             <summary>
             Not Like查询
             </summary>
@@ -1203,21 +1115,21 @@
             <param name="param2"></param>
             <returns></returns>
         </member>
-        <member name="M:Dapper.Common.WhereType.IsNull(System.Object)">
+        <member name="M:Dapper.Common.ConditionType.IsNull(System.Object)">
             <summary>
             Is Null查询
             </summary>
             <param name="value"></param>
             <returns></returns>
         </member>
-        <member name="M:Dapper.Common.WhereType.IsNotNull(System.Object)">
+        <member name="M:Dapper.Common.ConditionType.IsNotNull(System.Object)">
             <summary>
             Is Not Null查询
             </summary>
             <param name="value"></param>
             <returns></returns>
         </member>
-        <member name="M:Dapper.Common.WhereType.Between(System.ValueType,System.ValueType,System.ValueType)">
+        <member name="M:Dapper.Common.ConditionType.Between(System.ValueType,System.ValueType,System.ValueType)">
             <summary>
             Between查询
             </summary>
@@ -1226,7 +1138,7 @@
             <param name="max"></param>
             <returns></returns>
         </member>
-        <member name="M:Dapper.Common.WhereType.NotBetween(System.ValueType,System.ValueType,System.ValueType)">
+        <member name="M:Dapper.Common.ConditionType.NotBetween(System.ValueType,System.ValueType,System.ValueType)">
             <summary>
             Not Between
             </summary>
@@ -1235,7 +1147,7 @@
             <param name="max"></param>
             <returns></returns>
         </member>
-        <member name="M:Dapper.Common.WhereType.Regexp(System.String,System.String)">
+        <member name="M:Dapper.Common.ConditionType.Regexp(System.String,System.String)">
             <summary>
             正则匹配
             </summary>
@@ -1243,7 +1155,7 @@
             <param name="regexp"></param>
             <returns></returns>
         </member>
-        <member name="M:Dapper.Common.WhereType.NotRegexp(System.String,System.String)">
+        <member name="M:Dapper.Common.ConditionType.NotRegexp(System.String,System.String)">
             <summary>
             正则不匹配
             </summary>
@@ -1251,50 +1163,113 @@
             <param name="regexp"></param>
             <returns></returns>
         </member>
-        <member name="T:Dapper.Common.WhereVisitor`1">
+        <member name="T:Dapper.Common.ConditionVisitor`1">
             <summary>
             数据库表达式构建
             </summary>
         </member>
-        <member name="F:Dapper.Common.WhereVisitor`1.WhereExpression">
+        <member name="F:Dapper.Common.ConditionVisitor`1.WhereExpression">
             <summary>
             表达式字符串
             </summary>
         </member>
-        <member name="F:Dapper.Common.WhereVisitor`1.Param">
+        <member name="F:Dapper.Common.ConditionVisitor`1.Param">
             <summary>
             表达式参数
             </summary>
         </member>
-        <member name="F:Dapper.Common.WhereVisitor`1.Fields">
+        <member name="F:Dapper.Common.ConditionVisitor`1.PropertyNameStack">
             <summary>
             字段栈
             </summary>
         </member>
-        <member name="P:Dapper.Common.WhereVisitor`1.Operator">
+        <member name="P:Dapper.Common.ConditionVisitor`1.CurrentCondition">
             <summary>
             当前运算符
             </summary>
         </member>
-        <member name="M:Dapper.Common.WhereVisitor`1.SetValue(System.Object)">
+        <member name="M:Dapper.Common.ConditionVisitor`1.SetValue(System.Object)">
             <summary>
             构建表达式参数
             </summary>
             <param name="value"></param>
         </member>
-        <member name="M:Dapper.Common.WhereVisitor`1.SetName(System.String,System.String)">
+        <member name="M:Dapper.Common.ConditionVisitor`1.SetName(System.String,System.String)">
             <summary>
             构建表达式字段
             </summary>
-            <param name="column"></param>
-            <param name="field"></param>
+            <param name="columnName"></param>
+            <param name="propertyName"></param>
         </member>
-        <member name="M:Dapper.Common.WhereVisitor`1.Build(System.Collections.Generic.Dictionary{System.String,System.Object},System.Collections.Generic.List{Dapper.Common.WhereExpression})">
+        <member name="M:Dapper.Common.ConditionVisitor`1.Build(System.Collections.Generic.Dictionary{System.String,System.Object},System.Collections.Generic.List{Dapper.Common.QueryableExpression})">
             <summary>
             构建表达式
             </summary>
             <param name="param"></param>
             <param name="expressionList"></param>
+            <returns></returns>
+        </member>
+        <member name="T:Dapper.Common.FunctionVisitor`1">
+            <summary>
+            数据库表达式构建
+            </summary>
+        </member>
+        <member name="P:Dapper.Common.FunctionVisitor`1.Param">
+            <summary>
+            表达式参数
+            </summary>
+        </member>
+        <member name="F:Dapper.Common.FunctionVisitor`1.FunExpression">
+            <summary>
+            表达式字符串
+            </summary>
+        </member>
+        <member name="P:Dapper.Common.FunctionVisitor`1.Alias">
+            <summary>
+            别名
+            </summary>
+        </member>
+        <member name="P:Dapper.Common.FunctionVisitor`1.KeyParameter">
+            <summary>
+            是否为关键字
+            </summary>
+        </member>
+        <member name="P:Dapper.Common.FunctionVisitor`1.Operator">
+            <summary>
+            当前操作符
+            </summary>
+        </member>
+        <member name="P:Dapper.Common.FunctionVisitor`1.IsConstant">
+            <summary>
+            是否是常量
+            </summary>
+        </member>
+        <member name="M:Dapper.Common.FunctionVisitor`1.SetValue(System.Object)">
+            <summary>
+            构建表达式参数
+            </summary>
+            <param name="value"></param>
+        </member>
+        <member name="M:Dapper.Common.FunctionVisitor`1.SetName(System.String)">
+            <summary>
+            构建表达式字段
+            </summary>
+            <param name="column"></param>
+        </member>
+        <member name="M:Dapper.Common.FunctionVisitor`1.Build(System.Collections.Generic.Dictionary{System.String,System.Object},System.Linq.Expressions.Expression,System.Boolean)">
+            <summary>
+            构建函数表达式,及参数
+            </summary>
+            <param name="param"></param>
+            <param name="expression"></param>
+            <param name="alias"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Dapper.Common.FunctionVisitor`1.GetColumn(System.Linq.Expressions.Expression)">
+            <summary>
+            获取字段名
+            </summary>
+            <param name="expression"></param>
             <returns></returns>
         </member>
         <member name="T:Dapper.Common.ISession">
@@ -1717,11 +1692,6 @@
             数据源
             </summary>
         </member>
-        <member name="P:Dapper.Common.SessionFactory.StaticProxy">
-            <summary>
-            是否开启静态代理来记录日志和计时
-            </summary>
-        </member>
         <member name="M:Dapper.Common.SessionFactory.#cctor">
             <summary>
             直接设置Dapper下划线匹配
@@ -1766,6 +1736,11 @@
         <member name="P:Dapper.Common.DataSource.Source">
             <summary>
             数据源
+            </summary>
+        </member>
+        <member name="P:Dapper.Common.DataSource.StaticProxy">
+            <summary>
+            是否使用代理
             </summary>
         </member>
         <member name="T:Dapper.Common.DataSourceType">

@@ -57,7 +57,7 @@ namespace  Dapper.Common.Example
 		};
 		}
 
-		public WhereQuery<<#=Utils.Pascal(table.TableName)#>> Query = new WhereQuery<<#=Utils.Pascal(table.TableName)#>>();
+		public Queryable<<#=Utils.Pascal(table.TableName)#>> Query = new Queryable<<#=Utils.Pascal(table.TableName)#>>();
 	}
 <#}#>
 
