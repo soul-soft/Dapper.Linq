@@ -47,6 +47,6 @@ namespace Dapper.Common
     {
         None,
         Primary,
-        UniQue,
+        Unique,
     }
 }
