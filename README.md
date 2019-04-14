@@ -73,6 +73,8 @@ if(row==0) session.Rollbakc();
 var row = session.From<Member>()
     //column,expr
     .Set(a=>a.Name,a=>DbFun.Replace(a.Name,"ff","cc"))
+    //Balance在原来基础上加100
+    .Set(a=>a.Balance,a=>a.Balance+100)
     .Update();
 ```
 
