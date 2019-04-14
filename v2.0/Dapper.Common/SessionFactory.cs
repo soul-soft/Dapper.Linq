@@ -100,7 +100,7 @@ namespace Dapper.Extension
             }
             if (SourceType == DataSourceType.SQLSERVER)
             {
-                return new SqlServerQuery<T>(this);
+                return new SqlQuery<T>(this);
             }
             throw new NotImplementedException();
         }
@@ -224,7 +224,7 @@ namespace Dapper.Extension
             }
             if (SourceType == DataSourceType.SQLSERVER)
             {
-                return new SqlServerQuery<T>(this);
+                return new SqlQuery<T>(this);
             }
             throw new NotImplementedException();
         }

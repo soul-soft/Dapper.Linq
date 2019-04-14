@@ -6,16 +6,16 @@ using System.Linq;
 
 namespace Dapper.Extension
 {
-    public class SqlServerQuery<T> : IQueryable<T> where T : class
+    public class SqlQuery<T> : IQueryable<T> where T : class
     {
         #region constructor
         public ISession _session { get; }
-        public SqlServerQuery(ISession session = null)
+        public SqlQuery(ISession session = null)
         {
             _session = session;
             Param = new Dictionary<string, object>();
         }
-        public SqlServerQuery(Dictionary<string, object> param)
+        public SqlQuery(Dictionary<string, object> param)
         {
             Param = param;
         }
