@@ -51,3 +51,28 @@ var row = session.From<Member>().Insert(new List<Member>(){new Member(){Name="Da
 var id = session.From<Member>().Insert(new Member(){Name="Dapper"});
 
 ```
+#### UPDATE
+* 根据主键，整体更新
+```
+//这将更新Member类的所有字段，假设还有Balance,此时将更新成NULL，支持更新一个List<Member>
+session.From<Member>().Update(new Member{Id=1,Name="Dapper"});
+//Filter指定Name,Balance列不更新，或只过滤余额 f=>f.Balance
+session.From<Member>().Filter(f=>new {f.Name,f.Balance}).Update(new Member{Id=1,Name="Dapper"});
+```
+* 更新部分列
+```
+var member = session.Where(a=>a.id==1).Signle();
+//乐观锁
+var row =  session.From<Member>()
+    .Set(a=>a.Balance,100)
+    .Set(a=>a.Version,Datetime.Now)
+    .Where(a=>a.Id==1&&a.Version=member.Version)
+    .Update();
+if(row==0) session.Rollbakc();
+//value为一个表达式
+var row = session.From<Member>()
+    //column,expr
+    .Set(a=>a.Name,a=>DbFun.Replace(a.Name,"ff","cc"))
+    .Update();
+```
+
