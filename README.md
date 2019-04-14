@@ -40,3 +40,14 @@ sql = query.BuildSelect();
     });
 var session = SessionFactor.GetSession("mysql");
 ```
+#### INSERT
+```
+var session = SessionFactor.GetSession();
+//新增单个
+var row = session.From<Member>().Insert(new Member{Name="Dapper"});
+//新增多个
+var row = session.From<Member>().Insert(new List<Member>(){new Member(){Name="Dapper"},new Member(){Name="Common"}});
+//返回Identity
+var id = session.From<Member>().Insert(new Member(){Name="Dapper"});
+
+```
