@@ -19,5 +19,9 @@ query.Where(a => a.Id == i).Single();
 sql = query.BuildSelect();
 ```
 #### 架构
-* ExpressionUtil：提供Linq to sql 的构建工具类
+* ExpressionUtil：提供linq to sql 的构建工具类
 * ExtensionUtil：扩展in，like，regexp等关键词，ID!=null,ID==null,将解析成为ID is null,ID is not null,切记列在左，值在右
+* IQueryable:构建完整查询语句的抽象接口
+* MysqlQuery:构建mysql查询的实例，实现IQueryable接口
+* SqlQuery:构建sqlserver查询的实例，实现IQueryable接口
+* ISession:数据库会话，一个Session对应一个Connection对象，代表一次会话，实现IDisposable接口，using只负责关闭连接不处理事务，事务请try...catch
