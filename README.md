@@ -45,8 +45,10 @@ var session = SessionFactor.GetSession("mysql");
 var session = SessionFactor.GetSession();
 //新增单个
 var row = session.From<Member>().Insert(new Member{Name="Dapper"});
+
 //新增多个
 var row = session.From<Member>().Insert(new List<Member>(){new Member(){Name="Dapper"},new Member(){Name="Common"}});
+
 //返回Identity
 var id = session.From<Member>().Insert(new Member(){Name="Dapper"});
 
@@ -54,8 +56,10 @@ var id = session.From<Member>().Insert(new Member(){Name="Dapper"});
 #### UPDATE
 * 根据主键，整体更新
 ```
+
 //这将更新Member类的所有字段，假设还有Balance,此时将更新成NULL，支持更新一个List<Member>
 session.From<Member>().Update(new Member{Id=1,Name="Dapper"});
+
 //Filter指定Name,Balance列不更新，或只过滤余额 f=>f.Balance
 session.From<Member>().Filter(f=>new {f.Name,f.Balance}).Update(new Member{Id=1,Name="Dapper"});
 ```
@@ -66,9 +70,10 @@ var member = session.Where(a=>a.id==1).Signle();
 var row =  session.From<Member>()
     .Set(a=>a.Balance,100)
     .Set(a=>a.Version,Datetime.Now)
-    .Where(a=>a.Id==1&&a.Version=member.Version)
+    .Where(a=>a.Id==1&&a.Version==member.Version)
     .Update();
 if(row==0) session.Rollbakc();
+
 //value为一个表达式
 var row = session.From<Member>()
     //column,expr
