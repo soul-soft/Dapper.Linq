@@ -36,9 +36,10 @@ namespace Dapper.Extension.Test
                 Name = "sqlserver",
             });
 
-            using (var session = SessionFactory.GetSession("sqlserver"))
+            using (var session = SessionFactory.GetSession("mysql"))
             {
-                //var entity = session.From<Member>().Where(a=>a.Id==2).Single();
+                var list = session.From<Member>().GroupBy(g => g.NickName).Paging(1,2,out long total).Select(s=>s.NickName);
+                var ins = session.From<Member>().InsertReturnId(new Member() { NickName="ff"});
             }
             var stopwatch = new Stopwatch();
             var sql = string.Empty;
@@ -50,7 +51,6 @@ namespace Dapper.Extension.Test
                 sql = query.BuildSelect();
             }
             stopwatch.Stop();
-            
         }
 
     }

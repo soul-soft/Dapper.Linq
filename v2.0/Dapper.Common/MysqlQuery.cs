@@ -194,13 +194,13 @@ namespace Dapper.Extension
             }
             return 0;
         }
-        public int InsertReturnId(T entity, bool condition = true, int? timeout = null)
+        public long InsertReturnId(T entity, bool condition = true, int? timeout = null)
         {
             if (condition && _session != null)
             {
                 var sql = BuildInsert();
                 sql = string.Format("{0};SELECT @@IDENTITY;", sql);
-                _session.ExecuteScalar<long>(sql, entity, timeout);
+                return _session.ExecuteScalar<long>(sql, entity, timeout);
             }
             return 0;
         }
@@ -450,7 +450,7 @@ namespace Dapper.Extension
             {
                 if (_groupBuffer.Length > 0)
                 {
-                    sqlBuffer.Append(" 1");
+                    sqlBuffer.Append(" 1 AS COUNT");
                 }
                 else
                 {

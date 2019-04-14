@@ -17,3 +17,13 @@ C:\Users\chaeyeon\Desktop\Dapper.Common\Dapper.Common\obj\Debug\net45\Dapper.Com
 C:\Users\chaeyeon\Desktop\Dapper.Common\Dapper.Common\obj\Debug\net45\Dapper.Common.csproj.CopyComplete
 C:\Users\chaeyeon\Desktop\Dapper.Common\Dapper.Common\obj\Debug\net45\Dapper.Common.dll
 C:\Users\chaeyeon\Desktop\Dapper.Common\Dapper.Common\obj\Debug\net45\Dapper.Common.pdb
+C:\Dapper.Common\v2.0\Dapper.Common\bin\Debug\net45\Dapper.Common.dll
+C:\Dapper.Common\v2.0\Dapper.Common\bin\Debug\net45\Dapper.Common.pdb
+C:\Dapper.Common\v2.0\Dapper.Common\bin\Debug\net45\Dapper.dll
+C:\Dapper.Common\v2.0\Dapper.Common\obj\Debug\net45\Dapper.Common.csprojAssemblyReference.cache
+C:\Dapper.Common\v2.0\Dapper.Common\obj\Debug\net45\Dapper.Common.csproj.CoreCompileInputs.cache
+C:\Dapper.Common\v2.0\Dapper.Common\obj\Debug\net45\Dapper.Common.AssemblyInfoInputs.cache
+C:\Dapper.Common\v2.0\Dapper.Common\obj\Debug\net45\Dapper.Common.AssemblyInfo.cs
+C:\Dapper.Common\v2.0\Dapper.Common\obj\Debug\net45\Dapper.Common.csproj.CopyComplete
+C:\Dapper.Common\v2.0\Dapper.Common\obj\Debug\net45\Dapper.Common.dll
+C:\Dapper.Common\v2.0\Dapper.Common\obj\Debug\net45\Dapper.Common.pdb

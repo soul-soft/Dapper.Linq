@@ -32,7 +32,7 @@ namespace Dapper.Extension
         IEnumerable<TResult> Select<TResult>(string colums = null, bool buffered = true, int? timeout = null);
         IEnumerable<TResult> Select<TResult>(Expression<Func<T, TResult>> columns, bool buffered = true, int? timeout = null);
         int Insert(T entity, bool condition = true, int? timeout = null);
-        int InsertReturnId(T entity, bool condition = true, int? timeout = null);
+        long InsertReturnId(T entity, bool condition = true, int? timeout = null);
         int Insert(IEnumerable<T> entitys, bool condition = true, int? timeout = null);
         int Update(bool condition = true, int? timeout = null);
         int Update(T entity, bool condition = true, int? timeout = null);
