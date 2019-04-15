@@ -10,7 +10,6 @@ C:\Users\Administrator\Desktop\Dapper.Common\Dapper.Common\obj\Release\net45\Dap
 D:\GitHub\Dapper.Common\v2.0\Dapper.Common\bin\Release\net45\Dapper.Common.dll
 D:\GitHub\Dapper.Common\v2.0\Dapper.Common\bin\Release\net45\Dapper.Common.pdb
 D:\GitHub\Dapper.Common\v2.0\Dapper.Common\bin\Release\net45\Dapper.dll
-D:\GitHub\Dapper.Common\v2.0\Dapper.Common\obj\Release\net45\Dapper.Common.csprojAssemblyReference.cache
 D:\GitHub\Dapper.Common\v2.0\Dapper.Common\obj\Release\net45\Dapper.Common.csproj.CoreCompileInputs.cache
 D:\GitHub\Dapper.Common\v2.0\Dapper.Common\obj\Release\net45\Dapper.Common.AssemblyInfoInputs.cache
 D:\GitHub\Dapper.Common\v2.0\Dapper.Common\obj\Release\net45\Dapper.Common.AssemblyInfo.cs

@@ -344,15 +344,15 @@ namespace Dapper.Extension
             DefaultTypeMap.MatchNamesWithUnderscores = true;
         }
         private static List<DataSource> DataSource = new List<DataSource>();
-        public static DataSource GetDataSource(string name=null)
+        public static DataSource GetDataSource(string name = null)
         {
-            return name==null?DataSource.SingleOrDefault(): DataSource.Find(f => f.Name == name);
+            return name == null ? DataSource.FirstOrDefault() : DataSource.Find(f => f.Name == name);
         }
         public static void AddDataSource(DataSource dataSource)
         {
             DataSource.Add(dataSource);
         }
-        public static ISession GetSession(string name=null)
+        public static ISession GetSession(string name = null)
         {
             var datasource = GetDataSource(name);
             ISession session = null;

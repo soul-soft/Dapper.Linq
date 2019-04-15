@@ -15,10 +15,11 @@ namespace Dapper.Extension.Test
         [TestMethod]
         public void TestMethod1()
         {
+            //mysql
             SessionFactory.AddDataSource(new DataSource()
             {
                 SourceType = DataSourceType.MYSQL,
-                Source = () => new MySql.Data.MySqlClient.MySqlConnection("server=127.0.0.1;user id=root;password=1024;database=test;pooling=True;minpoolsize=1;maxpoolsize=10;connectiontimeout=180;"),
+                Source = () => new MySql.Data.MySqlClient.MySqlConnection("server=127.0.0.1;user id=root;password=1024;database=test;"),
                 UseProxy = true,
                 Name = "mysql",
             });
@@ -28,6 +29,8 @@ namespace Dapper.Extension.Test
             sb.Password = "1024";
             sb.UserID = "sa";
             sb.FailoverPartner = @"PC033\SQLEXPRESS";
+
+            //Sqlserver
             SessionFactory.AddDataSource(new DataSource()
             {
                 SourceType = DataSourceType.SQLSERVER,
@@ -35,15 +38,9 @@ namespace Dapper.Extension.Test
                 UseProxy = true,
                 Name = "sqlserver",
             });
+            var session1 = SessionFactory.GetSession("mysql");
+            var ss = session1.From<Member>().Where(a=>a.Id==100).With(Lock.UPDLOCK).Single();
 
-            using (var session = SessionFactory.GetSession("sqlserver"))
-            {
-                var ins = session.From<Member>()
-                    .Paging(2,2,out long total)
-                    .OrderByDescending(a=>a.Balance)
-                    .Select();
-            }
-           
         }
 
     }

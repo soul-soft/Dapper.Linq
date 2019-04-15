@@ -22,6 +22,30 @@ namespace Dapper.Extension
         #endregion
 
         #region implement
+        public IQueryable<T> With(string locks, bool condition = true)
+        {
+            if (condition)
+            {
+                _lock.Append(locks);
+            }
+            return this;
+        }
+
+        public IQueryable<T> With(Lock locks, bool condition = true)
+        {
+            if (condition)
+            {
+                if (locks==Lock.FOR_UPADTE)
+                {
+                    With("FOR UPDATE");
+                }
+                else if(locks==Lock.LOCK_IN_SHARE_MODE)
+                {
+                    With("LOCK IN SHARE MODE");
+                }
+            }
+            return this;
+        }
         public IQueryable<T> Distinct(bool condition = true)
         {
             if (condition)
@@ -350,6 +374,7 @@ namespace Dapper.Extension
         public StringBuilder _distinctBuffer = new StringBuilder();
         public StringBuilder _countBuffer = new StringBuilder();
         public StringBuilder _sumBuffer = new StringBuilder();
+        public StringBuilder _lock = new StringBuilder();
         public Table _table = MapUtil.GetTable<T>();
         public int? pageIndex = null;
         public int? pageCount = null;
@@ -430,6 +455,10 @@ namespace Dapper.Extension
             {
                 sqlBuffer.AppendFormat(" LIMIT {0},{1}", pageIndex, pageCount);
             }
+            if (_lock.Length>0)
+            {
+                sqlBuffer.AppendFormat(" {0}",_lock);
+            }
             var sql = sqlBuffer.ToString();
             return sql;
         }
@@ -509,6 +538,8 @@ namespace Dapper.Extension
             }
             return sqlBuffer.ToString();
         }
+
+      
         #endregion
     }
 }

@@ -14,11 +14,11 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("Dapper.Common")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Release")]
 [assembly: System.Reflection.AssemblyDescriptionAttribute("dapper,linq to sql,mysql,sqlserver,function")]
-[assembly: System.Reflection.AssemblyFileVersionAttribute("1.3.4.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.3.4")]
+[assembly: System.Reflection.AssemblyFileVersionAttribute("1.4.0.0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.3.4.0")]
 [assembly: System.Reflection.AssemblyProductAttribute("Dapper.Common")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Dapper.Common")]
-[assembly: System.Reflection.AssemblyVersionAttribute("1.3.4.0")]
+[assembly: System.Reflection.AssemblyVersionAttribute("1.4.0.0")]
 
 // 由 MSBuild WriteCodeFragment 类生成。
 

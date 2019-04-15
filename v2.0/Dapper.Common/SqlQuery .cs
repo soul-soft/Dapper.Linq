@@ -22,6 +22,31 @@ namespace Dapper.Extension
         #endregion
 
         #region implement
+        public IQueryable<T> With(string locks, bool condition = true)
+        {
+            if (condition)
+            {
+                _lock.Append(locks);
+            }
+            return this;
+        }
+
+        public IQueryable<T> With(Lock locks, bool condition = true)
+        {
+            if (condition)
+            {
+                var temp = string.Empty;
+                if (locks==Lock.UPDLOCK)
+                {
+                    With("UPDLOCK");
+                }
+                else if(locks == Lock.NOLOCK)
+                {
+                    With("NOLOCK");
+                }
+            }
+            return this;
+        }
         public IQueryable<T> Distinct(bool condition = true)
         {
             if (condition)
@@ -252,8 +277,9 @@ namespace Dapper.Extension
         }
         public TResult Single<TResult>(Expression<Func<T, TResult>> columns, bool buffered = true, int? timeout = null)
         {
+            _columns = ExpressionUtil.BuildColumns<T>(columns, Param);
             return Single<TResult>(string.Join(",",
-                ExpressionUtil.BuildColumns<T>(columns, Param).Select(s => string.Format("{0} AS {1}", s.Value, s.Key))),
+                _columns.Select(s => string.Format("{0} AS {1}", s.Value, s.Key))),
                 buffered,
                 timeout);
         }
@@ -285,8 +311,9 @@ namespace Dapper.Extension
         }
         public IEnumerable<TResult> Select<TResult>(Expression<Func<T, TResult>> columns, bool buffered = true, int? timeout = null)
         {
+            _columns = ExpressionUtil.BuildColumns<T>(columns, Param);
             return Select<TResult>(string.Join(",",
-                ExpressionUtil.BuildColumns<T>(columns, Param).Select(s => string.Format("{0} AS {1}", s.Value, s.Key)))
+                _columns.Select(s => string.Format("{0} AS {1}", s.Value, s.Key)))
                 , buffered, timeout);
         }
         public long Count(string columns = null, bool codition = true, int? timeout = null)
@@ -340,6 +367,7 @@ namespace Dapper.Extension
 
         #region property
         public Dictionary<string, object> Param { get; set; }
+        public Dictionary<string, string> _columns = new Dictionary<string, string>();
         public StringBuilder _columnBuffer = new StringBuilder();
         public List<string> _filters = new List<string>();
         public StringBuilder _setBuffer = new StringBuilder();
@@ -350,6 +378,7 @@ namespace Dapper.Extension
         public StringBuilder _distinctBuffer = new StringBuilder();
         public StringBuilder _countBuffer = new StringBuilder();
         public StringBuilder _sumBuffer = new StringBuilder();
+        public StringBuilder _lock = new StringBuilder();
         public Table _table = MapUtil.GetTable<T>();
         public int? pageIndex = null;
         public int? pageCount = null;
@@ -397,9 +426,9 @@ namespace Dapper.Extension
         public string BuildSelect()
         {
             var sqlBuffer = new StringBuilder();
-            if (pageIndex==0&&pageCount>0)
+            if (pageIndex == 0 && pageCount > 0)
             {
-                sqlBuffer.AppendFormat("SELECT TOP {0}",pageCount);
+                sqlBuffer.AppendFormat("SELECT TOP {0}", pageCount);
             }
             else
             {
@@ -420,9 +449,15 @@ namespace Dapper.Extension
             if (pageIndex > 0)
             {
                 sqlBuffer.AppendFormat(",ROW_NUMBER()OVER(ORDER BY {0}) AS RowNum",
-                    _orderBuffer.Length > 0 ? _orderBuffer.ToString() : _table.Columns.Find(f => f.ColumnKey == ColumnKey.Primary).ColumnName);
+                    _orderBuffer.Length > 0 ? _orderBuffer.ToString() :
+                    _groupBuffer.Length > 0 ? _groupBuffer.ToString() :
+                    _table.Columns.Find(f => f.ColumnKey == ColumnKey.Primary).ColumnName);
             }
             sqlBuffer.AppendFormat(" FROM {0}", _table.TableName);
+            if (_lock.Length>0)
+            {
+                sqlBuffer.AppendFormat(" WITH({0})",_lock);
+            }
             if (_whereBuffer.Length > 0)
             {
                 sqlBuffer.AppendFormat(" WHERE {0}", _whereBuffer);
@@ -435,13 +470,16 @@ namespace Dapper.Extension
             {
                 sqlBuffer.AppendFormat(" HAVING {0}", _havingBuffer);
             }
-            if (_orderBuffer.Length > 0 && (pageIndex==null||pageIndex==0))
+            if (_orderBuffer.Length > 0 && (pageIndex == null || pageIndex == 0))
             {
                 sqlBuffer.AppendFormat(" ORDER BY {0}", _orderBuffer);
             }
             if (pageIndex > 0)
             {
-                return string.Format("SELECT TOP {0} * FROM ({1}) AS T WHERE RowNum>{2}", pageCount, sqlBuffer, pageIndex);
+                return string.Format("SELECT TOP {0} {1} FROM ({2}) AS T WHERE RowNum>{3}", pageCount,
+                    _columns.Count > 0 ? string.Join(",", _columns.Keys) : "*",
+                    sqlBuffer,
+                    pageIndex);
             }
             else
             {

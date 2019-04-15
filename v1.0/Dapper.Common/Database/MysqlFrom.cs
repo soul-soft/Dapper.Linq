@@ -676,7 +676,7 @@ namespace Dapper.Common
         /// <returns></returns>
         public IFrom<T> Set(string column, object value)
         {
-            var propertyName = Mapper.GetColumn<T>(f => f.ColumnName == column);
+            var propertyName = Mapper.GetColumn<T>(f => f.ColumnName == column).PropertyName;
             _set.AppendFormat("{0}{1} = @{2}", _set.Length == 0 ? "" : ",", column, propertyName);
             Param.Add("@" + propertyName, value);
             return this;
