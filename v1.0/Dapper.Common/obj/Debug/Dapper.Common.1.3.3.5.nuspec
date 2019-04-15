@@ -20,7 +20,7 @@
     </dependencies>
   </metadata>
   <files>
-    <file src="C:\Dapper.Common\v1.0\Dapper.Common\bin\Debug\net45\Dapper.Common.dll" target="lib\net45\Dapper.Common.dll" />
-    <file src="C:\Dapper.Common\v1.0\Dapper.Common\bin\Debug\netstandard2.0\Dapper.Common.dll" target="lib\netstandard2.0\Dapper.Common.dll" />
+    <file src="D:\GitHub\Dapper.Common\v1.0\Dapper.Common\bin\Debug\net45\Dapper.Common.dll" target="lib\net45\Dapper.Common.dll" />
+    <file src="D:\GitHub\Dapper.Common\v1.0\Dapper.Common\bin\Debug\netstandard2.0\Dapper.Common.dll" target="lib\netstandard2.0\Dapper.Common.dll" />
   </files>
 </package>

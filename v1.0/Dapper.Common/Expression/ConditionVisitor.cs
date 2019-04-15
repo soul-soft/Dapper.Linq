@@ -38,8 +38,9 @@ namespace Dapper.Common
         /// 构建表达式参数
         /// </summary>
         /// <param name="value"></param>
-        private void SetValue(object value)
+        private void SetValue(Expression expression)
         {
+            var value = GetValue(expression);
             var field = PropertyNameStack.Pop();
             var key = string.Format("@{0}_{1}", field, Param.Count);
             if (value == null)
@@ -136,8 +137,8 @@ namespace Dapper.Common
             }
             else
             {
-                var value = Expression.Lambda(node).Compile().DynamicInvoke();
-                SetValue(value);
+                //var value = Expression.Lambda(node).Compile().DynamicInvoke();
+                SetValue(node);
             }
             return node;
         }
@@ -159,21 +160,21 @@ namespace Dapper.Common
             }
             else
             {
-                var value = Expression.Lambda(node).Compile().DynamicInvoke();
-                SetValue(value);
+                //var value = Expression.Lambda(node).Compile().DynamicInvoke();
+                SetValue(node);
             }
 
             return node;
         }
         protected override Expression VisitConstant(ConstantExpression node)
         {
-            SetValue(node.Value);
+            SetValue(node);
             return node;
         }
         protected override Expression VisitNewArray(NewArrayExpression node)
         {
-            var value = Expression.Lambda(node).Compile().DynamicInvoke();
-            SetValue(value);
+            //var value = Expression.Lambda(node).Compile().DynamicInvoke();
+            SetValue(node);
             return node;
         }
         protected override Expression VisitUnary(UnaryExpression node)
@@ -185,8 +186,8 @@ namespace Dapper.Common
             }
             else if (node.Operand.NodeType == ExpressionType.New)
             {
-                var value = Expression.Lambda(node).Compile().DynamicInvoke();
-                SetValue(value);
+                //var value = Expression.Lambda(node).Compile().DynamicInvoke();
+                SetValue(node);
             }
             else
             {
@@ -196,14 +197,14 @@ namespace Dapper.Common
         }
         protected override Expression VisitConditional(ConditionalExpression node)
         {
-            var value = Expression.Lambda(node).Compile().DynamicInvoke();
-            SetValue(value);
+            //var value = Expression.Lambda(node).Compile().DynamicInvoke();
+            SetValue(node);
             return node;
         }
         protected override Expression VisitNew(NewExpression node)
         {
-            var value = Expression.Lambda(node).Compile().DynamicInvoke();
-            SetValue(value);
+            //var value = Expression.Lambda(node).Compile().DynamicInvoke();
+            SetValue(node);
             return node;
         }
         #endregion
@@ -229,6 +230,40 @@ namespace Dapper.Common
                 throw new Exception("Not Cast MemberExpression");
             }
             return Mapper.GetColumn<T>(f=>f.PropertyName==propertyName).ColumnName;
+        }
+        public static object GetValue(Expression expression)
+        {
+            var names = new Stack<string>();
+            while (expression is MemberExpression)
+            {
+                var memberExpression = expression as MemberExpression;
+                names.Push(memberExpression.Member.Name);
+                expression = memberExpression.Expression;
+                if (expression == null && memberExpression.Type == typeof(DateTime) && memberExpression.Member.Name == nameof(DateTime.Now))
+                {
+                    return DateTime.Now;
+                }
+            }
+            if (expression is ConstantExpression)
+            {
+                var value = (expression as ConstantExpression).Value;
+                foreach (var item in names)
+                {
+                    if (value.GetType().GetField(item) != null)
+                    {
+                        value = value.GetType().GetField(item).GetValue(value);
+                    }
+                    else
+                    {
+                        value = value.GetType().GetProperty(item).GetValue(value);
+                    }
+                }
+                return value;
+            }
+            else
+            {
+                return Expression.Lambda(expression).Compile().DynamicInvoke();
+            }
         }
         #endregion
 

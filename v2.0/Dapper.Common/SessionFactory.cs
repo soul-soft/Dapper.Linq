@@ -25,7 +25,7 @@ namespace Dapper.Extension
         void Open(bool beginTransaction, IsolationLevel? level = null);
         void Commit();
         void Rollback();
-        void Colse();
+        void Close();
     }
     internal class Session : ISession
     {
@@ -53,7 +53,7 @@ namespace Dapper.Extension
             }
             State = SessionState.Open;
         }
-        public void Colse()
+        public void Close()
         {
             Connection.Close();
             State = SessionState.Closed;
@@ -78,7 +78,7 @@ namespace Dapper.Extension
         }
         public void Dispose()
         {
-            Colse();
+            Close();
         }
         public GridReader QueryMultiple(string sql, object param = null, int? commandTimeout = null, CommandType text = CommandType.Text)
         {
@@ -131,13 +131,13 @@ namespace Dapper.Extension
 
         public DataSourceType SourceType => _target.SourceType;
 
-        public void Colse()
+        public void Close()
         {
             var watch = new Stopwatch();
             try
             {
                 watch.Start();
-                _target.Colse();
+                _target.Close();
                 watch.Stop();
             }
             finally
@@ -145,7 +145,7 @@ namespace Dapper.Extension
                 Loggers.Add(new Logger()
                 {
                     Param = null,
-                    Text = nameof(SessionProxy.Colse),
+                    Text = nameof(SessionProxy.Close),
                     ElapsedMilliseconds = watch.ElapsedMilliseconds
                 });
             }

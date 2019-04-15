@@ -138,40 +138,6 @@ namespace Dapper.Extension
             _value.Add(key, value);
             _build.Append(key);
         }
-        public static object GetValue(Expression expression)
-        {
-            var names = new Stack<string>();
-            while (expression is MemberExpression)
-            {
-                var memberExpression = expression as MemberExpression;
-                names.Push(memberExpression.Member.Name);
-                expression = memberExpression.Expression;
-                if (expression == null && memberExpression.Type == typeof(DateTime) && memberExpression.Member.Name == nameof(DateTime.Now))
-                {
-                    return DateTime.Now;
-                }
-            }
-            if (expression is ConstantExpression)
-            {
-                var value = (expression as ConstantExpression).Value;
-                foreach (var item in names)
-                {
-                    if (value.GetType().GetField(item) != null)
-                    {
-                        value = value.GetType().GetField(item).GetValue(value);
-                    }
-                    else
-                    {
-                        value = value.GetType().GetProperty(item).GetValue(value);
-                    }
-                }
-                return value;
-            }
-            else
-            {
-                return Expression.Lambda(expression).Compile().DynamicInvoke();
-            }
-        }
 
         #endregion
 
@@ -244,6 +210,40 @@ namespace Dapper.Extension
                 var build = BuildExpression<T>(expression, param);
                 column.Add(name,build);
                 return column;
+            }
+        }
+        public static object GetValue(Expression expression)
+        {
+            var names = new Stack<string>();
+            while (expression is MemberExpression)
+            {
+                var memberExpression = expression as MemberExpression;
+                names.Push(memberExpression.Member.Name);
+                expression = memberExpression.Expression;
+                if (expression == null && memberExpression.Type == typeof(DateTime) && memberExpression.Member.Name == nameof(DateTime.Now))
+                {
+                    return DateTime.Now;
+                }
+            }
+            if (expression is ConstantExpression)
+            {
+                var value = (expression as ConstantExpression).Value;
+                foreach (var item in names)
+                {
+                    if (value.GetType().GetField(item) != null)
+                    {
+                        value = value.GetType().GetField(item).GetValue(value);
+                    }
+                    else
+                    {
+                        value = value.GetType().GetProperty(item).GetValue(value);
+                    }
+                }
+                return value;
+            }
+            else
+            {
+                return Expression.Lambda(expression).Compile().DynamicInvoke();
             }
         }
         #endregion

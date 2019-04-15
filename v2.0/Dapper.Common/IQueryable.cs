@@ -8,7 +8,6 @@ namespace Dapper.Extension
 {
     public interface IQueryable<T>
     {
-        Dictionary<string, object> Param { get; }
         IQueryable<T> Set(string column, object value, bool condition = true);
         IQueryable<T> Set<TResult>(Expression<Func<T, TResult>> column, TResult value, bool condition = true);
         IQueryable<T> Set<TResult>(Expression<Func<T, TResult>> column, Expression<Func<T, TResult>> value, bool condition = true);
