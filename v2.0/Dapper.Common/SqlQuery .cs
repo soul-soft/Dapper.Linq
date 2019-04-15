@@ -162,7 +162,7 @@ namespace Dapper.Extension
             {
                 if (_whereBuffer.Length > 0)
                 {
-                    _whereBuffer.AppendFormat(" {0} ", ExtensionUtil.GetCondition(ExpressionType.AndAlso));
+                    _whereBuffer.AppendFormat("{0}", ExtensionUtil.GetCondition(ExpressionType.AndAlso));
                 }
                 _whereBuffer.Append(expression);
             }
@@ -360,7 +360,7 @@ namespace Dapper.Extension
         {
             var sql = string.Format("INSERT INTO {0} ({1}) VALUES ({2})",
                 _table.TableName,
-                string.Join(",", _table.Columns.FindAll(f=>f.Identity==false).Select(s => s.ColumnName))
+                string.Join(",", _table.Columns.FindAll(f => f.Identity == false).Select(s => s.ColumnName))
                 , string.Join(",", _table.Columns.FindAll(f => f.Identity == false).Select(s => string.Format("@{0}", s.CSharpName))));
             return sql;
         }
@@ -396,7 +396,15 @@ namespace Dapper.Extension
         }
         public string BuildSelect()
         {
-            var sqlBuffer = new StringBuilder("SELECT");
+            var sqlBuffer = new StringBuilder();
+            if (pageIndex==0&&pageCount>0)
+            {
+                sqlBuffer.AppendFormat("SELECT TOP {0}",pageCount);
+            }
+            else
+            {
+                sqlBuffer.AppendFormat("SELECT");
+            }
             if (_distinctBuffer.Length > 0)
             {
                 sqlBuffer.AppendFormat(" {0}", _distinctBuffer.Length > 0 ? _distinctBuffer.ToString() : "");
@@ -409,9 +417,9 @@ namespace Dapper.Extension
             {
                 sqlBuffer.AppendFormat(" {0}", string.Join(",", _table.Columns.FindAll(f => !_filters.Exists(e => e == f.ColumnName)).Select(s => string.Format("{0} AS {1}", s.ColumnName, s.CSharpName))));
             }
-            if (pageIndex != null && pageCount != null)
+            if (pageIndex > 0)
             {
-                sqlBuffer.AppendFormat(",ROW_NUMBER()OVER(ORDER BY {0}) AS RowIndex",
+                sqlBuffer.AppendFormat(",ROW_NUMBER()OVER(ORDER BY {0}) AS RowNum",
                     _orderBuffer.Length > 0 ? _orderBuffer.ToString() : _table.Columns.Find(f => f.ColumnKey == ColumnKey.Primary).ColumnName);
             }
             sqlBuffer.AppendFormat(" FROM {0}", _table.TableName);
@@ -427,13 +435,13 @@ namespace Dapper.Extension
             {
                 sqlBuffer.AppendFormat(" HAVING {0}", _havingBuffer);
             }
-            if (_orderBuffer.Length > 0 && (pageIndex == null && pageCount == null))
+            if (_orderBuffer.Length > 0 && (pageIndex==null||pageIndex==0))
             {
                 sqlBuffer.AppendFormat(" ORDER BY {0}", _orderBuffer);
             }
-            if (pageIndex != null && pageCount != null)
+            if (pageIndex > 0)
             {
-                return string.Format("SELECT TOP {0} * FROM ({1}) AS T WHERE RowIndex>{2}", pageCount,sqlBuffer, pageIndex);
+                return string.Format("SELECT TOP {0} * FROM ({1}) AS T WHERE RowNum>{2}", pageCount, sqlBuffer, pageIndex);
             }
             else
             {
@@ -445,7 +453,6 @@ namespace Dapper.Extension
             var sqlBuffer = new StringBuilder("SELECT");
             if (_columnBuffer.Length > 0)
             {
-
                 sqlBuffer.Append(" COUNT(");
                 if (_distinctBuffer.Length > 0)
                 {

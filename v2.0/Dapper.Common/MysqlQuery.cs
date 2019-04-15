@@ -162,7 +162,7 @@ namespace Dapper.Extension
             {
                 if (_whereBuffer.Length > 0)
                 {
-                    _whereBuffer.AppendFormat(" {0} ", ExtensionUtil.GetCondition(ExpressionType.AndAlso));
+                    _whereBuffer.AppendFormat("{0}", ExtensionUtil.GetCondition(ExpressionType.AndAlso));
                 }
                 _whereBuffer.Append(expression);
             }

@@ -31,26 +31,19 @@ namespace Dapper.Extension.Test
             SessionFactory.AddDataSource(new DataSource()
             {
                 SourceType = DataSourceType.SQLSERVER,
-                Source = () => new SqlConnection(@"Data Source=PC033\SQLEXPRESS;Initial Catalog=test;User ID=sa;Password=1024"),
+                Source = () => new SqlConnection(@"Data Source=DESKTOP-9IS2HA6\SQLEXPRESS;Initial Catalog=test;User ID=sa;Password=1024"),
                 UseProxy = true,
                 Name = "sqlserver",
             });
 
-            using (var session = SessionFactory.GetSession("mysql"))
+            using (var session = SessionFactory.GetSession("sqlserver"))
             {
-                var list = session.From<Member>().GroupBy(g => g.NickName).Paging(1,2,out long total).Select(s=>s.NickName);
-                var ins = session.From<Member>().InsertReturnId(new Member() { NickName="ff"});
+                var ins = session.From<Member>()
+                    .Paging(2,2,out long total)
+                    .OrderByDescending(a=>a.Balance)
+                    .Select();
             }
-            var stopwatch = new Stopwatch();
-            var sql = string.Empty;
-            stopwatch.Start();
-            for (int i = 0; i < 20000; i++)
-            {
-                var query = new MysqlQuery<Member>();
-                query.Where(a => a.Id == i).Single();
-                sql = query.BuildSelect();
-            }
-            stopwatch.Stop();
+           
         }
 
     }
