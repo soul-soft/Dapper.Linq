@@ -87,7 +87,7 @@ namespace Dapper.Extension
             _build.Append("(");
             Visit(node.Left);
             _condition = ExtensionUtil.GetCondition(node.NodeType);
-            if (node.Right is ConstantExpression &&(node.NodeType==ExpressionType.Equal||node.NodeType==ExpressionType.NotEqual) && (node.Right as ConstantExpression).Value==null)
+            if (node.Right is ConstantExpression && (node.NodeType == ExpressionType.Equal || node.NodeType == ExpressionType.NotEqual) && (node.Right as ConstantExpression).Value == null)
             {
                 _build.AppendFormat(" {0}", node.NodeType == ExpressionType.Equal ? "IS NULL" : "IS NOT NULL");
             }
@@ -123,16 +123,16 @@ namespace Dapper.Extension
         #region private
         public void SetName(string name)
         {
-            var column = MapUtil.GetColumn(_type, f => f.CSharpName == name)?.ColumnName??name;
+            var column = MapUtil.GetColumn(_type, f => f.CSharpName == name)?.ColumnName ?? name;
             _build.Append(column);
             _name = name;
         }
         public void SetValue(Expression expression)
         {
             var value = GetValue(expression);
-            if (_condition=="LIKE"||_condition=="NOT LIKE")
+            if (_condition == "LIKE" || _condition == "NOT LIKE")
             {
-                value = string.Format("%{0}%",value);
+                value = string.Format("%{0}%", value);
             }
             var key = string.Format("@{0}{1}", _name, _value.Count);
             _value.Add(key, value);
@@ -162,9 +162,11 @@ namespace Dapper.Extension
             if (expression is MemberInitExpression)
             {
                 var initExpression = (expression as MemberInitExpression);
-                foreach (var item in initExpression.Bindings)
+                for (int i = 0; i < initExpression.Bindings.Count; i++)
                 {
-
+                    var expr = BuildExpression<T>((initExpression.Bindings[i] as MemberAssignment).Expression, param);
+                    var name = initExpression.Bindings[i].Member.Name;
+                    columns.Add(name, expr);
                 }
             }
             else if (expression is NewExpression)
@@ -172,25 +174,26 @@ namespace Dapper.Extension
                 var newExpression = (expression as NewExpression);
                 for (int i = 0; i < newExpression.Arguments.Count; i++)
                 {
-                    var build = BuildExpression<T>(newExpression.Arguments[i], param);
-                    columns.Add(newExpression.Members[i].Name, build);
+                    var expr = BuildExpression<T>(newExpression.Arguments[i], param);
+                    var name = newExpression.Members[i].Name;
+                    columns.Add(name, expr);
                 }
             }
             else if (expression is MemberExpression)
             {
                 var name = (expression as MemberExpression).Member.Name;
-                var column = MapUtil.GetColumn<T>(f => f.CSharpName == name)?.ColumnName ?? name;
-                columns.Add(name, column);
+                var expr = MapUtil.GetColumn<T>(f => f.CSharpName == name)?.ColumnName ?? name;
+                columns.Add(name, expr);
             }
             else
             {
-                var name = string.Format("COLUMN{0}",param.Count);
-                var build = BuildExpression<T>(expression, param);
-                columns.Add(build, build);
+                var name = string.Format("COLUMN{0}", param.Count);
+                var expr = BuildExpression<T>(expression, param);
+                columns.Add(name, expr);
             }
             return columns;
         }
-        public static Dictionary<string,string> BuildColumn<T>(Expression expression,Dictionary<string,object> param)
+        public static Dictionary<string, string> BuildColumn<T>(Expression expression, Dictionary<string, object> param)
         {
             if (expression is LambdaExpression)
             {
@@ -200,15 +203,15 @@ namespace Dapper.Extension
             if (expression is MemberExpression)
             {
                 var name = (expression as MemberExpression).Member.Name;
-                var columnName = MapUtil.GetColumn<T>(f=>f.CSharpName==name)?.ColumnName??name;
-                column.Add(name,columnName);
+                var columnName = MapUtil.GetColumn<T>(f => f.CSharpName == name)?.ColumnName ?? name;
+                column.Add(name, columnName);
                 return column;
             }
             else
             {
                 var name = string.Format("COLUMN");
                 var build = BuildExpression<T>(expression, param);
-                column.Add(name,build);
+                column.Add(name, build);
                 return column;
             }
         }

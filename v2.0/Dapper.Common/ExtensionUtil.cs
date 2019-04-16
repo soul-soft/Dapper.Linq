@@ -41,7 +41,6 @@ namespace Dapper.Extension
         {
             return true;
         }
-
         #endregion
 
         #region utils

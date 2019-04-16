@@ -38,8 +38,13 @@ namespace Dapper.Extension.Test
                 UseProxy = true,
                 Name = "sqlserver",
             });
-            var session1 = SessionFactory.GetSession("mysql");
-            var ss = session1.From<Member>().Where(a=>a.Id==100).With(Lock.UPDLOCK).Single();
+
+            var session1 = SessionFactory.GetSession("sqlserver");
+            var ss = session1.From<Member>().Take(4).Select(s => new Member()
+            {
+                NickName = s.NickName,
+                Balance = s.Balance
+            });
 
         }
 

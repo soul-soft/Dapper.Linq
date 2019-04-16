@@ -16,3 +16,4 @@ D:\GitHub\Dapper.Common\v2.0\Dapper.Common\obj\Release\net45\Dapper.Common.Assem
 D:\GitHub\Dapper.Common\v2.0\Dapper.Common\obj\Release\net45\Dapper.Common.csproj.CopyComplete
 D:\GitHub\Dapper.Common\v2.0\Dapper.Common\obj\Release\net45\Dapper.Common.dll
 D:\GitHub\Dapper.Common\v2.0\Dapper.Common\obj\Release\net45\Dapper.Common.pdb
+D:\GitHub\Dapper.Common\v2.0\Dapper.Common\obj\Release\net45\Dapper.Common.csprojAssemblyReference.cache

@@ -23,8 +23,8 @@ namespace Dapper.Extension
         IQueryable<T> Having(string expression, bool condition = true);
         IQueryable<T> Having(Expression<Func<T, bool>> expression, bool condition = true);
         IQueryable<T> Filter<TResult>(Expression<Func<T, TResult>> columns, bool condition = true);
-        IQueryable<T> With(string lokc, bool condition = true);
-        IQueryable<T> With(Lock lokc, bool condition = true);
+        IQueryable<T> With(string locks, bool condition = true);
+        IQueryable<T> With(Lock locks, bool condition = true);
         IQueryable<T> Distinct(bool condition = true);
         T Single(string columns = null, bool buffered = true, int? timeout = null);
         TResult Single<TResult>(string columns = null, bool buffered = true, int? timeout = null);

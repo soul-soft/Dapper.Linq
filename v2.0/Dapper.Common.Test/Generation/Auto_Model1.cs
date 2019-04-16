@@ -28,7 +28,7 @@ namespace Standard.Model
 		/// ColumnType：varchar(225), IsNull：YES, Default：NULL
 		/// JsName:nickName
 		/// </summary>
-		[Column("NICK_NAME",ColumnKey.None,isColumn:false)]
+		[Column("NICK_NAME",ColumnKey.None)]
 		public string NickName { get; set; }
 			
 		/// <summary>
