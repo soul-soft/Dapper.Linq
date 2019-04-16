@@ -6,7 +6,7 @@
 * PS：常量直接获取，如果是变量将采用反射，否则将采用动态编译，性能：常量>变量>函数
 ```
 /****
-这段代码将构建一条基础查询语句，300ms！！！
+这段代码将构建一条基础查询语句，2W次不超过400ms！！！
 
 SELECT 
   ID AS Id,NICK_NAME AS NickName,CREATE_TIME AS CreateTime,BALANCE AS Balance 
