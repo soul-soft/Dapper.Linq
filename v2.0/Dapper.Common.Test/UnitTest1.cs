@@ -4,8 +4,8 @@ using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Diagnostics;
 using System.Collections.Generic;
-using Standard.Model;
 using System.Data.SqlClient;
+using Standard.Model;
 
 namespace Dapper.Extension.Test
 {
@@ -23,12 +23,14 @@ namespace Dapper.Extension.Test
                 UseProxy = true,
                 Name = "mysql",
             });
-            var sb = new SqlConnectionStringBuilder();
-            sb.InitialCatalog = "test";
-            sb.Pooling = true;
-            sb.Password = "1024";
-            sb.UserID = "sa";
-            sb.FailoverPartner = @"PC033\SQLEXPRESS";
+            var sb = new SqlConnectionStringBuilder
+            {
+                InitialCatalog = "test",
+                Pooling = true,
+                Password = "1024",
+                UserID = "sa",
+                FailoverPartner = @"PC033\SQLEXPRESS"
+            };
 
             //Sqlserver
             SessionFactory.AddDataSource(new DataSource()
