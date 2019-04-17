@@ -111,3 +111,16 @@ var row = session.From<Member>()
     
 ```
 #### DELETE
+```
+//delete all
+var row = session.From<Member>()
+    .Delete();
+
+var row = session.From<Member>()
+    .Where(a=>a.Id ==2 )
+    .Delete();
+    
+var row = session.From<Member>()
+    .Where(a=>a.Id.In(new int[]{1,2,3}))
+    .Delete();
+```
