@@ -209,3 +209,42 @@ var list = session.From<Member>()
  //从下标未5开始获取十个，等价于MYSQL中的LIMIT
  var list = session.From<Member>().Skip(5,10).Select();
 ```
+
+#### Mapping
+```
+ TableAttribute("t_member")
+ public class Member
+ {
+    //分别标识：字段名、主键，自增列，SQLSERVER，一定要标识自增列，否则INSERT时将向自增赋值，而引发异常
+    [ColumnAttribu("ID",ColumnKey.Primary,true)]
+    public int? Id { get; set; }
+    //通过`COLUMN_NAME`，来映射关键词
+    [ColumnAttribu("`GROUP`",ColumnKey.None)]
+    public int? Group { get; set;}
+ }
+```
+
+#### CUSTOM FUNCTION
+
+```
+public static DBFUN
+{
+    [FunctionAttribute]//必须用该特性标识为数据库函数
+    public T COUNT<T>(T column)
+    {
+       return default(T);
+    }
+    //ParameterAttribute:标记特殊参数：关键字参数
+    public T COUNT<T>([Parameter]string distinct,T column)
+    {
+      
+    }
+}
+//DEMO:可以标识该字段为特殊参数：特殊参数之后不加逗号
+session.From<Member>().GroupBy(g=>g.NickName).Select(s=>new 
+{
+   s.NickName,
+   Count=DBFUN.COUNT("DISTINCT ,",1)
+})
+
+```
