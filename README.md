@@ -5,17 +5,15 @@
 * Dapper.Common SQL构建性能：
 * PS：常量直接获取，如果是变量将采用反射，否则将采用动态编译，性能：常量>变量>函数
 ```
-/****
-这段代码将构建一条基础查询语句，2W次不超过400ms！！！
 
-SELECT 
-  ID AS Id,NICK_NAME AS NickName,CREATE_TIME AS CreateTime,BALANCE AS Balance 
-FROM member 
-  WHERE (ID=@Id0) LIMIT 0,1
- ****/
-var query = new MysqlQuery<Member>();
-query.Where(a => a.Id == i).Single();
-sql = query.BuildSelect();
+//这段代码将构建一条基础查询语句，2W次不超过400ms！！！
+for(var i = 0;i < 20000; i++)
+{
+  var query = new MysqlQuery<Member>();
+  query.Where(a => a.Id == i).Single();
+  sql = query.BuildSelect();
+}
+
 ```
 
 #### 架构:高可维护性，可扩展性
@@ -79,6 +77,7 @@ session.From<Member>().Filter(f=>new {f.Name,f.Balance}).Update(new Member{Id=1,
 var member = session.Where(a=>a.id==1).Signle();
 //乐观锁
 var row =  session.From<Member>()
+    //column,value
     .Set(a=>a.Balance,100)
     .Set(a=>a.Version,Datetime.Now)
     .Where(a=>a.Id==1&&a.Version==member.Version)
