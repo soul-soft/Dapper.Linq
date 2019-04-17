@@ -97,7 +97,7 @@ var row =  session.From<Member>()
     .Set(a => a.Balance,100)
     .Set(a => a.Version,Datetime.Now)
     .Where(a => a.Id == 1 && a.Version == member.Version)
-    .Update();
+    .Update(true);//绝大部分接口都可以传递一个condition，已决定是否执行
 if(row==0) 
   session.Rollbakc();
 
@@ -173,10 +173,39 @@ var param=
 }
 
 var list = session.From<Member>()
+  //当param.Id!=null成立时，执行a.Id==param条件
   .Where(a=>a.Id==param.Id,param.Id!=null)
   .Where(a=>a.NickName.Like(param.NickName),!string.IsNull(param.NickName))
+  .OrderBy(a=>a.Balance)
+  .OrderByDescending(a=>a.Id)
+  //分页一定要写在group,where，having 之后
   .Paging(param.Index,param.Count,out long total)
   .Select();
-  
 ```
 
+#### Group By
+
+```
+ var list = select.From<Member>()
+   .GroupBy(a=>a.NickName)
+   .Having(a=>DbFun.Count(NickName)>2)
+   //支持匿名类型但不建议使用
+   .Select(a=>new 
+   {
+     a.NickName,
+     SUM = DbFun.Sum(a.Balace)，
+     Count = DbFun.Count(1)
+   });
+ 
+```
+
+#### Take
+ ```
+ //获取前8个
+ var list = session.From<Member>().Take(8).Select();
+ ```
+#### SKIP
+```
+ //从下标未5开始获取十个，等价于MYSQL中的LIMIT
+ var list = session.From<Member>().Skip(5,10).Select();
+```
