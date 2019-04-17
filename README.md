@@ -248,3 +248,36 @@ session.From<Member>().GroupBy(g=>g.NickName).Select(s=>new
 })
 
 ```
+#### Extension
+
+* IQueryable
+```
+public class MVCBase
+{
+  public int PageIndex {get;set;}
+  public int PageCount {get;set;}
+  public int PageTotal {get;set;}
+  public int QueryAll {get;set;}
+}
+public static CustomExtension
+{
+    IQueryable<T> ToPage(this IQueryable<T> queryable,MVCBase mvc)
+    {
+        //condition:mvc.QueryAll!=1
+        queryable.Paging(mvc.PageIndex,mvc.PageCount,out long total,mvc.QueryAll!=1)
+        //返回总页数
+        mvc.PageTotal = (int)(mvc.PageIndex+mvc.PageCount-1)*mvc.PageCount;
+    }   
+}
+```
+
+* Lambda Expression
+
+```
+//1.
+  Expression<Member,boll> expr = a=>a.NickName=='%132%' || a.Id.In(new []{1,8});
+  var param = new Dictionary<string,>
+  var exprstr = ExpressionUtil.BuildExpression(expr,param);
+  var lsit = session.From<Member>().Where(exprestr).Select();
+```
+
