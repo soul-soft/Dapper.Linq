@@ -113,14 +113,33 @@ var row = session.From<Member>()
 #### DELETE
 ```
 //delete all
-var row = session.From<Member>()
-    .Delete();
+var row = session.From<Member>().Delete();
 
 var row = session.From<Member>()
-    .Where(a=>a.Id ==2 )
+    .Where(a=>a.Id ==2)
     .Delete();
     
 var row = session.From<Member>()
     .Where(a=>a.Id.In(new int[]{1,2,3}))
     .Delete();
+```
+
+#### Count
+```
+var count = session.From<Member>().Where(a=>a.id>2).Count();
+
+var count = session.Frm<Member>().Count(s=>new 
+{
+   s.NickName,
+   s.Balance
+});
+
+var count = session.Frm<Member>()
+.Distinct()
+.Count(s=>new 
+{
+   s.NickName,
+   s.Balance
+});
+
 ```
