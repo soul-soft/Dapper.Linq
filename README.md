@@ -162,5 +162,21 @@ var info = session.From<Member>().Where().Single(s=>new {s.NickName,s.Gander});
 
 ```
 
+#### Paging
+```
+var param=
+{
+ NickName="zs",
+ Id = null,
+ Index = 1,
+ Count = 10
+}
 
+var list = session.From<Member>()
+  .Where(a=>a.Id==param.Id,param.Id!=null)
+  .Where(a=>a.NickName.Like(param.NickName),!string.IsNull(param.NickName))
+  .Paging(param.Index,param.Count,out long total)
+  .Select();
+  
+```
 
