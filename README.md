@@ -124,7 +124,7 @@ var row = session.From<Member>()
     .Delete();
 ```
 
-#### Count
+#### COUNT
 ```
 var count = session.From<Member>().Where(a=>a.id>2).Count();
 
@@ -141,5 +141,13 @@ var count = session.Frm<Member>()
    s.NickName,
    s.Balance
 });
+
+```
+
+#### SUM
+```
+var total = session.From<Member>().Where(a=>a.Id>0).Sum(s=>s.Balace);
+
+var total = session.From<Member>().Sum(s=>s.Balace*10*s.Id);
 
 ```
