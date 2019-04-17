@@ -94,18 +94,20 @@ var member = session.Where(a=>a.id==1).Signle();
 //乐观锁
 var row =  session.From<Member>()
     //column,value
-    .Set(a=>a.Balance,100)
-    .Set(a=>a.Version,Datetime.Now)
-    .Where(a=>a.Id==1&&a.Version==member.Version)
+    .Set(a => a.Balance,100)
+    .Set(a => a.Version,Datetime.Now)
+    .Where(a => a.Id == 1 && a.Version == member.Version)
     .Update();
-if(row==0) session.Rollbakc();
+if(row==0) 
+  session.Rollbakc();
 
 //value为一个表达式
 var row = session.From<Member>()
-    //column,expr
-    .Set(a=>a.Name,a=>DbFun.Replace(a.Name,"ff","cc"))
-    //Balance在原来基础上加100,这种方法可以防止丢失更新
-    .Set(a=>a.Balance,a=>a.Balance+100)
+     //column,expr
+    .Set(a => a.Name,a => DbFun.Replace(a.Name, "ff", "cc"))
+     //Balance在原来基础上加100,这种方法可以防止丢失更新
+    .Set(a => a.Balance,a => a.Balance + 100)
     .Update();
+    
 ```
-
+#### DELETE
