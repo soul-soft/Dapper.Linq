@@ -151,3 +151,16 @@ var total = session.From<Member>().Where(a=>a.Id>0).Sum(s=>s.Balace);
 var total = session.From<Member>().Sum(s=>s.Balace*10*s.Id);
 
 ```
+#### Single
+
+```
+var member = session.From<Member>().Where(a=>a.Id==1).Single();
+
+var balance = session.From<Member>().Where(a=>a.Id==1).Single(s=>s.Balace);
+
+var info = session.From<Member>().Where().Single(s=>new {s.NickName,s.Gander});
+
+```
+
+
+
