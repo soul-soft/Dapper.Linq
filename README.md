@@ -53,13 +53,29 @@ var session = SessionFactor.GetSession("mysql");
 ```
 var session = SessionFactor.GetSession();
 //新增单个
-var row = session.From<Member>().Insert(new Member{Name="Dapper"});
+var row = session.From<Member>().Insert(new Member 
+{
+    Name="Dapper"
+});
 
 //新增多个
-var row = session.From<Member>().Insert(new List<Member>(){new Member(){Name="Dapper"},new Member(){Name="Common"}});
+var row = session.From<Member>().Insert(new List<Member>()
+{
+    new Member()
+    {
+      Name="Dapper"
+    },
+    new Member()
+    {
+      Name="Common"
+    }
+});
 
 //返回Identity
-var id = session.From<Member>().InsertReturnId(new Member(){Name="Dapper"});
+var id = session.From<Member>().InsertReturnId(new Member()
+{
+    Name="Dapper"
+});
 
 ```
 #### UPDATE
