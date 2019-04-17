@@ -63,7 +63,7 @@ namespace Dapper.Extension
                 var parameters = node.Method.GetParameters();
                 for (int i = 0; i < node.Arguments.Count; i++)
                 {
-                    if (parameters[i].GetCustomAttributes(typeof(ParameterAttribute), true).Length > 0 ? true : false)
+                    if (parameters[i].GetCustomAttributes(typeof(ParameterAttribute), true).Length > 0)
                     {
                         _build.Append((node.Arguments[i] as ConstantExpression).Value);
                         continue;
