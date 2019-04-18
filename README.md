@@ -140,6 +140,38 @@ var row = session.From<Member>()
     .Delete();
 ```
 
+#### Transaction
+* 如果不使用事务
+ ```
+  using(var session = SessionFactory.GetSession())
+  {
+    session.From<Member>().Insert(new Member()
+    {
+        NickName="dapper"
+    });
+  }
+ ```
+* 如果使用事务
+```
+  using(vaar session = SessionFactory.GetSession())
+  {
+    try
+    {
+     session.From<Member>().Insert(new Member()
+      {
+          NickName="dapper"
+      });
+      session.From<Member>().Where(a=>a.Id=2).Delete();
+      session.Commit();
+    }
+    catch
+    {
+      session.Rollback();
+    }
+   
+  }
+``
+
 #### Count
 ```
 var count = session.From<Member>().Where(a=>a.id>2).Count();
