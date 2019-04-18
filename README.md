@@ -37,6 +37,8 @@ for(var i = 0;i < 20000; i++)
 
 * Attribute:中包含对表，字段，函数的注解，用于解决：字段映射，自定义函数
 
+* 绝大部分接口都可以传递一个condition以决定是否执行
+
 #### 配置：多数据源
 ```
 //可以配置多个数据源，UseProxy将开启代理，记录sql，查询耗时，name是获取数据源的标识
@@ -83,10 +85,24 @@ var id = session.From<Member>().InsertReturnId(new Member()
 ```
 
 //这将更新Member类的所有字段，假设还有Balance,此时将更新成NULL，支持更新一个List<Member>
-session.From<Member>().Update(new Member{Id=1,Name="Dapper"});
+session.From<Member>().Update(new Member
+{
+    Id = 1,
+    Name = "Dapper"
+});
 
-//Filter指定Name,Balance列不更新，或只过滤余额 f=>f.Balance
-session.From<Member>().Filter(f=>new {f.Name,f.Balance}).Update(new Member{Id=1,Name="Dapper"});
+//Filter指定Name,Balance列不更新，或只过滤余额 f=>f.Balance，select的 时候可以过滤掉不想查询的列
+session.From<Member>()
+  .Filter(f=>new 
+  {
+    f.Name,
+    f.Balance
+  })
+  .Update(new Member
+  {
+    Id=1,
+    Name="Dapper"
+  });
 ```
 * 更新部分列
 ```
