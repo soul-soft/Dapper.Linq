@@ -49,7 +49,7 @@ for(var i = 0;i < 20000; i++)
     });
 var session = SessionFactor.GetSession("mysql");
 ```
-#### INSERT
+#### Insert
 ```
 var session = SessionFactor.GetSession();
 //新增单个
@@ -78,7 +78,7 @@ var id = session.From<Member>().InsertReturnId(new Member()
 });
 
 ```
-#### UPDATE
+#### Update
 * 根据主键，整体更新
 ```
 
@@ -110,7 +110,7 @@ var row = session.From<Member>()
     .Update();
     
 ```
-#### DELETE
+#### Delete
 ```
 //delete all
 var row = session.From<Member>().Delete();
@@ -124,7 +124,7 @@ var row = session.From<Member>()
     .Delete();
 ```
 
-#### COUNT
+#### Count
 ```
 var count = session.From<Member>().Where(a=>a.id>2).Count();
 
@@ -144,7 +144,7 @@ var count = session.Frm<Member>()
 
 ```
 
-#### SUM
+#### Sum
 ```
 var total = session.From<Member>().Where(a=>a.Id>0).Sum(s=>s.Balace);
 
@@ -204,7 +204,7 @@ var list = session.From<Member>()
  //获取前8个
  var list = session.From<Member>().Take(8).Select();
  ```
-#### SKIP
+#### Skip
 ```
  //从下标未5开始获取十个，等价于MYSQL中的LIMIT
  var list = session.From<Member>().Skip(5,10).Select();
@@ -224,7 +224,7 @@ var list = session.From<Member>()
  }
 ```
 
-#### CUSTOM FUNCTION
+#### Function
 
 ```
 public static DBFUN
@@ -267,6 +267,7 @@ public static CustomExtension
         queryable.Paging(mvc.PageIndex,mvc.PageCount,out long total,mvc.QueryAll!=1)
         //返回总页数
         mvc.PageTotal = (int)(mvc.PageIndex+mvc.PageCount-1)*mvc.PageCount;
+        return this;
     }   
 }
 ```
