@@ -167,10 +167,9 @@ var row = session.From<Member>()
     catch
     {
       session.Rollback();
-    }
-   
+    }   
   }
-``
+```
 
 #### Count
 ```
