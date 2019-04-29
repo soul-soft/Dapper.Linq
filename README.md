@@ -37,6 +37,8 @@ for(var i = 0;i < 20000; i++)
 
 * Attribute:中包含对表，字段，函数的注解，用于解决：字段映射，自定义函数
 
+* 绝大部分接口都可以传递一个condition以决定是否执行
+
 #### 配置：多数据源
 ```
 //可以配置多个数据源，UseProxy将开启代理，记录sql，查询耗时，name是获取数据源的标识
@@ -49,7 +51,7 @@ for(var i = 0;i < 20000; i++)
     });
 var session = SessionFactor.GetSession("mysql");
 ```
-#### INSERT
+#### Insert
 ```
 var session = SessionFactor.GetSession();
 //新增单个
@@ -78,15 +80,29 @@ var id = session.From<Member>().InsertReturnId(new Member()
 });
 
 ```
-#### UPDATE
+#### Update
 * 根据主键，整体更新
 ```
 
 //这将更新Member类的所有字段，假设还有Balance,此时将更新成NULL，支持更新一个List<Member>
-session.From<Member>().Update(new Member{Id=1,Name="Dapper"});
+session.From<Member>().Update(new Member
+{
+    Id = 1,
+    Name = "Dapper"
+});
 
-//Filter指定Name,Balance列不更新，或只过滤余额 f=>f.Balance
-session.From<Member>().Filter(f=>new {f.Name,f.Balance}).Update(new Member{Id=1,Name="Dapper"});
+//Filter指定Name,Balance列不更新，或只过滤余额 f=>f.Balance，select的 时候可以过滤掉不想查询的列
+session.From<Member>()
+  .Filter(f=>new 
+  {
+    f.Name,
+    f.Balance
+  })
+  .Update(new Member
+  {
+    Id=1,
+    Name="Dapper"
+  });
 ```
 * 更新部分列
 ```
@@ -110,7 +126,7 @@ var row = session.From<Member>()
     .Update();
     
 ```
-#### DELETE
+#### Delete
 ```
 //delete all
 var row = session.From<Member>().Delete();
@@ -124,7 +140,38 @@ var row = session.From<Member>()
     .Delete();
 ```
 
-#### COUNT
+#### Transaction
+* 如果不使用事务
+ ```
+  using(var session = SessionFactory.GetSession())
+  {
+    session.From<Member>().Insert(new Member()
+    {
+        NickName="dapper"
+    });
+  }
+ ```
+* 如果使用事务
+```
+  using(vaar session = SessionFactory.GetSession())
+  {
+    try
+    {
+     session.From<Member>().Insert(new Member()
+      {
+          NickName="dapper"
+      });
+      session.From<Member>().Where(a=>a.Id=2).Delete();
+      session.Commit();
+    }
+    catch
+    {
+      session.Rollback();
+    }   
+  }
+```
+
+#### Count
 ```
 var count = session.From<Member>().Where(a=>a.id>2).Count();
 
@@ -144,7 +191,7 @@ var count = session.Frm<Member>()
 
 ```
 
-#### SUM
+#### Sum
 ```
 var total = session.From<Member>().Where(a=>a.Id>0).Sum(s=>s.Balace);
 
@@ -204,7 +251,7 @@ var list = session.From<Member>()
  //获取前8个
  var list = session.From<Member>().Take(8).Select();
  ```
-#### SKIP
+#### Skip
 ```
  //从下标未5开始获取十个，等价于MYSQL中的LIMIT
  var list = session.From<Member>().Skip(5,10).Select();
@@ -224,7 +271,7 @@ var list = session.From<Member>()
  }
 ```
 
-#### CUSTOM FUNCTION
+#### Function
 
 ```
 public static DBFUN
@@ -267,6 +314,7 @@ public static CustomExtension
         queryable.Paging(mvc.PageIndex,mvc.PageCount,out long total,mvc.QueryAll!=1)
         //返回总页数
         mvc.PageTotal = (int)(mvc.PageIndex+mvc.PageCount-1)*mvc.PageCount;
+        return this;
     }   
 }
 ```
