@@ -1,9 +1,0 @@
-D:\GitHub\Dapper.Session\Dapper.Session\bin\Debug\net45\Dapper.Session.dll
-D:\GitHub\Dapper.Session\Dapper.Session\bin\Debug\net45\Dapper.Session.pdb
-D:\GitHub\Dapper.Session\Dapper.Session\bin\Debug\net45\Dapper.dll
-D:\GitHub\Dapper.Session\Dapper.Session\obj\Debug\net45\Dapper.Session.csproj.CoreCompileInputs.cache
-D:\GitHub\Dapper.Session\Dapper.Session\obj\Debug\net45\Dapper.Session.AssemblyInfoInputs.cache
-D:\GitHub\Dapper.Session\Dapper.Session\obj\Debug\net45\Dapper.Session.AssemblyInfo.cs
-D:\GitHub\Dapper.Session\Dapper.Session\obj\Debug\net45\Dapper.Session.csproj.CopyComplete
-D:\GitHub\Dapper.Session\Dapper.Session\obj\Debug\net45\Dapper.Session.dll
-D:\GitHub\Dapper.Session\Dapper.Session\obj\Debug\net45\Dapper.Session.pdb
