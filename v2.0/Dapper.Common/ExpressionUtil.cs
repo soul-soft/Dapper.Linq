@@ -6,6 +6,11 @@ using System.Linq.Expressions;
 
 namespace Dapper.Extension
 {
+    /// <summary>
+    ///  
+    /// 摘要:
+    ///     用于构建表达式工具。 若要浏览源代码，请参阅Github。
+    /// </summary>
     public class ExpressionUtil : ExpressionVisitor
     {
         #region propertys
@@ -123,7 +128,7 @@ namespace Dapper.Extension
         #region private
         public void SetName(string name)
         {
-            var column = MapUtil.GetColumn(_type, f => f.CSharpName == name)?.ColumnName ?? name;
+            var column = EntityUtil.GetColumn(_type, f => f.CSharpName == name)?.ColumnName ?? name;
             _build.Append(column);
             _name = name;
         }
@@ -182,7 +187,7 @@ namespace Dapper.Extension
             else if (expression is MemberExpression)
             {
                 var name = (expression as MemberExpression).Member.Name;
-                var expr = MapUtil.GetColumn<T>(f => f.CSharpName == name)?.ColumnName ?? name;
+                var expr = EntityUtil.GetColumn<T>(f => f.CSharpName == name)?.ColumnName ?? name;
                 columns.Add(name, expr);
             }
             else
@@ -203,7 +208,7 @@ namespace Dapper.Extension
             if (expression is MemberExpression)
             {
                 var name = (expression as MemberExpression).Member.Name;
-                var columnName = MapUtil.GetColumn<T>(f => f.CSharpName == name)?.ColumnName ?? name;
+                var columnName = EntityUtil.GetColumn<T>(f => f.CSharpName == name)?.ColumnName ?? name;
                 column.Add(name, columnName);
                 return column;
             }

@@ -19,7 +19,7 @@ namespace Dapper.Extension
         IQueryable<T> OrderByDescending<TResult>(Expression<Func<T, TResult>> expression, bool condition = true);
         IQueryable<T> Skip(int index, int count, bool condition = true);
         IQueryable<T> Take(int count);
-        IQueryable<T> Paging(int index, int count, out long total, bool condition = true);
+        IQueryable<T> Page(int index, int count, out long total, bool condition = true);
         IQueryable<T> Having(string expression, bool condition = true);
         IQueryable<T> Having(Expression<Func<T, bool>> expression, bool condition = true);
         IQueryable<T> Filter<TResult>(Expression<Func<T, TResult>> columns, bool condition = true);

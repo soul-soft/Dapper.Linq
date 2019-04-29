@@ -68,10 +68,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Function.cs" />
-    <Compile Include="Generation\SQL_MODEL.cs">
+    <Compile Include="Generation\MYSQL_Model.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
-      <DependentUpon>SQL_MODEL.tt</DependentUpon>
+      <DependentUpon>MYSQL_Model.tt</DependentUpon>
     </Compile>
     <Compile Include="UnitTest1.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

@@ -12,7 +12,7 @@
 <#@ output extension=".cs" #>
 <#
 	//数据库连接字符串
-	var connectionString = "server=127.0.0.1;user id=root;password=1024;database=test;pooling=True;minpoolsize=1;maxpoolsize=10;connectiontimeout=180;";
+	var connectionString = "server=127.0.0.1;user id=root;password=1024;database=test;";
 #>
 <#
 	DefaultTypeMap.MatchNamesWithUnderscores = true;

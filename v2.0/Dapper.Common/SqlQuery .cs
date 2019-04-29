@@ -115,7 +115,7 @@ namespace Dapper.Extension
             }
             return this;
         }
-        public IQueryable<T> Paging(int index, int count, out long total, bool condition = true)
+        public IQueryable<T> Page(int index, int count, out long total, bool condition = true)
         {
             total = 0;
             if (condition)
@@ -379,7 +379,7 @@ namespace Dapper.Extension
         public StringBuilder _countBuffer = new StringBuilder();
         public StringBuilder _sumBuffer = new StringBuilder();
         public StringBuilder _lock = new StringBuilder();
-        public Table _table = MapUtil.GetTable<T>();
+        public Table _table = EntityUtil.GetTable<T>();
         public int? pageIndex = null;
         public int? pageCount = null;
         #endregion

@@ -15,6 +15,7 @@ namespace Dapper.Extension.Test
         [TestMethod]
         public void TestMethod1()
         {
+            ExpressionUtil
             //mysql
             SessionFactory.AddDataSource(new DataSource()
             {
@@ -26,7 +27,7 @@ namespace Dapper.Extension.Test
             var sb = new SqlConnectionStringBuilder
             {
                 InitialCatalog = "test",
-                Pooling = true,
+                Pooling = false,
                 Password = "1024",
                 UserID = "sa",
                 FailoverPartner = @"PC033\SQLEXPRESS"
@@ -40,13 +41,10 @@ namespace Dapper.Extension.Test
                 UseProxy = true,
                 Name = "sqlserver",
             });
-
-            var session1 = SessionFactory.GetSession("sqlserver");
-            var ss = session1.From<Member>().Take(4).Select(s => new Member()
-            {
-                NickName = s.NickName,
-                Balance = s.Balance
-            });
+            var aid = 1;
+            var session1 = SessionFactory.GetSession("mysql");
+            session1.Open(false);
+            var ss = session1.From<Member>().Where(a => a.Id == 1).Single(s=>s.NickName);
 
         }
 
