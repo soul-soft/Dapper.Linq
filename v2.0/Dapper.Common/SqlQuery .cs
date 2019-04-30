@@ -3,8 +3,9 @@ using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Text;
 using System.Linq;
+using Dapper.Extension.Util;
 
-namespace Dapper.Extension
+namespace Dapper.Extension.SqlServer
 {
     public class SqlQuery<T> : IQueryable<T> where T : class
     {
@@ -36,11 +37,11 @@ namespace Dapper.Extension
             if (condition)
             {
                 var temp = string.Empty;
-                if (locks==Lock.UPDLOCK)
+                if (locks == Lock.UPDLOCK)
                 {
                     With("UPDLOCK");
                 }
-                else if(locks == Lock.NOLOCK)
+                else if (locks == Lock.NOLOCK)
                 {
                     With("NOLOCK");
                 }
@@ -133,9 +134,9 @@ namespace Dapper.Extension
                 {
                     _setBuffer.Append(",");
                 }
-                var key = string.Format("Param{0}", Param.Count);
+                var key = string.Format("Column{0}", Param.Count);
                 Param.Add(key, value);
-                _setBuffer.AppendFormat("{0}=@{1}", column, key);
+                _setBuffer.AppendFormat("{0} = @{1}", column, key);
             }
             return this;
         }
@@ -147,10 +148,10 @@ namespace Dapper.Extension
                 {
                     _setBuffer.Append(",");
                 }
-                var bcolumn = ExpressionUtil.BuildColumn<T>(column, Param).First();
-                var key = string.Format("{0}{1}", bcolumn.Key, Param.Count);
+                var columns = ExpressionUtil.BuildColumn<T>(column, Param).First();
+                var key = string.Format("{0}{1}", columns.Key, Param.Count);
                 Param.Add(key, value);
-                _setBuffer.AppendFormat("{0}=@{1}", bcolumn.Value, key);
+                _setBuffer.AppendFormat("{0} = @{1}", columns.Value, key);
             }
             return this;
         }
@@ -162,8 +163,9 @@ namespace Dapper.Extension
                 {
                     _setBuffer.Append(",");
                 }
-                _setBuffer.AppendFormat("{0}={1}", ExpressionUtil.BuildColumn<T>(column, Param).First().Value,
-                    ExpressionUtil.BuildExpression<T>(value, Param));
+                var columnName = ExpressionUtil.BuildColumn<T>(column, Param).First().Value;
+                var expression = ExpressionUtil.BuildExpression<T>(value, Param);
+                _setBuffer.AppendFormat("{0} = {1}",columnName ,expression);
             }
             return this;
         }
@@ -454,9 +456,9 @@ namespace Dapper.Extension
                     _table.Columns.Find(f => f.ColumnKey == ColumnKey.Primary).ColumnName);
             }
             sqlBuffer.AppendFormat(" FROM {0}", _table.TableName);
-            if (_lock.Length>0)
+            if (_lock.Length > 0)
             {
-                sqlBuffer.AppendFormat(" WITH({0})",_lock);
+                sqlBuffer.AppendFormat(" WITH({0})", _lock);
             }
             if (_whereBuffer.Length > 0)
             {

@@ -4,20 +4,15 @@ using System.Text;
 using System.Linq;
 using System.Linq.Expressions;
 
-namespace Dapper.Extension
+namespace Dapper.Extension.Util
 {
-    /// <summary>
-    ///  
-    /// 摘要:
-    ///     用于构建表达式工具。 若要浏览源代码，请参阅Github。
-    /// </summary>
     public class ExpressionUtil : ExpressionVisitor
     {
         #region propertys
         private StringBuilder _build = new StringBuilder();
         private Type _type { get; set; }
         private Dictionary<string, object> _value { get; set; }
-        private string _name = "Param";
+        private string _name = "Name";
         private string _condition { get; set; }
         #endregion
 
@@ -91,14 +86,15 @@ namespace Dapper.Extension
         {
             _build.Append("(");
             Visit(node.Left);
-            _condition = ExtensionUtil.GetCondition(node.NodeType);
             if (node.Right is ConstantExpression && (node.NodeType == ExpressionType.Equal || node.NodeType == ExpressionType.NotEqual) && (node.Right as ConstantExpression).Value == null)
             {
-                _build.AppendFormat(" {0}", node.NodeType == ExpressionType.Equal ? "IS NULL" : "IS NOT NULL");
+                _condition = node.NodeType == ExpressionType.Equal ? ExtensionUtil.GetCondition(nameof(ExtensionUtil.IsNull)) : ExtensionUtil.GetCondition(nameof(ExtensionUtil.IsNotNull));
+                _build.AppendFormat(" {0}", _condition);
             }
             else
             {
-                _build.AppendFormat("{0}", _condition);
+                _condition = ExtensionUtil.GetCondition(node.NodeType);
+                _build.AppendFormat(" {0} ", _condition);
                 Visit(node.Right);
             }
             _build.Append(")");

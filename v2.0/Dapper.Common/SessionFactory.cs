@@ -6,6 +6,7 @@ using System.Text;
 using System.Linq;
 using static Dapper.SqlMapper;
 using System.Diagnostics;
+using Dapper.Extension.SqlServer;
 
 namespace Dapper.Extension
 {
@@ -96,11 +97,11 @@ namespace Dapper.Extension
         {
             if (SourceType == DataSourceType.MYSQL)
             {
-                return new MysqlQuery<T>(this);
+                return new Mysql.MysqlQuery<T>(this);
             }
             if (SourceType == DataSourceType.SQLSERVER)
             {
-                return new SqlQuery<T>(this);
+                return new SqlServer.SqlQuery<T>(this);
             }
             throw new NotImplementedException();
         }
@@ -220,11 +221,11 @@ namespace Dapper.Extension
         {
             if (SourceType == DataSourceType.MYSQL)
             {
-                return new MysqlQuery<T>(this);
+                return new Mysql.MysqlQuery<T>(this);
             }
             if (SourceType == DataSourceType.SQLSERVER)
             {
-                return new SqlQuery<T>(this);
+                return new SqlServer.SqlQuery<T>(this);
             }
             throw new NotImplementedException();
         }

@@ -14,8 +14,7 @@ namespace Dapper.Extension.Test
     {
         [TestMethod]
         public void TestMethod1()
-        {
-            ExpressionUtil
+        {            
             //mysql
             SessionFactory.AddDataSource(new DataSource()
             {
@@ -41,11 +40,15 @@ namespace Dapper.Extension.Test
                 UseProxy = true,
                 Name = "sqlserver",
             });
-            var aid = 1;
+            
             var session1 = SessionFactory.GetSession("mysql");
-            session1.Open(false);
-            var ss = session1.From<Member>().Where(a => a.Id == 1).Single(s=>s.NickName);
-
+            session1.Open(true);
+            var balance = 100;
+            var ss = session1.From<Member>()
+                .Set(a => a.Balance, a=>a.Balance + balance)
+                .Where(a=>a.Id==1)
+                .Update();
+            session1.Close();
         }
 
     }

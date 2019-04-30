@@ -3,8 +3,9 @@ using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Text;
 using System.Linq;
+using Dapper.Extension.Util;
 
-namespace Dapper.Extension
+namespace Dapper.Extension.Mysql
 {
     public class MysqlQuery<T> : IQueryable<T> where T : class
     {
@@ -35,11 +36,11 @@ namespace Dapper.Extension
         {
             if (condition)
             {
-                if (locks==Lock.FOR_UPADTE)
+                if (locks == Lock.FOR_UPADTE)
                 {
                     With("FOR UPDATE");
                 }
-                else if(locks==Lock.LOCK_IN_SHARE_MODE)
+                else if (locks == Lock.LOCK_IN_SHARE_MODE)
                 {
                     With("LOCK IN SHARE MODE");
                 }
@@ -132,9 +133,9 @@ namespace Dapper.Extension
                 {
                     _setBuffer.Append(",");
                 }
-                var key = string.Format("Param{0}", Param.Count);
+                var key = string.Format("Column{0}", Param.Count);
                 Param.Add(key, value);
-                _setBuffer.AppendFormat("{0}=@{1}", column, key);
+                _setBuffer.AppendFormat("{0} = @{1}", column, key);
             }
             return this;
         }
@@ -146,10 +147,10 @@ namespace Dapper.Extension
                 {
                     _setBuffer.Append(",");
                 }
-                var bcolumn = ExpressionUtil.BuildColumn<T>(column, Param).First();
-                var key = string.Format("{0}{1}", bcolumn.Key, Param.Count);
+                var columns = ExpressionUtil.BuildColumn<T>(column, Param).First();
+                var key = string.Format("{0}{1}", columns.Key, Param.Count);
                 Param.Add(key, value);
-                _setBuffer.AppendFormat("{0}=@{1}", bcolumn.Value, key);
+                _setBuffer.AppendFormat("{0} = @{1}", columns.Value, key);
             }
             return this;
         }
@@ -161,8 +162,9 @@ namespace Dapper.Extension
                 {
                     _setBuffer.Append(",");
                 }
-                _setBuffer.AppendFormat("{0}={1}", ExpressionUtil.BuildColumn<T>(column, Param).First().Value,
-                    ExpressionUtil.BuildExpression<T>(value, Param));
+                var columnName = ExpressionUtil.BuildColumn<T>(column, Param).First().Value;
+                var expression = ExpressionUtil.BuildExpression<T>(value, Param);
+                _setBuffer.AppendFormat("{0} = {1}", columnName,expression);
             }
             return this;
         }
@@ -276,10 +278,9 @@ namespace Dapper.Extension
         }
         public TResult Single<TResult>(Expression<Func<T, TResult>> columns, bool buffered = true, int? timeout = null)
         {
-            return Single<TResult>(string.Join(",",
-                ExpressionUtil.BuildColumns<T>(columns, Param).Select(s => string.Format("{0} AS {1}", s.Value, s.Key))),
-                buffered,
-                timeout);
+            var columnstr = string.Join(",",
+                ExpressionUtil.BuildColumns<T>(columns, Param).Select(s => string.Format("{0} AS {1}", s.Value, s.Key)));
+            return Single<TResult>(columnstr, buffered, timeout);
         }
         public IEnumerable<T> Select(string colums = null, bool buffered = true, int? timeout = null)
         {
@@ -309,9 +310,9 @@ namespace Dapper.Extension
         }
         public IEnumerable<TResult> Select<TResult>(Expression<Func<T, TResult>> columns, bool buffered = true, int? timeout = null)
         {
-            return Select<TResult>(string.Join(",",
-                ExpressionUtil.BuildColumns<T>(columns, Param).Select(s => string.Format("{0} AS {1}", s.Value, s.Key)))
-                , buffered, timeout);
+            var columstr = string.Join(",",
+                ExpressionUtil.BuildColumns<T>(columns, Param).Select(s => string.Format("{0} AS {1}", s.Value, s.Key)));
+            return Select<TResult>(columstr, buffered, timeout);
         }
         public long Count(string columns = null, bool codition = true, int? timeout = null)
         {
@@ -455,9 +456,9 @@ namespace Dapper.Extension
             {
                 sqlBuffer.AppendFormat(" LIMIT {0},{1}", pageIndex, pageCount);
             }
-            if (_lock.Length>0)
+            if (_lock.Length > 0)
             {
-                sqlBuffer.AppendFormat(" {0}",_lock);
+                sqlBuffer.AppendFormat(" {0}", _lock);
             }
             var sql = sqlBuffer.ToString();
             return sql;
@@ -539,7 +540,7 @@ namespace Dapper.Extension
             return sqlBuffer.ToString();
         }
 
-      
+
         #endregion
     }
 }

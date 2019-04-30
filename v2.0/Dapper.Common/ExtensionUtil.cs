@@ -8,6 +8,11 @@ namespace Dapper.Extension
 {
     public static class ExtensionUtil
     {
+        #region property
+        internal static bool IsNull { get; set; }
+        internal static bool IsNotNull { get; set; }
+        #endregion
+
         #region extension
         public static bool In(this ValueType column, IEnumerable enumerable)
         {
@@ -60,18 +65,12 @@ namespace Dapper.Extension
                 case "NotLike":
                     condition = "NOT LIKE";
                     break;
-                //case "IsNull":
-                //    condition = "IS NULL";
-                //    break;
-                //case "IsNotNull":
-                //    condition = "IS NOT NULL";
-                //    break;
-                //case "Between":
-                //    condition = "BETWEEN";
-                //    break;
-                //case "NotBetween":
-                //    condition = "NOT BETWEEN";
-                //    break;
+                case "IsNull":
+                    condition = "IS NULL";
+                    break;
+                case "IsNotNull":
+                    condition = "IS NOT NULL";
+                    break;             
                 case "Regexp":
                     condition = "REGEXP";
                     break;

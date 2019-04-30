@@ -43,6 +43,7 @@ namespace Dapper.Extension
         None,
         Primary,
         Quniue,
+        Unique,
         Foreign
     }
 }
