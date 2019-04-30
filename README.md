@@ -157,7 +157,7 @@ var row = session.From<Member>()
   {
     try
     {
-     //d打开事物
+     //打开事物
      session.Open(true);
      session.From<Member>().Insert(new Member()
       {
@@ -168,6 +168,7 @@ var row = session.From<Member>()
     }
     catch
     {
+      //一定要通过异常机制来处理事物
       session.Rollback();
     }   
   }
@@ -177,7 +178,7 @@ var row = session.From<Member>()
 ```
 var count = session.From<Member>().Where(a=>a.id>2).Count();
 
-var count = session.Frm<Member>().Count(s=>new 
+var count = session.From<Member>().Count(s=>new 
 {
    s.NickName,
    s.Balance
@@ -211,7 +212,7 @@ var info = session.From<Member>().Where().Single(s=>new {s.NickName,s.Gander});
 
 ```
 
-#### Paging
+#### Page
 ```
 var param=
 {
@@ -228,7 +229,7 @@ var list = session.From<Member>()
   .OrderBy(a=>a.Balance)
   .OrderByDescending(a=>a.Id)
   //分页一定要写在group,where，having 之后
-  .Paging(param.Index,param.Count,out long total)
+  .Page(param.Index,param.Count,out long total)
   .Select();
 ```
 
@@ -243,7 +244,7 @@ var list = session.From<Member>()
    {
      a.NickName,
      SUM = DbFun.Sum(a.Balace)，
-     Count = DbFun.Count(1)
+     Count = DbFun.Count(1L)
    });
  
 ```
@@ -259,7 +260,7 @@ var list = session.From<Member>()
  var list = session.From<Member>().Skip(5,10).Select();
 ```
 
-#### Mapping
+#### Map
 ```
  TableAttribute("t_member")
  public class Member
@@ -313,7 +314,7 @@ public static CustomExtension
     IQueryable<T> ToPage(this IQueryable<T> queryable,MVCBase mvc)
     {
         //condition:mvc.QueryAll!=1
-        queryable.Paging(mvc.PageIndex,mvc.PageCount,out long total,mvc.QueryAll!=1)
+        queryable.Page(mvc.PageIndex,mvc.PageCount,out long total,mvc.QueryAll!=1)
         //返回总页数
         mvc.PageTotal = (int)(mvc.PageIndex+mvc.PageCount-1)*mvc.PageCount;
         return this;
