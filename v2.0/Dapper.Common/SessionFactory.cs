@@ -12,6 +12,8 @@ namespace Dapper.Extension
 {
     public interface ISession : IDisposable
     {
+        bool? Buffered { get; set; }
+        int? Timeout { get; set; }
         List<Logger> Loggers { get; }
         IQueryable<T> From<T>() where T : class;
         GridReader QueryMultiple(string sql, object param = null, int? commandTimeout = null, CommandType text = CommandType.Text);
@@ -34,6 +36,8 @@ namespace Dapper.Extension
         public List<Logger> Loggers { get; private set; }
         public IDbTransaction Transaction { get; private set; }
         public IDbConnection Connection { get; }
+        public bool? Buffered { get; set; }
+        public int? Timeout { get; set; }
         public SessionState State { get; private set; }
         public Session(IDbConnection connection, DataSourceType sourceType)
         {
@@ -83,15 +87,15 @@ namespace Dapper.Extension
         }
         public GridReader QueryMultiple(string sql, object param = null, int? commandTimeout = null, CommandType text = CommandType.Text)
         {
-            return Connection.QueryMultiple(sql, param, Transaction, commandTimeout, text);
+            return Connection.QueryMultiple(sql, param, Transaction, Timeout != null ? Timeout.Value : commandTimeout, text);
         }
         public int Execute(string sql, object param = null, int? commandTimeout = null, CommandType text = CommandType.Text)
         {
-            return Connection.Execute(sql, param, Transaction, commandTimeout, text);
+            return Connection.Execute(sql, param, Transaction, Timeout != null ? Timeout.Value : commandTimeout, text);
         }
         public T ExecuteScalar<T>(string sql, object param = null, int? commandTimeout = null, CommandType text = CommandType.Text)
         {
-            return Connection.ExecuteScalar<T>(sql, param, Transaction, commandTimeout, text);
+            return Connection.ExecuteScalar<T>(sql, param, Transaction, Timeout != null ? Timeout.Value : commandTimeout, text);
         }
         public IQueryable<T> From<T>() where T : class
         {
@@ -107,11 +111,11 @@ namespace Dapper.Extension
         }
         public IEnumerable<T> Query<T>(string sql, object param = null, bool buffered = true, int? commandTimeout = null, CommandType? commandType = null)
         {
-            return Connection.Query<T>(sql, param, Transaction, buffered, commandTimeout, commandType);
+            return Connection.Query<T>(sql, param, Transaction, Buffered != null ? Buffered.Value : buffered, Timeout != null ? Timeout.Value : commandTimeout, commandType);
         }
         public IEnumerable<dynamic> Query(string sql, object param = null, bool buffered = true, int? commandTimeout = null, CommandType? commandType = null)
         {
-            return Connection.Query(sql, param, Transaction, buffered, commandTimeout, commandType);
+            return Connection.Query(sql, param, Transaction, Buffered != null ? Buffered.Value : buffered, Timeout != null ? Timeout.Value : commandTimeout, commandType);
         }
 
     }
@@ -124,6 +128,7 @@ namespace Dapper.Extension
             Loggers = new List<Logger>();
         }
         public List<Logger> Loggers { get; private set; }
+
         public IDbConnection Connection => _target.Connection;
 
         public IDbTransaction Transaction => _target.Transaction;
@@ -131,6 +136,9 @@ namespace Dapper.Extension
         public SessionState State => _target.State;
 
         public DataSourceType SourceType => _target.SourceType;
+
+        public bool? Buffered { get => _target.Buffered; set => _target.Buffered = value; }
+        public int? Timeout { get => _target.Timeout; set => _target.Timeout = value; }
 
         public void Close()
         {
