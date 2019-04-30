@@ -41,7 +41,7 @@ for(var i = 0;i < 20000; i++)
 
 #### 配置：多数据源
 ```
-//可以配置多个数据源，UseProxy将开启代理，记录sql，查询耗时，name是获取数据源的标识
+//可以配置多个数据源，UseProxy将开启代理，记录sql，查询耗时，name是获取数据源的标识，只需要执行一次，请写在静态代码块或者Asp启动事件中
  SessionFactory.AddDataSource(new DataSource()
     {
         SourceType = DataSourceType.MYSQL,
