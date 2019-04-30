@@ -29,7 +29,7 @@ for(var i = 0;i < 20000; i++)
 
 * ISession：数据库会话，一个Session对应一个Connection对象，代表一次会话，实现IDisposable接口，using只负责关闭连接不处理事务，事务请try...catch提交或回滚
 
-* Session：实现ISession接口，
+* Session：实现ISession接口，Timeout和Buffered如果设置则优先使用Session中的配置
 
 * SessionProxy:实现ISession对Session进行静态代理，记录日志信息，如果有异常便于调试，由于VS出现异常将退出程序，请在catch分析session实例中的Loggers
 
