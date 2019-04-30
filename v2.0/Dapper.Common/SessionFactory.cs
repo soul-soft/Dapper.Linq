@@ -153,9 +153,11 @@ namespace Dapper.Extension
             {
                 Loggers.Add(new Logger()
                 {
-                    Param = null,
+                    Value = null,
+                    Buffered = Buffered,
+                    Timeout = Timeout,
                     Text = nameof(SessionProxy.Close),
-                    ElapsedMilliseconds = watch.ElapsedMilliseconds
+                    ExecuteTime = watch.ElapsedMilliseconds
                 });
             }
         }
@@ -173,9 +175,11 @@ namespace Dapper.Extension
             {
                 Loggers.Add(new Logger()
                 {
-                    Param = null,
+                    Value = null,
+                    Buffered = Buffered,
+                    Timeout = Timeout,
                     Text = nameof(Commit),
-                    ElapsedMilliseconds = watch.ElapsedMilliseconds
+                    ExecuteTime = watch.ElapsedMilliseconds
                 });
             }
         }
@@ -198,9 +202,11 @@ namespace Dapper.Extension
                 watch.Stop();
                 Loggers.Add(new Logger()
                 {
-                    Param = param,
+                    Value = param,
                     Text = sql,
-                    ElapsedMilliseconds = watch.ElapsedMilliseconds
+                    Buffered = Buffered,
+                    Timeout = Timeout,
+                    ExecuteTime = watch.ElapsedMilliseconds
                 });
             }
         }
@@ -218,9 +224,11 @@ namespace Dapper.Extension
                 watch.Stop();
                 Loggers.Add(new Logger()
                 {
-                    Param = param,
+                    Value = param,
                     Text = sql,
-                    ElapsedMilliseconds = watch.ElapsedMilliseconds
+                    Buffered = Buffered,
+                    Timeout = Timeout,
+                    ExecuteTime = watch.ElapsedMilliseconds
                 });
             }
         }
@@ -251,9 +259,11 @@ namespace Dapper.Extension
             {
                 Loggers.Add(new Logger()
                 {
-                    Param = null,
+                    Value = null,
+                    Buffered = Buffered,
+                    Timeout = Timeout,
                     Text = string.Format("{0}:Transaction:{1}", nameof(Open), beginTransaction ? "ON" : "OFF"),
-                    ElapsedMilliseconds = watch.ElapsedMilliseconds
+                    ExecuteTime = watch.ElapsedMilliseconds
                 });
             }
         }
@@ -271,9 +281,11 @@ namespace Dapper.Extension
                 watch.Stop();
                 Loggers.Add(new Logger()
                 {
-                    Param = param,
+                    Value = param,
                     Text = sql,
-                    ElapsedMilliseconds = watch.ElapsedMilliseconds
+                    Buffered = Buffered,
+                    Timeout = Timeout,
+                    ExecuteTime = watch.ElapsedMilliseconds
                 });
             }
         }
@@ -292,9 +304,11 @@ namespace Dapper.Extension
                 watch.Stop();
                 Loggers.Add(new Logger()
                 {
-                    Param = param,
+                    Value = param,
                     Text = sql,
-                    ElapsedMilliseconds = watch.ElapsedMilliseconds
+                    Buffered = Buffered,
+                    Timeout = Timeout,
+                    ExecuteTime = watch.ElapsedMilliseconds
                 });
             }
         }
@@ -312,9 +326,11 @@ namespace Dapper.Extension
                 watch.Stop();
                 Loggers.Add(new Logger()
                 {
-                    Param = param,
+                    Value = param,
                     Text = sql,
-                    ElapsedMilliseconds = watch.ElapsedMilliseconds
+                    Buffered = Buffered,
+                    Timeout = Timeout,
+                    ExecuteTime = watch.ElapsedMilliseconds
                 });
             }
         }
@@ -332,9 +348,11 @@ namespace Dapper.Extension
             {
                 Loggers.Add(new Logger()
                 {
-                    Param = null,
+                    Value = null,
                     Text = nameof(Rollback),
-                    ElapsedMilliseconds = watch.ElapsedMilliseconds
+                    Buffered = Buffered,
+                    Timeout = Timeout,
+                    ExecuteTime = watch.ElapsedMilliseconds
                 });
             }
         }
