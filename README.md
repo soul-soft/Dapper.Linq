@@ -23,7 +23,7 @@ for(var i = 0;i < 20000; i++)
 
 * IQueryable：构建完整查询语句的抽象接口
 
-* MysqlQuery：构建mysql查询的实例，实现IQueryable接口，直接创建对象，不设置Session可之构建sql
+* MysqlQuery：构建mysql查询的实例，实现IQueryable接口，直接创建对象，不设置Session可只构建sql
 
 * SqlQuery：构建sqlserver查询的实例，实现IQueryable接口
 
@@ -91,7 +91,7 @@ session.From<Member>().Update(new Member
     Name = "Dapper"
 });
 
-//Filter指定Name,Balance列不更新，或只过滤余额 f=>f.Balance，select的 时候可以过滤掉不想查询的列
+//Filter指定Name,Balance列不更新，或只过滤余额 f=>f.Balance，select的时候可以过滤掉不想查询的列
 session.From<Member>()
   .Filter(f=>new 
   {
@@ -157,6 +157,8 @@ var row = session.From<Member>()
   {
     try
     {
+     //d打开事物
+     session.Open(true);
      session.From<Member>().Insert(new Member()
       {
           NickName="dapper"
