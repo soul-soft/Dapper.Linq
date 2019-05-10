@@ -188,7 +188,7 @@ namespace Dapper.Extension.Mysql
             {
                 if (_whereBuffer.Length > 0)
                 {
-                    _whereBuffer.AppendFormat("{0}", ExtensionUtil.GetCondition(ExpressionType.AndAlso));
+                    _whereBuffer.AppendFormat(" {0} ", ExtensionUtil.GetCondition(ExpressionType.AndAlso));
                 }
                 _whereBuffer.Append(expression);
             }
@@ -386,8 +386,8 @@ namespace Dapper.Extension.Mysql
         {
             var sql = string.Format("INSERT INTO {0} ({1}) VALUES ({2})",
                 _table.TableName,
-                string.Join(",", _table.Columns.FindAll(f => f.Identity == false).Select(s => s.ColumnName))
-                , string.Join(",", _table.Columns.FindAll(f => f.Identity == false).Select(s => string.Format("@{0}", s.CSharpName))));
+                string.Join(",", _table.Columns.FindAll(f => f.Identity == false && !_filters.Exists(e => e == f.ColumnName)).Select(s => s.ColumnName))
+                , string.Join(",", _table.Columns.FindAll(f => f.Identity == false && !_filters.Exists(e => e == f.ColumnName)).Select(s => string.Format("@{0}", s.CSharpName))));
             return sql;
         }
         public string BuildUpdate()
