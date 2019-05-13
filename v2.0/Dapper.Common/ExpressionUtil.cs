@@ -116,7 +116,18 @@ namespace Dapper.Extension.Util
         }
         protected override Expression VisitConstant(ConstantExpression node)
         {
-            _build.AppendFormat("{0}{1}{0}", node.Value?.GetType() == typeof(string) ? "'" : "", node.Value?.ToString());
+            if (node.Value == null)
+            {
+                _build.AppendFormat("NULL");
+            }
+            else if (node.Value is string)
+            {
+                _build.AppendFormat("'{0}'", node.Value);
+            }
+            else
+            {
+                _build.AppendFormat("{0}", node.Value);
+            }
             return node;
         }
         #endregion

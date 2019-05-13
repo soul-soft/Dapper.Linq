@@ -1,0 +1,26 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2012/06/nuspec.xsd">
+  <metadata>
+    <id>Dapper.Common</id>
+    <version>1.4.0</version>
+    <authors>Dapper.Common</authors>
+    <owners>Dapper.Common</owners>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <projectUrl>https://github.com/1448376744/Dapper.Common</projectUrl>
+    <description>dapper,linq to sql,mysql,sqlserver,function</description>
+    <tags>linq to sql</tags>
+    <repository url="https://github.com/1448376744/Dapper.Common" />
+    <dependencies>
+      <group targetFramework=".NETFramework4.5">
+        <dependency id="Dapper" version="1.42.0" exclude="Build,Analyzers" />
+      </group>
+      <group targetFramework=".NETStandard2.0">
+        <dependency id="Dapper" version="1.60.6" exclude="Build,Analyzers" />
+      </group>
+    </dependencies>
+  </metadata>
+  <files>
+    <file src="D:\Dapper.Common\v2.0\Dapper.Common\bin\Release\net45\Dapper.Common.dll" target="lib\net45\Dapper.Common.dll" />
+    <file src="D:\Dapper.Common\v2.0\Dapper.Common\bin\Release\netstandard2.0\Dapper.Common.dll" target="lib\netstandard2.0\Dapper.Common.dll" />
+  </files>
+</package>
