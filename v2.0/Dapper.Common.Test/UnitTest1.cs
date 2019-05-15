@@ -14,7 +14,7 @@ namespace Dapper.Extension.Test
     {
         [TestMethod]
         public void TestMethod1()
-        {            
+        {
             //mysql
             SessionFactory.AddDataSource(new DataSource()
             {
@@ -40,17 +40,37 @@ namespace Dapper.Extension.Test
                 UseProxy = true,
                 Name = "sqlserver",
             });
-            
+
             var session1 = SessionFactory.GetSession("mysql");
             session1.Open(true);
             var balance = 100;
-            var ss = session1.From<Member>()
-                .Set(a => a.Balance, a=>a.Balance + balance)
-                .Where(a=>a.Id==1)
-                .Update();
-            session1.Close();
+            var af = new { a = 50 };
+            var arr = new int[] { 1, 2, 3 };
+            try
+            {
+                var group = "case when id<2 then 1 when id<4 then 2 end";
+                var ss = session1.From<Member>()
+               .Single(s => new 
+               {
+                   Grop = "case when id<2 then 1 when id<4 then 2 end",
+                   Id = DbFun.Count<long>(1)
+               });
+            }
+            catch (Exception e)
+            {
+
+                throw;
+            }
+
         }
 
+    }
+    public class M
+    {
+        public long? Grop { get; set; }
+        public long? Id { get; set; }
+        public string NickName { get; set; }
+        public decimal? Balance { get; set; }
     }
 
 }

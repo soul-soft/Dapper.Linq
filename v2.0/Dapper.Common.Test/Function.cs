@@ -19,7 +19,7 @@ namespace Dapper.Extension.Test
             return 0;
         }
         [Function]
-        public static T Count<T>(T column)
+        public static T Count<T>(long column)
         {
             return default(T);
         }

@@ -18,7 +18,15 @@ namespace Dapper.Extension
         {
             return true;
         }
+        public static bool In(this ValueType column, params ValueType[] value)
+        {
+            return true;
+        }
         public static bool NotIn(this ValueType column, IEnumerable enumerable)
+        {
+            return true;
+        }
+        public static bool NotIn(this ValueType column, params ValueType[] value)
         {
             return true;
         }
@@ -26,7 +34,15 @@ namespace Dapper.Extension
         {
             return true;
         }
+        public static bool In(this string column, params string[] value)
+        {
+            return true;
+        }
         public static bool NotIn(this string column, IEnumerable enumerable)
+        {
+            return true;
+        }
+        public static bool NotIn(this string column, params string[] value)
         {
             return true;
         }

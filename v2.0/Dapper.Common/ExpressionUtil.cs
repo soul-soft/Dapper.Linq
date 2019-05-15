@@ -176,7 +176,24 @@ namespace Dapper.Extension.Util
                 var initExpression = (expression as MemberInitExpression);
                 for (int i = 0; i < initExpression.Bindings.Count; i++)
                 {
-                    var expr = BuildExpression<T>((initExpression.Bindings[i] as MemberAssignment).Expression, param);
+                    var expr = string.Empty;
+                    Expression argument = (initExpression.Bindings[i] as MemberAssignment).Expression;
+                    if (argument is UnaryExpression)
+                    {
+                        argument = (argument as UnaryExpression).Operand;
+                    }
+                    if (argument is MethodCallExpression && (argument as MethodCallExpression).Method.DeclaringType == typeof(Convert))
+                    {
+                        expr = GetValue((argument as MethodCallExpression).Arguments[0]).ToString();
+                    }
+                    else if (argument is ConstantExpression || argument is MemberExpression)
+                    {
+                        expr = GetValue(argument).ToString();
+                    }
+                    else
+                    {
+                        expr = BuildExpression<T>(argument, param);
+                    }
                     var name = initExpression.Bindings[i].Member.Name;
                     columns.Add(name, expr);
                 }
@@ -186,7 +203,20 @@ namespace Dapper.Extension.Util
                 var newExpression = (expression as NewExpression);
                 for (int i = 0; i < newExpression.Arguments.Count; i++)
                 {
-                    var expr = BuildExpression<T>(newExpression.Arguments[i], param);
+                    var expr = string.Empty;
+                    var argument = newExpression.Arguments[i];
+                    if (argument is MethodCallExpression && (argument as MethodCallExpression).Method.DeclaringType == typeof(Convert))
+                    {
+                        expr = GetValue((argument as MethodCallExpression).Arguments[0]).ToString();
+                    }
+                    else if (argument is ConstantExpression || argument is MemberExpression)
+                    {
+                        expr = GetValue(argument).ToString();
+                    }
+                    else
+                    {
+                        expr = BuildExpression<T>(argument, param);
+                    }
                     var name = newExpression.Members[i].Name;
                     columns.Add(name, expr);
                 }
@@ -199,7 +229,7 @@ namespace Dapper.Extension.Util
             }
             else
             {
-                var name = string.Format("COLUMN{0}", param.Count);
+                var name = string.Format("COLUMN0");
                 var expr = BuildExpression<T>(expression, param);
                 columns.Add(name, expr);
             }
@@ -221,7 +251,7 @@ namespace Dapper.Extension.Util
             }
             else
             {
-                var name = string.Format("COLUMN");
+                var name = string.Format("COLUMN0");
                 var build = BuildExpression<T>(expression, param);
                 column.Add(name, build);
                 return column;
@@ -229,21 +259,23 @@ namespace Dapper.Extension.Util
         }
         public static object GetValue(Expression expression)
         {
-            var names = new Stack<string>();
-            while (expression is MemberExpression)
+            var memberNames = new Stack<string>();
+            var tempExpression = expression;
+            while (tempExpression is MemberExpression)
             {
-                var memberExpression = expression as MemberExpression;
-                names.Push(memberExpression.Member.Name);
-                expression = memberExpression.Expression;
-                if (expression == null && memberExpression.Type == typeof(DateTime) && memberExpression.Member.Name == nameof(DateTime.Now))
+                var memberExpression = tempExpression as MemberExpression;
+                memberNames.Push(memberExpression.Member.Name);
+                if (tempExpression == null && memberExpression.Type == typeof(DateTime) && memberExpression.Member.Name == nameof(DateTime.Now))
                 {
                     return DateTime.Now;
                 }
+                tempExpression = memberExpression.Expression;
             }
-            if (expression is ConstantExpression)
+
+            if (tempExpression is ConstantExpression)
             {
-                var value = (expression as ConstantExpression).Value;
-                foreach (var item in names)
+                var value = (tempExpression as ConstantExpression).Value;
+                foreach (var item in memberNames)
                 {
                     if (value.GetType().GetField(item) != null)
                     {

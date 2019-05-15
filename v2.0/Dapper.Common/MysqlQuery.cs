@@ -14,11 +14,11 @@ namespace Dapper.Extension.Mysql
         public MysqlQuery(ISession session = null)
         {
             _session = session;
-            Param = new Dictionary<string, object>();
+            _param = new Dictionary<string, object>();
         }
         public MysqlQuery(Dictionary<string, object> param)
         {
-            Param = param;
+            _param = param;
         }
         #endregion
 
@@ -59,16 +59,25 @@ namespace Dapper.Extension.Mysql
         {
             if (condition)
             {
-                _filters.AddRange(ExpressionUtil.BuildColumns<T>(columns, Param).Select(s => s.Value));
+                _filters.AddRange(ExpressionUtil.BuildColumns<T>(columns, _param).Select(s => s.Value));
+            }
+            return this;
+        }
+        public IQueryable<T> GroupBy(string expression, bool condition = true)
+        {
+            if (condition)
+            {
+                if (_groupBuffer.Length > 0)
+                {
+                    _groupBuffer.Append(",");
+                }
+                _groupBuffer.Append(expression);
             }
             return this;
         }
         public IQueryable<T> GroupBy<TResult>(Expression<Func<T, TResult>> expression, bool condition = true)
         {
-            if (condition)
-            {
-                _groupBuffer.Append(string.Join(",", ExpressionUtil.BuildColumns<T>(expression, Param).Select(s => s.Value)));
-            }
+            GroupBy(string.Join(",", ExpressionUtil.BuildColumns<T>(expression, _param).Select(s => s.Value)),condition);
             return this;
         }
         public IQueryable<T> Having(string expression, bool condition = true)
@@ -81,10 +90,7 @@ namespace Dapper.Extension.Mysql
         }
         public IQueryable<T> Having(Expression<Func<T, bool>> expression, bool condition = true)
         {
-            if (condition)
-            {
-                Having(string.Join(",", ExpressionUtil.BuildColumns<T>(expression, Param).Select(s => s.Value)));
-            }
+            Having(string.Join(",", ExpressionUtil.BuildColumns<T>(expression, _param).Select(s => s.Value)), condition);
             return this;
         }
         public IQueryable<T> OrderBy(string orderBy, bool condition = true)
@@ -101,18 +107,12 @@ namespace Dapper.Extension.Mysql
         }
         public IQueryable<T> OrderBy<TResult>(Expression<Func<T, TResult>> expression, bool condition = true)
         {
-            if (condition)
-            {
-                OrderBy(string.Join(",", ExpressionUtil.BuildColumns<T>(expression, Param).Select(s => string.Format("{0} ASC", s.Value))));
-            }
+            OrderBy(string.Join(",", ExpressionUtil.BuildColumns<T>(expression, _param).Select(s => string.Format("{0} ASC", s.Value))), condition);
             return this;
         }
         public IQueryable<T> OrderByDescending<TResult>(Expression<Func<T, TResult>> expression, bool condition = true)
         {
-            if (condition)
-            {
-                OrderBy(string.Join(",", ExpressionUtil.BuildColumns<T>(expression, Param).Select(s => string.Format("{0} DESC", s.Value))));
-            }
+            OrderBy(string.Join(",", ExpressionUtil.BuildColumns<T>(expression, _param).Select(s => string.Format("{0} DESC", s.Value))),condition);
             return this;
         }
         public IQueryable<T> Page(int index, int count, out long total, bool condition = true)
@@ -125,7 +125,7 @@ namespace Dapper.Extension.Mysql
             }
             return this;
         }
-        public IQueryable<T> Set(string column, object value, bool condition = true)
+        public IQueryable<T> Set<TResult>(Expression<Func<T, TResult>> column, string value, Action<Dictionary<string, object>> action = null, bool condition = true)
         {
             if (condition)
             {
@@ -133,9 +133,9 @@ namespace Dapper.Extension.Mysql
                 {
                     _setBuffer.Append(",");
                 }
-                var key = string.Format("Column{0}", Param.Count);
-                Param.Add(key, value);
-                _setBuffer.AppendFormat("{0} = @{1}", column, key);
+                var columns = ExpressionUtil.BuildColumn<T>(column, _param).First();
+                action?.Invoke(_param);
+                _setBuffer.AppendFormat("{0} = {1}", columns.Value, value);
             }
             return this;
         }
@@ -147,9 +147,9 @@ namespace Dapper.Extension.Mysql
                 {
                     _setBuffer.Append(",");
                 }
-                var columns = ExpressionUtil.BuildColumn<T>(column, Param).First();
-                var key = string.Format("{0}{1}", columns.Key, Param.Count);
-                Param.Add(key, value);
+                var columns = ExpressionUtil.BuildColumn<T>(column, _param).First();
+                var key = string.Format("{0}{1}", columns.Key, _param.Count);
+                _param.Add(key, value);
                 _setBuffer.AppendFormat("{0} = @{1}", columns.Value, key);
             }
             return this;
@@ -162,9 +162,9 @@ namespace Dapper.Extension.Mysql
                 {
                     _setBuffer.Append(",");
                 }
-                var columnName = ExpressionUtil.BuildColumn<T>(column, Param).First().Value;
-                var expression = ExpressionUtil.BuildExpression<T>(value, Param);
-                _setBuffer.AppendFormat("{0} = {1}", columnName,expression);
+                var columnName = ExpressionUtil.BuildColumn<T>(column, _param).First().Value;
+                var expression = ExpressionUtil.BuildExpression<T>(value, _param);
+                _setBuffer.AppendFormat("{0} = {1}", columnName, expression);
             }
             return this;
         }
@@ -182,7 +182,7 @@ namespace Dapper.Extension.Mysql
             Skip(0, count);
             return this;
         }
-        public IQueryable<T> Where(string expression, bool condition = true)
+        public IQueryable<T> Where(string expression, Action<Dictionary<string, object>> action = null, bool condition = true)
         {
             if (condition)
             {
@@ -190,16 +190,14 @@ namespace Dapper.Extension.Mysql
                 {
                     _whereBuffer.AppendFormat(" {0} ", ExtensionUtil.GetCondition(ExpressionType.AndAlso));
                 }
+                action?.Invoke(_param);
                 _whereBuffer.Append(expression);
             }
             return this;
         }
         public IQueryable<T> Where(Expression<Func<T, bool>> expression, bool condition = true)
         {
-            if (condition)
-            {
-                Where(ExpressionUtil.BuildExpression<T>(expression, Param));
-            }
+            Where(ExpressionUtil.BuildExpression<T>(expression, _param),null, condition);
             return this;
         }
         public int Delete(bool condition = true, int? timeout = null)
@@ -207,7 +205,7 @@ namespace Dapper.Extension.Mysql
             if (condition && _session != null)
             {
                 var sql = BuildDelete();
-                return _session.Execute(sql, Param, timeout);
+                return _session.Execute(sql, _param, timeout);
             }
             return 0;
         }
@@ -244,7 +242,7 @@ namespace Dapper.Extension.Mysql
             if (condition && _session != null)
             {
                 var sql = BuildUpdate();
-                return _session.Execute(sql, Param, timeout);
+                return _session.Execute(sql, _param, timeout);
             }
             return 0;
         }
@@ -279,7 +277,7 @@ namespace Dapper.Extension.Mysql
         public TResult Single<TResult>(Expression<Func<T, TResult>> columns, bool buffered = true, int? timeout = null)
         {
             var columnstr = string.Join(",",
-                ExpressionUtil.BuildColumns<T>(columns, Param).Select(s => string.Format("{0} AS {1}", s.Value, s.Key)));
+                ExpressionUtil.BuildColumns<T>(columns, _param).Select(s => string.Format("{0} AS {1}", s.Value, s.Key)));
             return Single<TResult>(columnstr, buffered, timeout);
         }
         public IEnumerable<T> Select(string colums = null, bool buffered = true, int? timeout = null)
@@ -291,7 +289,7 @@ namespace Dapper.Extension.Mysql
             if (_session != null)
             {
                 var sql = BuildSelect();
-                return _session.Query<T>(sql, Param, buffered, timeout);
+                return _session.Query<T>(sql, _param, buffered, timeout);
             }
             return new List<T>();
         }
@@ -304,14 +302,14 @@ namespace Dapper.Extension.Mysql
             if (_session != null)
             {
                 var sql = BuildSelect();
-                return _session.Query<TResult>(sql, Param, buffered, timeout);
+                return _session.Query<TResult>(sql, _param, buffered, timeout);
             }
             return new List<TResult>();
         }
         public IEnumerable<TResult> Select<TResult>(Expression<Func<T, TResult>> columns, bool buffered = true, int? timeout = null)
         {
             var columstr = string.Join(",",
-                ExpressionUtil.BuildColumns<T>(columns, Param).Select(s => string.Format("{0} AS {1}", s.Value, s.Key)));
+                ExpressionUtil.BuildColumns<T>(columns, _param).Select(s => string.Format("{0} AS {1}", s.Value, s.Key)));
             return Select<TResult>(columstr, buffered, timeout);
         }
         public long Count(string columns = null, bool codition = true, int? timeout = null)
@@ -325,7 +323,7 @@ namespace Dapper.Extension.Mysql
                 if (_session != null)
                 {
                     var sql = BuildCount();
-                    return _session.ExecuteScalar<long>(sql, Param, timeout);
+                    return _session.ExecuteScalar<long>(sql, _param, timeout);
                 }
             }
             return 0;
@@ -334,7 +332,7 @@ namespace Dapper.Extension.Mysql
         {
             if (condition)
             {
-                return Count(string.Join(",", ExpressionUtil.BuildColumns<T>(expression, Param).Select(s => s.Value)), condition, timeout);
+                return Count(string.Join(",", ExpressionUtil.BuildColumns<T>(expression, _param).Select(s => s.Value)), condition, timeout);
             }
             return 0;
         }
@@ -343,7 +341,7 @@ namespace Dapper.Extension.Mysql
             if (condition && _session != null)
             {
                 var sql = BuildExists();
-                return _session.ExecuteScalar<int>(sql, Param, timeout) > 0;
+                return _session.ExecuteScalar<int>(sql, _param, timeout) > 0;
             }
             return false;
         }
@@ -351,12 +349,12 @@ namespace Dapper.Extension.Mysql
         {
             if (condition)
             {
-                var column = ExpressionUtil.BuildColumn<T>(expression, Param).First();
+                var column = ExpressionUtil.BuildColumn<T>(expression, _param).First();
                 _sumBuffer.AppendFormat("{0}", column.Value);
                 if (_session != null)
                 {
                     var sql = BuildSum();
-                    return _session.ExecuteScalar<TResult>(sql, Param, timeout);
+                    return _session.ExecuteScalar<TResult>(sql, _param, timeout);
                 }
             }
             return default(TResult);
@@ -364,7 +362,7 @@ namespace Dapper.Extension.Mysql
         #endregion
 
         #region property
-        public Dictionary<string, object> Param { get; set; }
+        public Dictionary<string, object> _param { get; set; }
         public StringBuilder _columnBuffer = new StringBuilder();
         public List<string> _filters = new List<string>();
         public StringBuilder _setBuffer = new StringBuilder();
