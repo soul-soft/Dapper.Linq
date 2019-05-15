@@ -277,9 +277,10 @@ var list = session.From<Member>()
 #### Function
 
 ```
+//注意虽然可以使用匿名类型，但是dapper映射级如count映射的在int64
 public static DBFUN
 {
-    [FunctionAttribute]//必须用该特性标识为数据库函数
+    [FunctionAttribute]//必须用该特性标识为数据库函数，应该返回long
     public T COUNT<T>(T column)
     {
        return default(T);
@@ -297,6 +298,28 @@ session.From<Member>().GroupBy(g=>g.NickName).Select(s=>new
    Count=DBFUN.COUNT("DISTINCT ,",1)
 })
 
+```
+#### SqlString
+```
+   //where,orderby,groupby,having，都可以插入sql片段
+   //如果case返回的是0，1，2，3，4，5数字类型
+   则PriceRange也应该是int类型（应该用int64）,此时PriceRange=range，PriceRange类型推断为string类型
+   //解决方案：PriceRange = Convert.ToInt64(range)
+   var range = @"(CASE WHEN sale_price <= 10 THEN '0' 
+                    WHEN sale_price <= 20 THEN '1'
+                    WHEN sale_price <= 30 THEN '2'
+                    WHEN sale_price <= 50 THEN '3'
+                    WHEN sale_price <= 100 THEN '4'
+                    ELSE 5 END)";
+                       
+    var list = Session.From<SaleOrderItem>()
+        .Where(a => a.ShopId == token.Id && a.CallbackState == 1)
+        .GroupBy(range)
+        .Select(s => new
+        {
+            PriceRange = range,
+            GoodsCount = DbFun.Sum(s.GoodsNum)
+        });
 ```
 #### Extension
 
