@@ -313,7 +313,7 @@ session.From<Member>().GroupBy(g=>g.NickName).Select(s=>new
                     ELSE 5 END)";
                        
     var list = Session.From<SaleOrderItem>()
-        .Where(a => a.ShopId == token.Id && a.CallbackState == 1)
+        .Where("id=@id",p=>p.Add("@id",1))//为了防止sql注入应该使用参数化
         .GroupBy(range)
         .Select(s => new
         {
