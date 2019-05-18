@@ -2,15 +2,17 @@
 
   <PropertyGroup>
     <TargetFrameworks>net45;netstandard2.0</TargetFrameworks>
-    <Version>1.4.0.6</Version>
+    <Version>1.4.0.8</Version>
     <Description>dapper,linq to sql,mysql,sqlserver,function</Description>
     <PackageProjectUrl>https://github.com/1448376744/Dapper.Common</PackageProjectUrl>
     <RepositoryUrl>https://github.com/1448376744/Dapper.Common</RepositoryUrl>
     <PackageTags>linq to sql</PackageTags>
-    <AssemblyVersion>1.4.0.6</AssemblyVersion>
-    <FileVersion>1.4.0.6</FileVersion>
+    <AssemblyVersion>1.4.0.8</AssemblyVersion>
+    <FileVersion>1.4.0.8</FileVersion>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <SignAssembly>false</SignAssembly>
+    <Copyright>mammothcode</Copyright>
+    <Authors>mammothcode</Authors>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net45|AnyCPU'">

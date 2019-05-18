@@ -48,12 +48,12 @@ namespace Dapper.Extension.Test
             var arr = new int[] { 1, 2, 3 };
             try
             {
-                var group = "case when id<2 then 1 when id<4 then 2 end";
+                var rang = "case when id<10 then 0 end";
+
                 var ss = session1.From<Member>()
                .Single(s => new 
                {
-                   Grop = "case when id<2 then 1 when id<4 then 2 end",
-                   Id = DbFun.Count<long>(1)
+                   s.Balance
                });
             }
             catch (Exception e)

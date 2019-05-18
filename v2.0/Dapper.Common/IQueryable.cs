@@ -8,12 +8,13 @@ namespace Dapper.Extension
 {
     public interface IQueryable<T>
     {
-        IQueryable<T> Set<TResult>(Expression<Func<T, TResult>> column, string value,Action<Dictionary<string,object>> param=null,bool condition = true);
+       
+        IQueryable<T> Set(string express, Action<Dictionary<string, object>> param = null, bool condition = true);
         IQueryable<T> Set<TResult>(Expression<Func<T, TResult>> column, TResult value, bool condition = true);
         IQueryable<T> Set<TResult>(Expression<Func<T, TResult>> column, Expression<Func<T, TResult>> expression, bool condition = true);
         IQueryable<T> GroupBy(string expression, bool condition = true);
         IQueryable<T> GroupBy<TResult>(Expression<Func<T, TResult>> expression, bool condition = true);
-        IQueryable<T> Where(string expression, Action<Dictionary<string, object>> action = null,bool condition = true);
+        IQueryable<T> Where(string expression, Action<Dictionary<string, object>> action = null, bool condition = true);
         IQueryable<T> Where(Expression<Func<T, bool>> expression, bool condition = true);
         IQueryable<T> OrderBy(string orderBy, bool condition = true);
         IQueryable<T> OrderBy<TResult>(Expression<Func<T, TResult>> expression, bool condition = true);

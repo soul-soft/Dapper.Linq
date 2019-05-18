@@ -186,7 +186,7 @@ namespace Dapper.Extension.Util
                     {
                         expr = GetValue((argument as MethodCallExpression).Arguments[0]).ToString();
                     }
-                    else if (argument is ConstantExpression || argument is MemberExpression)
+                    else if (argument is ConstantExpression || (argument is MemberExpression && (argument as MemberExpression).Expression is ConstantExpression))
                     {
                         expr = GetValue(argument).ToString();
                     }
@@ -209,7 +209,7 @@ namespace Dapper.Extension.Util
                     {
                         expr = GetValue((argument as MethodCallExpression).Arguments[0]).ToString();
                     }
-                    else if (argument is ConstantExpression || argument is MemberExpression)
+                    else if (argument is ConstantExpression || (argument is MemberExpression && (argument as MemberExpression).Expression is ConstantExpression))
                     {
                         expr = GetValue(argument).ToString();
                     }

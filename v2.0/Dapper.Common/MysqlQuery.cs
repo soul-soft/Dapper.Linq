@@ -125,7 +125,7 @@ namespace Dapper.Extension.Mysql
             }
             return this;
         }
-        public IQueryable<T> Set<TResult>(Expression<Func<T, TResult>> column, string value, Action<Dictionary<string, object>> action = null, bool condition = true)
+        public IQueryable<T> Set(string expression, Action<Dictionary<string, object>> action = null, bool condition = true)
         {
             if (condition)
             {
@@ -133,9 +133,8 @@ namespace Dapper.Extension.Mysql
                 {
                     _setBuffer.Append(",");
                 }
-                var columns = ExpressionUtil.BuildColumn<T>(column, _param).First();
                 action?.Invoke(_param);
-                _setBuffer.AppendFormat("{0} = {1}", columns.Value, value);
+                _setBuffer.AppendFormat(expression);
             }
             return this;
         }
