@@ -260,7 +260,7 @@ var list = session.From<Member>()
  var list = session.From<Member>().Skip(5,10).Select();
 ```
 
-#### Map
+#### Mapper
 ```
  TableAttribute("t_member")
  public class Member
@@ -277,17 +277,24 @@ var list = session.From<Member>()
 #### Function
 
 ```
+//注意虽然可以使用匿名类型，但是dapper对匿名类型映射不友好，
 public static DBFUN
 {
-    [FunctionAttribute]//必须用该特性标识为数据库函数
-    public T COUNT<T>(T column)
+    [Function]//必须用该特性标识为数据库函数    
+    public long? COUNT<T>(T column)
     {
        return default(T);
     }
+    [Function]//必须用该特性标识为数据库函数 
     //ParameterAttribute:标记特殊参数：关键字参数
     public T COUNT<T>([Parameter]string distinct,T column)
     {
-      
+       return default(T);
+    }
+    [Function]//必须用该特性标识为数据库函数,尽量返回大的数据类型 
+    public decimal Sum(object o)
+    {
+       return default(T);
     }
 }
 //DEMO:可以标识该字段为特殊参数：特殊参数之后不加逗号
@@ -297,6 +304,28 @@ session.From<Member>().GroupBy(g=>g.NickName).Select(s=>new
    Count=DBFUN.COUNT("DISTINCT ,",1)
 })
 
+```
+#### SqlString
+```
+   //where,orderby,groupby,having，都可以插入sql片段
+   //如果case返回的是0，1，2，3，4，5数字类型
+   //则PriceRange也应该是int类型（应该用int64）,此时PriceRange=range，PriceRange类型推断为string类型
+   //解决方案：PriceRange = Convert.ToInt64(range),只支持conver来将sql片段进行转换
+   var range = @"(CASE WHEN sale_price <= 10 THEN '0' 
+                    WHEN sale_price <= 20 THEN '1'
+                    WHEN sale_price <= 30 THEN '2'
+                    WHEN sale_price <= 50 THEN '3'
+                    WHEN sale_price <= 100 THEN '4'
+                    ELSE 5 END)";
+                       
+    var list = Session.From<SaleOrderItem>()
+        .Where("id=@id",p=>p.Add("@id",1))//为了防止sql注入应该使用参数化
+        .GroupBy(range)
+        .Select(s => new
+        {
+            PriceRange = range,
+            GoodsCount = DbFun.Sum(s.GoodsNum)
+        });
 ```
 #### Extension
 
