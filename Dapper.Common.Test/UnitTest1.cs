@@ -1,6 +1,7 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Data.SqlClient;
+using System.Linq;
 
 namespace Dapper.Extension.Test
 {
@@ -40,16 +41,11 @@ namespace Dapper.Extension.Test
             session.Open(true);
             try
             {
-                var list = session.From<MemberBill, Member, MemberOrder>()
-                    .Join<Member,MemberBill>((a, b) => a.Id == b.MemberId)
-                    .Join<Member, MemberOrder>((a, b) => a.Id == b.MemberId,JoinType.Left)
-                    .Select((a, b, c) => new
-                    {
-                        b.Id,
-                        b.NickName,
-                        c.OrderName
-                    });
-
+                var ids = new int[] { 1,2,3,4};
+                var list = session.From<Member>()
+                    .Where(a=>a.Id.In(ids.ToList().Where(f=>f<4)))
+                    .Select();
+                   
             }
             catch (Exception e)
             {

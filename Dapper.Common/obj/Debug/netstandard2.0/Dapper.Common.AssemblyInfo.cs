@@ -16,7 +16,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCopyrightAttribute("mammothcode")]
 [assembly: System.Reflection.AssemblyDescriptionAttribute("dapper,linq to sql,mysql,sqlserver,function")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.5.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.4.0.8")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.5.0.0")]
 [assembly: System.Reflection.AssemblyProductAttribute("Dapper.Common")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Dapper.Common")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.5.0.0")]
