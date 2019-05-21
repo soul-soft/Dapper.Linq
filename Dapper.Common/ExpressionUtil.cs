@@ -137,7 +137,7 @@ namespace Dapper.Extension.Util
         {
             var name = expression.Member.Name;
             var columnName = EntityUtil.GetColumn(expression.Expression.Type, f => f.CSharpName == name)?.ColumnName ?? name;
-            if (_singleTable)
+            if (!_singleTable)
             {
                 var tableName = EntityUtil.GetTable(expression.Expression.Type).TableName;
                 columnName = string.Format("{0}.{1}", tableName, columnName);
@@ -197,7 +197,7 @@ namespace Dapper.Extension.Util
                     }
                     else
                     {
-                        column = BuildExpression(argument, param);
+                        column = BuildExpression(argument, param, singleTable);
                     }
                     var name = initExpression.Bindings[i].Member.Name;
                     columns.Add(name, column);
@@ -220,7 +220,7 @@ namespace Dapper.Extension.Util
                     }
                     else
                     {
-                        columnName = BuildExpression(argument, param);
+                        columnName = BuildExpression(argument, param,singleTable);
                     }
                     var name = newExpression.Members[i].Name;
                     columns.Add(name, columnName);
@@ -241,7 +241,7 @@ namespace Dapper.Extension.Util
             else
             {
                 var name = string.Format("COLUMN0");
-                var columnName = BuildExpression(expression, param);
+                var columnName = BuildExpression(expression, param, singleTable);
                 columns.Add(name, columnName);
             }
             return columns;
@@ -269,7 +269,7 @@ namespace Dapper.Extension.Util
             else
             {
                 var name = string.Format("COLUMN0");
-                var build = BuildExpression(expression, param);
+                var build = BuildExpression(expression, param, singleTable);
                 column.Add(name, build);
                 return column;
             }
@@ -298,9 +298,13 @@ namespace Dapper.Extension.Util
                     {
                         value = value.GetType().GetField(item).GetValue(value);
                     }
-                    else
+                    else if(value.GetType().GetProperty(item)!=null)
                     {
                         value = value.GetType().GetProperty(item).GetValue(value);
+                    }
+                    else
+                    {
+                        return value;
                     }
                 }
                 return value;

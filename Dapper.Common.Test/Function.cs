@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Dapper.Extension.Test
 {
-    public class DbFun
+    public static class DbFun
     {
         [Function]
         public static long? Count([Parameter] string expr, object column)

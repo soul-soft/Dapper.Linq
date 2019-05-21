@@ -16,6 +16,7 @@ namespace Dapper.Extension
         List<Logger> Loggers { get; }
         IQueryable<T> From<T>() where T : class;
         IQueryable<T1, T2> From<T1, T2>() where T1 : class where T2 : class;
+        IQueryable<T1, T2, T3> From<T1, T2, T3>() where T1 : class where T2 : class where T3 : class;
         GridReader QueryMultiple(string sql, object param = null, int? commandTimeout = null, CommandType text = CommandType.Text);
         int Execute(string sql, object param = null, int? commandTimeout = null, CommandType text = CommandType.Text);
         T ExecuteScalar<T>(string sql, object param = null, int? commandTimeout = null, CommandType text = CommandType.Text);
@@ -117,7 +118,19 @@ namespace Dapper.Extension
             }
             if (SourceType == DataSourceType.SQLSERVER)
             {
-                //return new SqlServer.SqlQuery<T>(this);
+                return new SqlQuery<T1, T2>(this);
+            }
+            throw new NotImplementedException();
+        }
+        public IQueryable<T1, T2, T3> From<T1, T2, T3>() where T1 : class where T2 : class where T3 : class
+        {
+            if (SourceType == DataSourceType.MYSQL)
+            {
+                return new MysqlQuery<T1, T2, T3>(this);
+            }
+            if (SourceType == DataSourceType.SQLSERVER)
+            {
+                return new SqlQuery<T1, T2, T3>(this);
             }
             throw new NotImplementedException();
         }
@@ -265,7 +278,19 @@ namespace Dapper.Extension
             }
             if (SourceType == DataSourceType.SQLSERVER)
             {
-                //return new SqlQuery<T1, T2>(this);
+                return new SqlQuery<T1, T2>(this);
+            }
+            throw new NotImplementedException();
+        }
+        public IQueryable<T1, T2, T3> From<T1, T2, T3>() where T1 : class where T2 : class where T3 : class
+        {
+            if (SourceType == DataSourceType.MYSQL)
+            {
+                return new MysqlQuery<T1, T2, T3>(this);
+            }
+            if (SourceType == DataSourceType.SQLSERVER)
+            {
+                return new SqlQuery<T1, T2, T3>(this);
             }
             throw new NotImplementedException();
         }

@@ -266,10 +266,6 @@ namespace Dapper.Extension
         public T Single(string columns = null, bool buffered = true, int? timeout = null)
         {
             Take(1);
-            if (columns != null)
-            {
-                _columnBuffer.Append(columns);
-            }
             return Select(columns, buffered, timeout).SingleOrDefault();
         }
         public TResult Single<TResult>(string columns = null, bool buffered = true, int? timeout = null)
@@ -395,8 +391,8 @@ namespace Dapper.Extension
                 var colums = _table.Columns.FindAll(f => f.ColumnKey != ColumnKey.Primary && !_filters.Exists(e => e == f.ColumnName));
                 var sql = string.Format("UPDATE {0} SET {1} WHERE {2}",
                     _table.TableName,
-                    string.Join(",", colums.Select(s => string.Format("{0}=@{1}", s.ColumnName, s.CSharpName))),
-                    string.Format("{0}=@{1}", keyColumn.ColumnName, keyColumn.CSharpName)
+                    string.Join(",", colums.Select(s => string.Format("{0} = @{1}", s.ColumnName, s.CSharpName))),
+                    string.Format("{0} = @{1}", keyColumn.ColumnName, keyColumn.CSharpName)
                     );
                 return sql;
             }
@@ -556,7 +552,6 @@ namespace Dapper.Extension
         #endregion
 
         #region implement
-
         public IQueryable<T1, T2> Distinct(bool condition = true)
         {
             if (condition)
@@ -565,7 +560,6 @@ namespace Dapper.Extension
             }
             return this;
         }
-
         public IQueryable<T1, T2> GroupBy(string expression, bool condition = true)
         {
             if (condition)
@@ -580,7 +574,7 @@ namespace Dapper.Extension
         }
         public IQueryable<T1, T2> GroupBy<TResult>(Expression<Func<T1, T2, TResult>> expression, bool condition = true)
         {
-            GroupBy(string.Join(",", ExpressionUtil.BuildColumns(expression, _param).Select(s => s.Value)), condition);
+            GroupBy(string.Join(",", ExpressionUtil.BuildColumns(expression, _param, false).Select(s => s.Value)), condition);
             return this;
         }
         public IQueryable<T1, T2> Having(string expression, bool condition = true)
@@ -593,7 +587,7 @@ namespace Dapper.Extension
         }
         public IQueryable<T1, T2> Having(Expression<Func<T1, T2, bool>> expression, bool condition = true)
         {
-            Having(string.Join(",", ExpressionUtil.BuildColumns(expression, _param).Select(s => s.Value)), condition);
+            Having(string.Join(",", ExpressionUtil.BuildColumns(expression, _param, false).Select(s => s.Value)), condition);
             return this;
         }
         public IQueryable<T1, T2> OrderBy(string orderBy, bool condition = true)
@@ -610,12 +604,12 @@ namespace Dapper.Extension
         }
         public IQueryable<T1, T2> OrderBy<TResult>(Expression<Func<T1, T2, TResult>> expression, bool condition = true)
         {
-            OrderBy(string.Join(",", ExpressionUtil.BuildColumns(expression, _param).Select(s => string.Format("{0} ASC", s.Value))), condition);
+            OrderBy(string.Join(",", ExpressionUtil.BuildColumns(expression, _param, false).Select(s => string.Format("{0} ASC", s.Value))), condition);
             return this;
         }
         public IQueryable<T1, T2> OrderByDescending<TResult>(Expression<Func<T1, T2, TResult>> expression, bool condition = true)
         {
-            OrderBy(string.Join(",", ExpressionUtil.BuildColumns(expression, _param).Select(s => string.Format("{0} DESC", s.Value))), condition);
+            OrderBy(string.Join(",", ExpressionUtil.BuildColumns(expression, _param, false).Select(s => string.Format("{0} DESC", s.Value))), condition);
             return this;
         }
         public IQueryable<T1, T2> Page(int index, int count, out long total, bool condition = true)
@@ -657,23 +651,8 @@ namespace Dapper.Extension
         }
         public IQueryable<T1, T2> Where(Expression<Func<T1, T2, bool>> expression, bool condition = true)
         {
-            Where(ExpressionUtil.BuildExpression(expression, _param), null, condition);
+            Where(ExpressionUtil.BuildExpression(expression, _param, false), null, condition);
             return this;
-        }
-        public TResult Single<TResult>(string columns = null, bool buffered = true, int? timeout = null)
-        {
-            Take(1);
-            if (columns != null)
-            {
-                _columnBuffer.Append(columns);
-            }
-            return Select<TResult>(columns, buffered, timeout).SingleOrDefault();
-        }
-        public TResult Single<TResult>(Expression<Func<T1, T2, TResult>> columns, bool buffered = true, int? timeout = null)
-        {
-            var columnstr = string.Join(",",
-              ExpressionUtil.BuildColumns(columns, _param).Select(s => string.Format("{0} AS {1}", s.Value, s.Key)));
-            return Single<TResult>(columnstr, buffered, timeout);
         }
         public IEnumerable<TResult> Select<TResult>(string columns = null, bool buffered = true, int? timeout = null)
         {
@@ -691,7 +670,7 @@ namespace Dapper.Extension
         public IEnumerable<TResult> Select<TResult>(Expression<Func<T1, T2, TResult>> columns, bool buffered = true, int? timeout = null)
         {
             var columstr = string.Join(",",
-                ExpressionUtil.BuildColumns(columns, _param).Select(s => string.Format("{0} AS {1}", s.Value, s.Key)));
+                ExpressionUtil.BuildColumns(columns, _param, false).Select(s => string.Format("{0} AS {1}", s.Value, s.Key)));
             return Select<TResult>(columstr, buffered, timeout);
         }
         public long Count(string columns = null, bool codition = true, int? timeout = null)
@@ -710,33 +689,6 @@ namespace Dapper.Extension
             }
             return 0;
         }
-        public long Count<TResult>(Expression<Func<T1, T2, TResult>> expression, bool condition = true, int? timeout = null)
-        {
-            return Count(string.Join(",", ExpressionUtil.BuildColumns(expression, _param).Select(s => s.Value)), condition, timeout);
-        }
-        public bool Exists(bool condition = true, int? timeout = null)
-        {
-            if (condition && _session != null)
-            {
-                var sql = BuildExists();
-                return _session.ExecuteScalar<int>(sql, _param, timeout) > 0;
-            }
-            return false;
-        }
-        public TResult Sum<TResult>(Expression<Func<T1, T2, TResult>> expression, bool condition = true, int? timeout = null)
-        {
-            if (condition)
-            {
-                //var column = ExpressionUtil.BuildColumn<T>(expression, _param).First();
-                //_sumBuffer.AppendFormat("{0}", column.Value);
-                //if (_session != null)
-                //{
-                //    var sql = BuildSum();
-                //    return _session.ExecuteScalar<TResult>(sql, _param, timeout);
-                //}
-            }
-            return default(TResult);
-        }
         public IQueryable<T1, T2> Join(string expression)
         {
             if (_join.Length > 0)
@@ -746,10 +698,9 @@ namespace Dapper.Extension
             _join.Append(expression);
             return this;
         }
-
         public IQueryable<T1, T2> Join(Expression<Func<T1, T2, bool>> expression, JoinType join = JoinType.Inner)
         {
-            var onExpression = ExpressionUtil.BuildExpression(expression, _param);
+            var onExpression = ExpressionUtil.BuildExpression(expression, _param, false);
             var table1Name = EntityUtil.GetTable<T1>().TableName;
             var table2Name = EntityUtil.GetTable<T2>().TableName;
             var joinType = string.Format("{0} JOIN", join.ToString().ToUpper());
@@ -767,7 +718,6 @@ namespace Dapper.Extension
         public StringBuilder _orderBuffer = new StringBuilder();
         public StringBuilder _distinctBuffer = new StringBuilder();
         public StringBuilder _countBuffer = new StringBuilder();
-        public StringBuilder _sumBuffer = new StringBuilder();
         public StringBuilder _join = new StringBuilder();
         public int? pageIndex = null;
         public int? pageCount = null;
@@ -852,11 +802,217 @@ namespace Dapper.Extension
                 return sqlBuffer.ToString();
             }
         }
-        public string BuildExists()
+        #endregion
+    }
+    public class MysqlQuery<T1, T2, T3> : IQueryable<T1, T2, T3> where T1 : class where T2 : class where T3 : class
+    {
+        #region constructor
+        public ISession _session { get; }
+        public MysqlQuery(ISession session = null)
         {
-            var sqlBuffer = new StringBuilder();
+            _session = session;
+            _param = new Dictionary<string, object>();
+        }
+        public MysqlQuery(Dictionary<string, object> param)
+        {
+            _param = param;
+        }
+        #endregion
 
-            sqlBuffer.AppendFormat("SELECT 1 FROM {0}", _join);
+        #region implement
+        public IQueryable<T1, T2, T3> Distinct(bool condition = true)
+        {
+            if (condition)
+            {
+                _distinctBuffer.Append("DISTINCT");
+            }
+            return this;
+        }
+        public IQueryable<T1, T2, T3> GroupBy(string expression, bool condition = true)
+        {
+            if (condition)
+            {
+                if (_groupBuffer.Length > 0)
+                {
+                    _groupBuffer.Append(",");
+                }
+                _groupBuffer.Append(expression);
+            }
+            return this;
+        }
+        public IQueryable<T1, T2, T3> GroupBy<TResult>(Expression<Func<T1, T2, T3, TResult>> expression, bool condition = true)
+        {
+            GroupBy(string.Join(",", ExpressionUtil.BuildColumns(expression, _param, false).Select(s => s.Value)), condition);
+            return this;
+        }
+        public IQueryable<T1, T2, T3> Having(string expression, bool condition = true)
+        {
+            if (condition)
+            {
+                _havingBuffer.Append(expression);
+            }
+            return this;
+        }
+        public IQueryable<T1, T2, T3> Having(Expression<Func<T1, T2, T3, bool>> expression, bool condition = true)
+        {
+            Having(string.Join(",", ExpressionUtil.BuildColumns(expression, _param, false).Select(s => s.Value)), condition);
+            return this;
+        }
+        public IQueryable<T1, T2, T3> OrderBy(string orderBy, bool condition = true)
+        {
+            if (condition)
+            {
+                if (_orderBuffer.Length > 0)
+                {
+                    _orderBuffer.Append(",");
+                }
+                _orderBuffer.Append(orderBy);
+            }
+            return this;
+        }
+        public IQueryable<T1, T2, T3> OrderBy<TResult>(Expression<Func<T1, T2, T3, TResult>> expression, bool condition = true)
+        {
+            OrderBy(string.Join(",", ExpressionUtil.BuildColumns(expression, _param, false).Select(s => string.Format("{0} ASC", s.Value))), condition);
+            return this;
+        }
+        public IQueryable<T1, T2, T3> OrderByDescending<TResult>(Expression<Func<T1, T2, T3, TResult>> expression, bool condition = true)
+        {
+            OrderBy(string.Join(",", ExpressionUtil.BuildColumns(expression, _param, false).Select(s => string.Format("{0} DESC", s.Value))), condition);
+            return this;
+        }
+        public IQueryable<T1, T2, T3> Page(int index, int count, out long total, bool condition = true)
+        {
+            total = 0;
+            if (condition)
+            {
+                Skip(count * (index - 1), count);
+                total = Count();
+            }
+            return this;
+        }
+        public IQueryable<T1, T2, T3> Skip(int index, int count, bool condition = true)
+        {
+            if (condition)
+            {
+                pageIndex = index;
+                pageCount = count;
+            }
+            return this;
+        }
+        public IQueryable<T1, T2, T3> Take(int count)
+        {
+            Skip(0, count);
+            return this;
+        }
+        public IQueryable<T1, T2, T3> Where(string expression, Action<Dictionary<string, object>> action = null, bool condition = true)
+        {
+            if (condition)
+            {
+                if (_whereBuffer.Length > 0)
+                {
+                    _whereBuffer.AppendFormat(" {0} ", ExtensionUtil.GetOperator(ExpressionType.AndAlso));
+                }
+                action?.Invoke(_param);
+                _whereBuffer.Append(expression);
+            }
+            return this;
+        }
+        public IQueryable<T1, T2, T3> Where(Expression<Func<T1, T2, T3, bool>> expression, bool condition = true)
+        {
+            Where(ExpressionUtil.BuildExpression(expression, _param, false), null, condition);
+            return this;
+        }
+        public IEnumerable<TResult> Select<TResult>(string columns = null, bool buffered = true, int? timeout = null)
+        {
+            if (columns != null)
+            {
+                _columnBuffer.Append(columns);
+            }
+            if (_session != null)
+            {
+                var sql = BuildSelect();
+                return _session.Query<TResult>(sql, _param, buffered, timeout);
+            }
+            return new List<TResult>();
+        }
+        public IEnumerable<TResult> Select<TResult>(Expression<Func<T1, T2, T3, TResult>> columns, bool buffered = true, int? timeout = null)
+        {
+            var columstr = string.Join(",",
+                ExpressionUtil.BuildColumns(columns, _param, false).Select(s => string.Format("{0} AS {1}", s.Value, s.Key)));
+            return Select<TResult>(columstr, buffered, timeout);
+        }
+        public long Count(string columns = null, bool codition = true, int? timeout = null)
+        {
+            if (codition)
+            {
+                if (columns != null)
+                {
+                    _columnBuffer.Append(columns);
+                }
+                if (_session != null)
+                {
+                    var sql = BuildCount();
+                    return _session.ExecuteScalar<long>(sql, _param, timeout);
+                }
+            }
+            return 0;
+        }
+        public IQueryable<T1, T2, T3> Join(string expression)
+        {
+            if (_join.Length > 0)
+            {
+                _join.Append(" ");
+            }
+            _join.Append(expression);
+            return this;
+        }
+        public IQueryable<T1, T2, T3> Join<E1, E2>(Expression<Func<E1, E2, bool>> expression, JoinType join= JoinType.Inner) where E1 : class where E2 : class
+        {
+            var onExpression = ExpressionUtil.BuildExpression(expression, _param, false);
+            var table1Name = EntityUtil.GetTable<E1>().TableName;
+            var table2Name = EntityUtil.GetTable<E2>().TableName;
+            var joinType = string.Format("{0} JOIN", join.ToString().ToUpper());
+            if (_tables.Exists(a => table1Name == a || table2Name == a))
+            {
+                Join(string.Format("{0} {1} {2} ON {3}", table1Name, joinType, table2Name, onExpression));
+            }
+            else if (_tables.Exists(a => table1Name == a))
+            {
+                Join(string.Format("{0} {1} ON {2}", joinType, table2Name, onExpression));
+            }
+            else
+            {
+                Join(string.Format("{0} {1} ON {2}", joinType, table1Name, onExpression));
+            }
+            return this;
+        }
+        #endregion
+
+        #region property
+        public Dictionary<string, object> _param { get; set; }
+        public StringBuilder _columnBuffer = new StringBuilder();
+        public StringBuilder _havingBuffer = new StringBuilder();
+        public StringBuilder _whereBuffer = new StringBuilder();
+        public StringBuilder _groupBuffer = new StringBuilder();
+        public StringBuilder _orderBuffer = new StringBuilder();
+        public StringBuilder _distinctBuffer = new StringBuilder();
+        public StringBuilder _countBuffer = new StringBuilder();
+        public StringBuilder _join = new StringBuilder();
+        public List<string> _tables = new List<string>();
+        public int? pageIndex = null;
+        public int? pageCount = null;
+        #endregion
+
+        #region build
+        public string BuildSelect()
+        {
+            var sqlBuffer = new StringBuilder("SELECT");
+            if (_distinctBuffer.Length > 0)
+            {
+                sqlBuffer.AppendFormat(" {0}", _distinctBuffer);
+            }
+            sqlBuffer.AppendFormat(" {0}", _columnBuffer);
+            sqlBuffer.AppendFormat(" FROM {0}", _join);
             if (_whereBuffer.Length > 0)
             {
                 sqlBuffer.AppendFormat(" WHERE {0}", _whereBuffer);
@@ -869,18 +1025,62 @@ namespace Dapper.Extension
             {
                 sqlBuffer.AppendFormat(" HAVING {0}", _havingBuffer);
             }
-            var sql = string.Format("SELECT EXISTS({0})", sqlBuffer);
+            if (_orderBuffer.Length > 0)
+            {
+                sqlBuffer.AppendFormat(" ORDER BY {0}", _orderBuffer);
+            }
+            if (pageIndex != null && pageCount != null)
+            {
+                sqlBuffer.AppendFormat(" LIMIT {0},{1}", pageIndex, pageCount);
+            }
+            var sql = sqlBuffer.ToString();
             return sql;
         }
-        public string BuildSum()
+        public string BuildCount()
         {
-            var sqlBuffer = new StringBuilder();
-            sqlBuffer.AppendFormat("SELECT SUM({0}) FROM {1}", _sumBuffer, _join);
+            var sqlBuffer = new StringBuilder("SELECT");
+            if (_columnBuffer.Length > 0)
+            {
+
+                sqlBuffer.Append(" COUNT(");
+                if (_distinctBuffer.Length > 0)
+                {
+                    sqlBuffer.AppendFormat("{0} ", _distinctBuffer);
+                }
+                sqlBuffer.AppendFormat("{0})", _columnBuffer);
+            }
+            else
+            {
+                if (_groupBuffer.Length > 0)
+                {
+                    sqlBuffer.Append(" 1 AS COUNT");
+                }
+                else
+                {
+                    sqlBuffer.AppendFormat(" COUNT(1)");
+                }
+            }
+            sqlBuffer.AppendFormat(" FROM {0}", _join);
             if (_whereBuffer.Length > 0)
             {
                 sqlBuffer.AppendFormat(" WHERE {0}", _whereBuffer);
             }
-            return sqlBuffer.ToString();
+            if (_groupBuffer.Length > 0)
+            {
+                sqlBuffer.AppendFormat(" GROUP BY {0}", _groupBuffer);
+            }
+            if (_havingBuffer.Length > 0)
+            {
+                sqlBuffer.AppendFormat(" HAVING {0}", _havingBuffer);
+            }
+            if (_groupBuffer.Length > 0)
+            {
+                return string.Format("SELECT COUNT(1) FROM ({0}) AS T", sqlBuffer);
+            }
+            else
+            {
+                return sqlBuffer.ToString();
+            }
         }
         #endregion
     }

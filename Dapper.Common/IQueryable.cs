@@ -62,14 +62,30 @@ namespace Dapper.Extension
         IQueryable<T1, T2> Having(string expression, bool condition = true);
         IQueryable<T1, T2> Having(Expression<Func<T1, T2, bool>> expression, bool condition = true);
         IQueryable<T1, T2> Distinct(bool condition = true);
-        TResult Single<TResult>(string columns = null, bool buffered = true, int? timeout = null);
-        TResult Single<TResult>(Expression<Func<T1, T2, TResult>> columns, bool buffered = true, int? timeout = null);
         IEnumerable<TResult> Select<TResult>(string colums = null, bool buffered = true, int? timeout = null);
         IEnumerable<TResult> Select<TResult>(Expression<Func<T1, T2, TResult>> columns, bool buffered = true, int? timeout = null);
-        bool Exists(bool condition = true, int? timeout = null);
         long Count(string columns = null, bool condition = true, int? timeout = null);
-        long Count<TResult>(Expression<Func<T1, T2, TResult>> expression, bool condition = true, int? timeout = null);
-        TResult Sum<TResult>(Expression<Func<T1, T2, TResult>> expression, bool condition = true, int? timeout = null);
+    }
+    public interface IQueryable<T1, T2, T3>
+    {
+        IQueryable<T1, T2, T3> Join(string expression);
+        IQueryable<T1, T2, T3> Join<E1, E2>(Expression<Func<E1, E2, bool>> expression, JoinType join = JoinType.Inner) where E1 : class where E2 : class;
+        IQueryable<T1, T2, T3> GroupBy(string expression, bool condition = true);
+        IQueryable<T1, T2, T3> GroupBy<TResult>(Expression<Func<T1, T2, T3, TResult>> expression, bool condition = true);
+        IQueryable<T1, T2, T3> Where(string expression, Action<Dictionary<string, object>> action = null, bool condition = true);
+        IQueryable<T1, T2, T3> Where(Expression<Func<T1, T2, T3, bool>> expression, bool condition = true);
+        IQueryable<T1, T2, T3> OrderBy(string orderBy, bool condition = true);
+        IQueryable<T1, T2, T3> OrderBy<TResult>(Expression<Func<T1, T2, T3, TResult>> expression, bool condition = true);
+        IQueryable<T1, T2, T3> OrderByDescending<TResult>(Expression<Func<T1, T2, T3, TResult>> expression, bool condition = true);
+        IQueryable<T1, T2, T3> Skip(int index, int count, bool condition = true);
+        IQueryable<T1, T2, T3> Take(int count);
+        IQueryable<T1, T2, T3> Page(int index, int count, out long total, bool condition = true);
+        IQueryable<T1, T2, T3> Having(string expression, bool condition = true);
+        IQueryable<T1, T2, T3> Having(Expression<Func<T1, T2, T3, bool>> expression, bool condition = true);
+        IQueryable<T1, T2, T3> Distinct(bool condition = true);
+        IEnumerable<TResult> Select<TResult>(string colums = null, bool buffered = true, int? timeout = null);
+        IEnumerable<TResult> Select<TResult>(Expression<Func<T1, T2, T3, TResult>> columns, bool buffered = true, int? timeout = null);
+        long Count(string columns = null, bool condition = true, int? timeout = null);
     }
 
     public enum LockType

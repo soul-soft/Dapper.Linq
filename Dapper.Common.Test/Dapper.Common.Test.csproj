@@ -68,30 +68,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Function.cs" />
-    <Compile Include="Generation\MYSQL_Model.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>MYSQL_Model.tt</DependentUpon>
-    </Compile>
     <Compile Include="UnitTest1.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Generation\MVC_Model.tt">
-      <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>MVC_Model1.cs</LastGenOutput>
-    </Content>
-    <Content Include="Generation\MYSQL_Model.tt">
-      <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>MYSQL_Model.cs</LastGenOutput>
-    </Content>
-    <Content Include="Generation\SQL_MODEL.tt">
-      <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>SQL_MODEL.cs</LastGenOutput>
-    </Content>
   </ItemGroup>
   <ItemGroup>
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
