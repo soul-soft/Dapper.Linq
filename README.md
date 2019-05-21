@@ -259,6 +259,19 @@ var list = session.From<Member>()
  //从下标未5开始获取十个，等价于MYSQL中的LIMIT
  var list = session.From<Member>().Skip(5,10).Select();
 ```
+#### Join
+
+```
+var list = session.From<MemberBill, Member, MemberOrder>()
+        .Join<Member,MemberBill>((a, b) => a.Id == b.MemberId)
+        .Join<Member, MemberOrder>((a, b) => a.Id == b.MemberId,JoinType.Left)
+        .Select((a, b, c) => new
+        {
+            b.Id,
+            b.NickName,
+            c.OrderName
+        });
+```
 
 #### Mapper
 ```
