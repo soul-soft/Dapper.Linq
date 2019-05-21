@@ -4,3 +4,4 @@ TestResult
 package
 Dapper.Common.Test/bin
 Dapper.Common.Test/obj
+.vs
