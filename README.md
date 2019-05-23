@@ -141,7 +141,7 @@ var row = session.From<Member>()
 ```
 
 #### Transaction
-* 如果不使用事务:推荐使用AOP完成，不懂加群
+* 如果不使用事务
  ```
   using(var session = SessionFactory.GetSession())
   {
@@ -151,7 +151,7 @@ var row = session.From<Member>()
     });
   }
  ```
-* 如果使用事务
+* 如果使用事务:推荐使用AOP完成，不懂加群
 ```
   using(vaar session = SessionFactory.GetSession())
   {
