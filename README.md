@@ -203,12 +203,19 @@ var total = session.From<Member>().Sum(s=>s.Balace*10*s.Id);
 ```
 #### Single
 
+
+### Filter
+
+```
+Filter 在Select,Insert,Update,时可以过滤掉不要的字段
+
+```
 ```
 var member = session.From<Member>().Where(a=>a.Id==1).Single();
 
 var balance = session.From<Member>().Where(a=>a.Id==1).Single(s=>s.Balace);
 
-var info = session.From<Member>().Where().Single(s=>new {s.NickName,s.Gander});
+var info = session.From<Member>().Where(a=>a.Id==2).Single(s=>new {s.NickName,s.Gander});
 
 ```
 
