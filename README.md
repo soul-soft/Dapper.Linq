@@ -201,8 +201,6 @@ var total = session.From<Member>().Where(a=>a.Id>0).Sum(s=>s.Balace);
 var total = session.From<Member>().Sum(s=>s.Balace*10*s.Id);
 
 ```
-#### Single
-
 
 ### Filter
 
@@ -210,6 +208,9 @@ var total = session.From<Member>().Sum(s=>s.Balace*10*s.Id);
 Filter 在Select,Insert,Update,时可以过滤掉不要的字段
 
 ```
+
+#### Single
+
 ```
 var member = session.From<Member>().Where(a=>a.Id==1).Single();
 
