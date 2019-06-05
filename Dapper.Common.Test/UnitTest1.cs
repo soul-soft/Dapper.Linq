@@ -38,14 +38,15 @@ namespace Dapper.Extension.Test
             });
 
             var session = SessionFactory.GetSession("mysql");
-            session.Open(true);
+            session.Open(false);
             try
             {
                 var ids = new int[] { 1,2,3,4};
-                var list = session.From<Member>()
-                    .Where(a=>a.Id.In(ids.ToList().Where(f=>f<4)))
-                    .Select();
-                   
+                var f = new Member() { NickName="fff,cc"};
+                session.From<Member>()
+                   .Where(a => a.NickName.In(f.NickName.Split(',')))
+                   .Select();
+                session.Close();
             }
             catch (Exception e)
             {

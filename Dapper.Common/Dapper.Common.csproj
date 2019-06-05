@@ -2,13 +2,13 @@
 
   <PropertyGroup>
     <TargetFrameworks>net45;netstandard2.0</TargetFrameworks>
-    <Version>1.5.0.0</Version>
+    <Version>1.6.0.0</Version>
     <Description>dapper,linq to sql,mysql,sqlserver,function</Description>
     <PackageProjectUrl>https://github.com/1448376744/Dapper.Common</PackageProjectUrl>
     <RepositoryUrl>https://github.com/1448376744/Dapper.Common</RepositoryUrl>
     <PackageTags>linq to sql</PackageTags>
-    <AssemblyVersion>1.5.0.0</AssemblyVersion>
-    <FileVersion>1.5.0.0</FileVersion>
+    <AssemblyVersion>1.6.0.0</AssemblyVersion>
+    <FileVersion>1.6.0.0</FileVersion>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <SignAssembly>false</SignAssembly>
     <Copyright>mammothcode</Copyright>

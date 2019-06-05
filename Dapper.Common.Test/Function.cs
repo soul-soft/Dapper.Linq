@@ -33,5 +33,10 @@ namespace Dapper.Extension.Test
         {
             return DateTime.Now;
         }
+        [Function]
+        public static string CONCAT(string objs,object obj)
+        {
+            return string.Empty;
+        }
     }
 }
