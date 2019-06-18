@@ -377,7 +377,7 @@ public static CustomExtension
 
 ```
 //1.
-  Expression<Member,boll> expr = a=>a.NickName=='%132%' || a.Id.In(new []{1,8});
+  Expression<Member,bool> expr = a=>a.NickName=='%132%' || a.Id.In(new []{1,8});
   var param = new Dictionary<string,>
   var exprstr = ExpressionUtil.BuildExpression(expr,param);
   var lsit = session.From<Member>().Where(exprestr).Select();
