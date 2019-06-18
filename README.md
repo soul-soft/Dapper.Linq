@@ -2,6 +2,7 @@
 
 #### 性能:基于Dapper
 * Dapper性能：[https://github.com/StackExchange/Dapper/blob/master/Readme.md]
+* 博客园：[https://www.cnblogs.com/chaeyeon/p/11028480.html]
 * Dapper.Common SQL构建性能：
 * PS：常量直接获取，如果是变量将采用反射，否则将采用动态编译，性能：常量>变量>函数
 ```
@@ -376,7 +377,7 @@ public static CustomExtension
 
 ```
 //1.
-  Expression<Member,boll> expr = a=>a.NickName=='%132%' || a.Id.In(new []{1,8});
+  Expression<Member,bool> expr = a=>a.NickName=='%132%' || a.Id.In(new []{1,8});
   var param = new Dictionary<string,>
   var exprstr = ExpressionUtil.BuildExpression(expr,param);
   var lsit = session.From<Member>().Where(exprestr).Select();
