@@ -353,29 +353,35 @@ session.From<Member>().GroupBy(g=>g.NickName).Select(s=>new
 ```
  //该策略可适用于百万级别，单表条件查询
 //思想:先只查满足条件的id，并分页，然后where in (idArray)查详情
-public static Dapper.Extension.IQueryable<T> SPage<T>(this Dapper.Extension.IQueryable<T> queryable, int index, int count, out long total) where T : class, new()
-{
-    total = 0;
-    //对mysql进行扩展
-    if (queryable is MysqlQuery<T> mysqlQuery)
-    {
-        total = queryable.Count();
-        var table = EntityUtil.GetTable<T>();
-        var idName = table.Columns.Find(f => f.ColumnKey == ColumnKey.Primary).ColumnName;
-        //先只查询主键字段并分页
-        var where = mysqlQuery._whereBuffer.Length > 0 ? "where " + mysqlQuery._whereBuffer : "";
-        var sql = string.Format("select {0} from {1} {2} limit {3},{4}", idName, table.TableName, where, (index - 1) * count, count);
-        var idArray = mysqlQuery._session.Query<long>(sql, mysqlQuery._param);
-        //重置
-        mysqlQuery._whereBuffer.Clear();
-        //新建条件
-        if (idArray.Count() > 0)
-        {
-            queryable.Where(string.Format("{0} in @idArray", idName), p => p.Add("@idArray", idArray));
-        }
-    }
-    return queryable;
-}
+ public static Dapper.Extension.IQueryable<T> SPage<T>(this Dapper.Extension.IQueryable<T> queryable, int index, int count, out long total) where T : class, new()
+  {
+      total = 0;
+      if (index <= 90000)
+      {
+          //采用limit
+          queryable.Page(index, count, out total);
+      }
+      //对mysql进行扩展
+      else if (queryable is MysqlQuery<T> mysqlQuery)
+      {
+          total = queryable.Count();
+          var table = EntityUtil.GetTable<T>();
+          var idName = table.Columns.Find(f => f.ColumnKey == ColumnKey.Primary).ColumnName;
+          //先只查询主键字段并分页
+          var where = mysqlQuery._whereBuffer.Length > 0 ? "where " + mysqlQuery._whereBuffer : "";
+          var orderby = mysqlQuery._orderBuffer.Length > 0 ? "order by" + mysqlQuery._orderBuffer : "";
+          var sql = string.Format("select {0} from {1} {2} {3} limit {4},{5}", idName, table.TableName, where, orderby, (index - 1) * count, count);
+          var idArray = mysqlQuery._session.Query<long>(sql, mysqlQuery._param);
+          //重置
+          mysqlQuery._whereBuffer.Clear();
+          //新建条件
+          if (idArray.Count() > 0)
+          {
+              queryable.Where(string.Format("{0} in @idArray", idName), p => p.Add("@idArray", idArray));
+          }
+      }
+      return queryable;
+  }
 
 
 var row = Session.From<Member>()
