@@ -349,29 +349,38 @@ session.From<Member>().GroupBy(g=>g.NickName).Select(s=>new
             GoodsCount = DbFun.Sum(s.GoodsNum)
         });
 ```
-#### 自定义分页
+#### 自定义分页-该策略可适用于百万级别
 ```
-  public static IQueryable<T> SPage<T>(this IQueryable<T> queryable, int page,int size,out long total) where T : class, new()
-  {
-        //对mysql进行扩展
-        total = 0;
-        if (queryable is MysqlQuery<T> mysqlQuery)
+ //该策略可适用于百万级别，单表条件查询
+//思想:先只查满足条件的id，并分页，然后where in (idArray)查详情
+public static Dapper.Extension.IQueryable<T> SPage<T>(this Dapper.Extension.IQueryable<T> queryable, int index, int count, out long total) where T : class, new()
+{
+    total = 0;
+    //对mysql进行扩展
+    if (queryable is MysqlQuery<T> mysqlQuery)
+    {
+        total = queryable.Count();
+        var table = EntityUtil.GetTable<T>();
+        var idName = table.Columns.Find(f => f.ColumnKey == ColumnKey.Primary).ColumnName;
+        //先只查询主键字段并分页
+        var where = mysqlQuery._whereBuffer.Length > 0 ? "where " + mysqlQuery._whereBuffer : "";
+        var sql = string.Format("select {0} from {1} {2} limit {3},{4}", idName, table.TableName, where, (index - 1) * count, count);
+        var idArray = mysqlQuery._session.Query<long>(sql, mysqlQuery._param);
+        //重置
+        mysqlQuery._whereBuffer.Clear();
+        //新建条件
+        if (idArray.Count() > 0)
         {
-            total = queryable.Count();
-            var table = EntityUtil.GetTable<T>();
-            var idname = table.Columns.Find(f => f.ColumnKey == ColumnKey.Primary).ColumnName;
-            mysqlQuery.Where(string.Format("({0} >= (select {0} from {1} where {2} order by {0} limit {3}))", idname, table.TableName, mysqlQuery._whereBuffer, page));
-            mysqlQuery.Take(size);
+            queryable.Where(string.Format("{0} in @idArray", idName), p => p.Add("@idArray", idArray));
         }
-        return queryable;
     }
-    use:
-    var row = Session.From<Member>()
-               .Where(a => a.NickName.Like("zs"))
-               .SPage(800,30,out long total)
-               .Select();
-    sql:
-    SELECT `id` AS Id,`open_id` AS OpenId,`nick_name` AS NickName,`head_img` AS HeadImg,`balance` AS Balance,`parent_id` AS ParentId,`integral` AS Integral,`mobile` AS Mobile,`real_name` AS RealName,`order_mobile` AS OrderMobile,`shop_id` AS ShopId,`create_time` AS CreateTime FROM `member` WHERE (`nick_name` LIKE 'zs') AND (`id` >= (select `id` from `member` where (`nick_name` LIKE 'zs') order by `id` limit 800)) LIMIT 0,30
+    return queryable;
+}
+
+
+var row = Session.From<Member>()
+     .SPage(2,2,out long total)
+     .Select();
     
 ```
 #### Extension
