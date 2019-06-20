@@ -265,7 +265,7 @@ var list = session.From<Member>()
  ```
 #### Skip
 ```
- //从下标未5开始获取十个，等价于MYSQL中的LIMIT
+ //从下标为5开始获取十个，等价于MYSQL中的LIMIT
  var list = session.From<Member>().Skip(5,10).Select();
 ```
 #### Join
@@ -348,6 +348,31 @@ session.From<Member>().GroupBy(g=>g.NickName).Select(s=>new
             PriceRange = range,
             GoodsCount = DbFun.Sum(s.GoodsNum)
         });
+```
+#### 自定义分页
+```
+  public static IQueryable<T> SPage<T>(this IQueryable<T> queryable, int page,int size,out long total) where T : class, new()
+  {
+        //对mysql进行扩展
+        total = 0;
+        if (queryable is MysqlQuery<T> mysqlQuery)
+        {
+            total = queryable.Count();
+            var table = EntityUtil.GetTable<T>();
+            var idname = table.Columns.Find(f => f.ColumnKey == ColumnKey.Primary).ColumnName;
+            mysqlQuery.Where(string.Format("({0} >= (select {0} from {1} where {2} order by {0} limit {3}))", idname, table.TableName, mysqlQuery._whereBuffer, page));
+            mysqlQuery.Take(size);
+        }
+        return queryable;
+    }
+    use:
+    var row = Session.From<Member>()
+               .Where(a => a.NickName.Like("zs"))
+               .SPage(800,30,out long total)
+               .Select();
+    sql:
+    SELECT `id` AS Id,`open_id` AS OpenId,`nick_name` AS NickName,`head_img` AS HeadImg,`balance` AS Balance,`parent_id` AS ParentId,`integral` AS Integral,`mobile` AS Mobile,`real_name` AS RealName,`order_mobile` AS OrderMobile,`shop_id` AS ShopId,`create_time` AS CreateTime FROM `member` WHERE (`nick_name` LIKE 'zs') AND (`id` >= (select `id` from `member` where (`nick_name` LIKE 'zs') order by `id` limit 800)) LIMIT 0,30
+    
 ```
 #### Extension
 
