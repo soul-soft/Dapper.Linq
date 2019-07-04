@@ -187,7 +187,7 @@ namespace Dapper.Common
             {
                 if (_whereBuffer.Length > 0)
                 {
-                    _whereBuffer.AppendFormat(" {0} ", ExtensionUtil.GetOperator(ExpressionType.AndAlso));
+                    _whereBuffer.AppendFormat(" {0} ", Operator.GetOperator(ExpressionType.AndAlso));
                 }
                 action?.Invoke(_param);
                 _whereBuffer.Append(expression);
@@ -795,7 +795,7 @@ namespace Dapper.Common
             {
                 if (_whereBuffer.Length > 0)
                 {
-                    _whereBuffer.AppendFormat(" {0} ", ExtensionUtil.GetOperator(ExpressionType.AndAlso));
+                    _whereBuffer.AppendFormat(" {0} ", Operator.GetOperator(ExpressionType.AndAlso));
                 }
                 action?.Invoke(_param);
                 _whereBuffer.Append(expression);
@@ -1098,7 +1098,7 @@ namespace Dapper.Common
             {
                 if (_whereBuffer.Length > 0)
                 {
-                    _whereBuffer.AppendFormat(" {0} ", ExtensionUtil.GetOperator(ExpressionType.AndAlso));
+                    _whereBuffer.AppendFormat(" {0} ", Operator.GetOperator(ExpressionType.AndAlso));
                 }
                 action?.Invoke(_param);
                 _whereBuffer.Append(expression);

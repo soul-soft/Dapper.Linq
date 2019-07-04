@@ -6,7 +6,7 @@ using System.Text;
 
 namespace Dapper.Common
 {
-    public static class ExtensionUtil
+    public static class Operator
     {
         #region extension
         public static bool In(this ValueType column, IEnumerable enumerable)
@@ -49,6 +49,22 @@ namespace Dapper.Common
         {
             return true;
         }
+        public static bool LikeLeft(string column, string text)
+        {
+            return true;
+        }
+        public static bool NotLikeLeft(string column, string text)
+        {
+            return true;
+        }
+        public static bool LikeRight(string column, string text)
+        {
+            return true;
+        }
+        public static bool NotLikeRight(string column, string text)
+        {
+            return true;
+        }
         public static bool Regexp(string column, string regexp)
         {
             return true;
@@ -87,9 +103,13 @@ namespace Dapper.Common
                     operatorType = "NOT IN";
                     break;
                 case "Like":
+                case "LikeLeft":
+                case "LikeRight":
                     operatorType = "LIKE";
                     break;
                 case "NotLike":
+                case "NotLikeLeft":
+                case "NotLikeRight":
                     operatorType = "NOT LIKE";
                     break;
                 case "IsNull":

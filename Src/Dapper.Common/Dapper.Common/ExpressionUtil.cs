@@ -11,6 +11,7 @@ namespace Dapper.Common.Util
         private StringBuilder _build = new StringBuilder();
         private Dictionary<string, object> _param { get; set; }
         private string _paramName = "Name";
+        private string _operatorMethod { get; set; }
         private string _operator { get; set; }
         private bool _singleTable { get; set; }
         #endregion
@@ -30,28 +31,29 @@ namespace Dapper.Common.Util
         }
         protected override Expression VisitMethodCall(MethodCallExpression node)
         {
-            if (node.Method.DeclaringType == typeof(ExtensionUtil))
+            if (node.Method.DeclaringType == typeof(Operator))
             {
                 _build.Append("(");
                 if (node.Arguments.Count == 1)
                 {
                     Visit(node.Arguments[0]);
-                    _build.AppendFormat(" {0} ", ExtensionUtil.GetOperator(node.Method.Name));
+                    _build.AppendFormat(" {0} ", Operator.GetOperator(node.Method.Name));
                 }
                 else if (node.Arguments.Count == 2)
                 {
                     Visit(node.Arguments[0]);
-                    _operator = ExtensionUtil.GetOperator(node.Method.Name);
+                    _operator = Operator.GetOperator(node.Method.Name);
+                    _operatorMethod = node.Method.Name;
                     _build.AppendFormat(" {0} ", _operator);
                     Visit(node.Arguments[1]);
                 }
                 else
                 {
-                    _operator = ExtensionUtil.GetOperator(node.Method.Name);
+                    _operator = Operator.GetOperator(node.Method.Name);
                     Visit(node.Arguments[0]);
                     _build.AppendFormat(" {0} ", _operator);
                     Visit(node.Arguments[1]);
-                    _build.AppendFormat(" {0} ", ExtensionUtil.GetOperator(ExpressionType.AndAlso));
+                    _build.AppendFormat(" {0} ", Operator.GetOperator(ExpressionType.AndAlso));
                     Visit(node.Arguments[2]);
                 }
                 _build.Append(")");
@@ -87,12 +89,12 @@ namespace Dapper.Common.Util
             Visit(node.Left);
             if (node.Right is ConstantExpression && (node.NodeType == ExpressionType.Equal || node.NodeType == ExpressionType.NotEqual) && (node.Right as ConstantExpression).Value == null)
             {
-                _operator = node.NodeType == ExpressionType.Equal ? ExtensionUtil.GetOperator(nameof(ExtensionUtil.IsNull)) : ExtensionUtil.GetOperator(nameof(ExtensionUtil.IsNotNull));
+                _operator = node.NodeType == ExpressionType.Equal ? Operator.GetOperator(nameof(Operator.IsNull)) : Operator.GetOperator(nameof(Operator.IsNotNull));
                 _build.AppendFormat(" {0}", _operator);
             }
             else
             {
-                _operator = ExtensionUtil.GetOperator(node.NodeType);
+                _operator = Operator.GetOperator(node.NodeType);
                 _build.AppendFormat(" {0} ", _operator);
                 Visit(node.Right);
             }
@@ -108,7 +110,7 @@ namespace Dapper.Common.Util
         {
             if (node.NodeType == ExpressionType.Not)
             {
-                _build.AppendFormat("{0}", ExtensionUtil.GetOperator(ExpressionType.Not));
+                _build.AppendFormat("{0}", Operator.GetOperator(ExpressionType.Not));
             }
             Visit(node.Operand);
             return node;
@@ -121,7 +123,18 @@ namespace Dapper.Common.Util
             }
             else if (_operator == "LIKE" || _operator == "NOT LIKE")
             {
-                _build.AppendFormat("'%{0}%'", node.Value);
+                if (_operatorMethod==nameof(Operator.LikeLeft)|| _operatorMethod == nameof(Operator.NotLikeLeft))
+                {
+                    _build.AppendFormat("'%{0}'", node.Value);
+                }
+                else if(_operatorMethod == nameof(Operator.NotLikeRight)|| _operatorMethod == nameof(Operator.LikeRight))
+                {
+                    _build.AppendFormat("'{0}%'", node.Value);
+                }
+                else
+                {
+                    _build.AppendFormat("'%{0}%'", node.Value);
+                }
             }
             else if (node.Value is string)
             {
@@ -153,11 +166,19 @@ namespace Dapper.Common.Util
             var value = GetValue(expression);
             if (_operator == "LIKE" || _operator == "NOT LIKE")
             {
-                value = string.Format("%{0}%", value);
-            }
-            if (_operator == "BETWEEN" || _operator == "NOT BETWEEN")
-            {
-
+                if (_operatorMethod == nameof(Operator.LikeLeft) || _operatorMethod == nameof(Operator.NotLikeLeft))
+                {
+                    value = string.Format("%{0}", value);
+                }
+                else if (_operatorMethod == nameof(Operator.NotLikeRight) || _operatorMethod == nameof(Operator.LikeRight))
+                {
+                    value = string.Format("{0}%", value);
+                }
+                else
+                {
+                    value = string.Format("%{0}%", value);
+                }
+                
             }
             var key = string.Format("@{0}{1}", _paramName, _param.Count);
             _param.Add(key, value);

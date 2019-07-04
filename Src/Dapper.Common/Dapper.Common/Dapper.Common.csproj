@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFrameworks>net45;netstandard2.0</TargetFrameworks>
-    <Version>1.5.0.1</Version>
+    <Version>1.5.0.2</Version>
     <Description>dapper,linq to sql,mysql,sqlserver,custom function</Description>
     <Authors>wangjianfeng</Authors>
     <PackageProjectUrl>https://github.com/1448376744/Dapper.Common</PackageProjectUrl>
@@ -11,6 +11,8 @@
     <Company>Mammothcode</Company>
     <Copyright>wangjianfeng</Copyright>
     <RepositoryType>github</RepositoryType>
+    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+    <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net45|AnyCPU'">
