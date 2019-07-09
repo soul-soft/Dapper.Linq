@@ -1,0 +1,29 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>net45;netstandard2.0</TargetFrameworks>
+    <Version>1.5.0.3</Version>
+    <Description>dapper,linq to sql,mysql,sqlserver,sqlite</Description>
+    <Authors>wangjianfeng</Authors>
+    <PackageProjectUrl>https://github.com/1448376744/Dapper.Common</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/1448376744/Dapper.Common</RepositoryUrl>
+    <PackageTags>dapper,orm,linq to sql</PackageTags>
+    <Company>mammothcode</Company>
+    <Copyright>wangjianfeng</Copyright>
+    <RepositoryType>github</RepositoryType>
+    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+    <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net45|AnyCPU'">
+    <DocumentationFile></DocumentationFile>
+  </PropertyGroup>
+  
+  <ItemGroup Condition=" '$(TargetFramework)' == 'net45' ">
+    <PackageReference Include="Dapper" Version="1.42.0" />
+  </ItemGroup>
+
+  <ItemGroup Condition=" '$(TargetFramework)' == 'netstandard2.0' ">
+    <PackageReference Include="Dapper" Version="1.60.6" />
+  </ItemGroup>
+</Project>
