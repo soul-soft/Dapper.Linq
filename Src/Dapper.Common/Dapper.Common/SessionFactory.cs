@@ -139,9 +139,13 @@ namespace Dapper.Common
             {
                 return new MysqlQuery<T>(this);
             }
-            if (SourceType == DataSourceType.SQLSERVER)
+            else if (SourceType == DataSourceType.SQLSERVER)
             {
                 return new SqlQuery<T>(this);
+            }
+            else if (SourceType == DataSourceType.SQLITE)
+            {
+                return new SQLiteQuery<T>(this);
             }
             throw new NotImplementedException();
         }
@@ -151,9 +155,13 @@ namespace Dapper.Common
             {
                 return new MysqlQuery<T1, T2>(this);
             }
-            if (SourceType == DataSourceType.SQLSERVER)
+            else if (SourceType == DataSourceType.SQLSERVER)
             {
                 return new SqlQuery<T1, T2>(this);
+            }
+            else if (SourceType == DataSourceType.SQLITE)
+            {
+                return new SQLiteQuery<T1, T2>(this);
             }
             throw new NotImplementedException();
         }
@@ -163,9 +171,13 @@ namespace Dapper.Common
             {
                 return new MysqlQuery<T1, T2, T3>(this);
             }
-            if (SourceType == DataSourceType.SQLSERVER)
+            else if (SourceType == DataSourceType.SQLSERVER)
             {
                 return new SqlQuery<T1, T2, T3>(this);
+            }
+            else if (SourceType == DataSourceType.SQLITE)
+            {
+                return new SQLiteQuery<T1, T2, T3>(this);
             }
             throw new NotImplementedException();
         }
@@ -207,7 +219,6 @@ namespace Dapper.Common
 
         public bool? Buffered { get => _target.Buffered; set => _target.Buffered = value; }
         public int? Timeout { get => _target.Timeout; set => _target.Timeout = value; }
-
         public void Close()
         {
             var watch = new Stopwatch();
@@ -229,7 +240,6 @@ namespace Dapper.Common
                 });
             }
         }
-
         public void Commit()
         {
             var watch = new Stopwatch();
@@ -251,12 +261,10 @@ namespace Dapper.Common
                 });
             }
         }
-
         public void Dispose()
         {
             _target.Dispose();
         }
-
         public int Execute(string sql, object param = null, int? commandTimeout = null, CommandType text = CommandType.Text)
         {
             var watch = new Stopwatch();
@@ -341,16 +349,19 @@ namespace Dapper.Common
                 });
             }
         }
-
         public IQueryable<T> From<T>() where T : class
         {
             if (SourceType == DataSourceType.MYSQL)
             {
                 return new MysqlQuery<T>(this);
             }
-            if (SourceType == DataSourceType.SQLSERVER)
+            else if (SourceType == DataSourceType.SQLSERVER)
             {
                 return new SqlQuery<T>(this);
+            }
+            else if (SourceType == DataSourceType.SQLITE)
+            {
+                return new SQLiteQuery<T>(this);
             }
             throw new NotImplementedException();
         }
@@ -360,9 +371,13 @@ namespace Dapper.Common
             {
                 return new MysqlQuery<T1, T2>(this);
             }
-            if (SourceType == DataSourceType.SQLSERVER)
+            else if (SourceType == DataSourceType.SQLSERVER)
             {
                 return new SqlQuery<T1, T2>(this);
+            }
+            else if (SourceType == DataSourceType.SQLITE)
+            {
+                return new SQLiteQuery<T1, T2>(this);
             }
             throw new NotImplementedException();
         }
@@ -376,9 +391,12 @@ namespace Dapper.Common
             {
                 return new SqlQuery<T1, T2, T3>(this);
             }
+            else if (SourceType == DataSourceType.SQLITE)
+            {
+                return new SQLiteQuery<T1, T2, T3>(this);
+            }
             throw new NotImplementedException();
         }
-
         public void Open(bool beginTransaction, IsolationLevel? level = null)
         {
             var watch = new Stopwatch();
@@ -421,7 +439,6 @@ namespace Dapper.Common
                 });
             }
         }
-
         public IEnumerable<T> Query<T>(string sql, object param = null, bool buffered = true, int? commandTimeout = null, CommandType? commandType = null)
         {
             var watch = new Stopwatch();
@@ -464,7 +481,6 @@ namespace Dapper.Common
                 });
             }
         }
-
         public IEnumerable<dynamic> Query(string sql, object param = null, bool buffered = true, int? commandTimeout = null, CommandType? commandType = null)
         {
             var watch = new Stopwatch();
@@ -509,7 +525,6 @@ namespace Dapper.Common
                 });
             }
         }
-
         public GridReader QueryMultiple(string sql, object param = null, int? commandTimeout = null, CommandType text = CommandType.Text)
         {
             var watch = new Stopwatch();
@@ -531,7 +546,6 @@ namespace Dapper.Common
                 });
             }
         }
-
         public Task<GridReader> QueryMultipleAsync(string sql, object param = null, int? commandTimeout = null, CommandType text = CommandType.Text)
         {
             var watch = new Stopwatch();
@@ -553,7 +567,6 @@ namespace Dapper.Common
                 });
             }
         }
-
         public void Rollback()
         {
             var watch = new Stopwatch();
@@ -592,16 +605,32 @@ namespace Dapper.Common
         private static List<DataSource> DataSource = new List<DataSource>();
         public static DataSource GetDataSource(string name = null)
         {
-            return name == null ? DataSource.FirstOrDefault() : DataSource.Find(f => f.Name == name);
+            if (name == null)
+            {
+                return DataSource.Find(f => f.Default) ?? DataSource.FirstOrDefault();
+            }
+            else
+            {
+                return DataSource.Find(f => f.Name == name);
+            }
         }
         public static void AddDataSource(DataSource dataSource)
         {
             DataSource.Add(dataSource);
+
+            if (dataSource.Default)
+            {
+                foreach (var item in DataSource)
+                {
+                    item.Default = false;
+                }
+            }
         }
         public static ISession GetSession(string name = null)
         {
             var datasource = GetDataSource(name);
             ISession session = null;
+
             if (datasource.UseProxy)
             {
                 session = new SessionProxy(new Session(datasource.Source(), datasource.SourceType));
@@ -619,11 +648,13 @@ namespace Dapper.Common
         public DataSourceType SourceType { get; set; }
         public string Name { get; set; }
         public bool UseProxy { get; set; }
+        public bool Default { get; set; }
     }
     public enum DataSourceType
     {
         MYSQL,
         SQLSERVER,
-        ORACLE
+        ORACLE,
+        SQLITE
     }
 }

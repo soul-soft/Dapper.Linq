@@ -106,6 +106,11 @@ namespace Dapper.Common.Util
             SetValue(node);
             return node;
         }
+        protected override Expression VisitNew(NewExpression node)
+        {
+            SetValue(node);
+            return node; 
+        }
         protected override Expression VisitUnary(UnaryExpression node)
         {
             if (node.NodeType == ExpressionType.Not)
@@ -123,11 +128,11 @@ namespace Dapper.Common.Util
             }
             else if (_operator == "LIKE" || _operator == "NOT LIKE")
             {
-                if (_operatorMethod==nameof(Operator.LikeLeft)|| _operatorMethod == nameof(Operator.NotLikeLeft))
+                if (_operatorMethod == nameof(Operator.LikeLeft) || _operatorMethod == nameof(Operator.NotLikeLeft))
                 {
                     _build.AppendFormat("'%{0}'", node.Value);
                 }
-                else if(_operatorMethod == nameof(Operator.NotLikeRight)|| _operatorMethod == nameof(Operator.LikeRight))
+                else if (_operatorMethod == nameof(Operator.NotLikeRight) || _operatorMethod == nameof(Operator.LikeRight))
                 {
                     _build.AppendFormat("'{0}%'", node.Value);
                 }
@@ -178,7 +183,7 @@ namespace Dapper.Common.Util
                 {
                     value = string.Format("%{0}%", value);
                 }
-                
+
             }
             var key = string.Format("@{0}{1}", _paramName, _param.Count);
             _param.Add(key, value);
@@ -304,38 +309,44 @@ namespace Dapper.Common.Util
         }
         public static object GetValue(Expression expression)
         {
-            var memberNames = new Stack<string>();
+            var names = new Stack<string>();
+            var exps = new Stack<Expression>();
+            var mifs = new Stack<System.Reflection.MemberInfo>();
             var tempExpression = expression;
             while (tempExpression is MemberExpression)
             {
-                var memberExpression = tempExpression as MemberExpression;
-                memberNames.Push(memberExpression.Member.Name);
-                if (tempExpression == null && memberExpression.Type == typeof(DateTime) && memberExpression.Member.Name == nameof(DateTime.Now))
-                {
-                    return DateTime.Now;
-                }
-                tempExpression = memberExpression.Expression;
-            }
+                var member = tempExpression as MemberExpression;
+                names.Push(member.Member.Name);
+                exps.Push(member.Expression);
+                mifs.Push(member.Member);
 
-            if (tempExpression is ConstantExpression)
+                tempExpression = member.Expression;
+            }
+            if (names.Count > 0)
             {
-                var value = (tempExpression as ConstantExpression).Value;
-                foreach (var item in memberNames)
+                object value = null;
+                foreach (var name in names)
                 {
-                    if (value.GetType().GetField(item) != null)
+                    var exp = exps.Pop();
+                    var mif = mifs.Pop();
+                    if (exp is ConstantExpression cex)
                     {
-                        value = value.GetType().GetField(item).GetValue(value);
+                        value = cex.Value;
                     }
-                    else if (value.GetType().GetProperty(item) != null)
+                    if ((mif is System.Reflection.PropertyInfo pif))
                     {
-                        value = value.GetType().GetProperty(item).GetValue(value);
+                        value = pif.GetValue(value);
                     }
-                    else
+                    else if ((mif is System.Reflection.FieldInfo fif))
                     {
-                        return value;
+                        value = fif.GetValue(value);
                     }
                 }
                 return value;
+            }
+            else if (expression is ConstantExpression)
+            {
+                return (tempExpression as ConstantExpression).Value;
             }
             else
             {

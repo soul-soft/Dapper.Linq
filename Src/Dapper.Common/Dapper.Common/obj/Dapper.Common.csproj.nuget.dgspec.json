@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "D:\\Dapper.Common\\Src\\Dapper.Common\\Dapper.Common\\Dapper.Common.csproj": {}
+    "D:\\Dapper.Common\\src\\Dapper.Common\\Dapper.Common\\Dapper.Common.csproj": {}
   },
   "projects": {
-    "D:\\Dapper.Common\\Src\\Dapper.Common\\Dapper.Common\\Dapper.Common.csproj": {
-      "version": "1.5.0.2",
+    "D:\\Dapper.Common\\src\\Dapper.Common\\Dapper.Common\\Dapper.Common.csproj": {
+      "version": "1.5.0.3",
       "restore": {
-        "projectUniqueName": "D:\\Dapper.Common\\Src\\Dapper.Common\\Dapper.Common\\Dapper.Common.csproj",
+        "projectUniqueName": "D:\\Dapper.Common\\src\\Dapper.Common\\Dapper.Common\\Dapper.Common.csproj",
         "projectName": "Dapper.Common",
-        "projectPath": "D:\\Dapper.Common\\Src\\Dapper.Common\\Dapper.Common\\Dapper.Common.csproj",
+        "projectPath": "D:\\Dapper.Common\\src\\Dapper.Common\\Dapper.Common\\Dapper.Common.csproj",
         "packagesPath": "C:\\Users\\14483\\.nuget\\packages\\",
-        "outputPath": "D:\\Dapper.Common\\Src\\Dapper.Common\\Dapper.Common\\obj\\",
+        "outputPath": "D:\\Dapper.Common\\src\\Dapper.Common\\Dapper.Common\\obj\\",
         "projectStyle": "PackageReference",
         "crossTargeting": true,
         "fallbackFolders": [
