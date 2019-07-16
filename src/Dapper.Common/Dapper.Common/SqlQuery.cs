@@ -11,8 +11,8 @@ namespace Dapper.Common
     public class SqlQuery<T> : IQueryable<T> where T : class
     {
         #region constructor
-        public ISession _session { get; }
-        public SqlQuery(ISession session = null)
+        public IDbContext _session { get; }
+        public SqlQuery(IDbContext session = null)
         {
             _session = session;
             _param = new Dictionary<string, object>();
@@ -32,7 +32,6 @@ namespace Dapper.Common
             }
             return this;
         }
-
         public IQueryable<T> With(LockType lockType, bool condition = true)
         {
             if (condition)
@@ -79,7 +78,10 @@ namespace Dapper.Common
         }
         public IQueryable<T> GroupBy<TResult>(Expression<Func<T, TResult>> expression, bool condition = true)
         {
-            GroupBy(string.Join(",", ExpressionUtil.BuildColumns(expression, _param).Select(s => s.Value)), condition);
+            if (condition)
+            {
+                GroupBy(string.Join(",", ExpressionUtil.BuildColumns(expression, _param).Select(s => s.Value)));
+            }
             return this;
         }
         public IQueryable<T> Having(string expression, bool condition = true)
@@ -112,12 +114,18 @@ namespace Dapper.Common
         }
         public IQueryable<T> OrderBy<TResult>(Expression<Func<T, TResult>> expression, bool condition = true)
         {
-            OrderBy(string.Join(",", ExpressionUtil.BuildColumns(expression, _param).Select(s => string.Format("{0} ASC", s.Value))), condition);
+            if (condition)
+            {
+                OrderBy(string.Join(",", ExpressionUtil.BuildColumns(expression, _param).Select(s => string.Format("{0} ASC", s.Value))));
+            }
             return this;
         }
         public IQueryable<T> OrderByDescending<TResult>(Expression<Func<T, TResult>> expression, bool condition = true)
         {
-            OrderBy(string.Join(",", ExpressionUtil.BuildColumns(expression, _param).Select(s => string.Format("{0} DESC", s.Value))), condition);
+            if (condition)
+            {
+                OrderBy(string.Join(",", ExpressionUtil.BuildColumns(expression, _param).Select(s => string.Format("{0} DESC", s.Value))));
+            }
             return this;
         }
         public IQueryable<T> Page(int index, int count, out long total, bool condition = true)
@@ -201,7 +209,10 @@ namespace Dapper.Common
         }
         public IQueryable<T> Where(Expression<Func<T, bool>> expression, bool condition = true)
         {
-            Where(ExpressionUtil.BuildExpression(expression, _param), null, condition);
+            if (condition)
+            {
+                Where(ExpressionUtil.BuildExpression(expression, _param), null);
+            }
             return this;
         }
         public int Delete(bool condition = true, int? timeout = null)
@@ -722,8 +733,8 @@ namespace Dapper.Common
     public class SqlQuery<T1, T2> : IQueryable<T1, T2> where T1 : class where T2 : class
     {
         #region constructor
-        public ISession _session { get; }
-        public SqlQuery(ISession session = null)
+        public IDbContext _session { get; }
+        public SqlQuery(IDbContext session = null)
         {
             _session = session;
             _param = new Dictionary<string, object>();
@@ -759,7 +770,10 @@ namespace Dapper.Common
         }
         public IQueryable<T1, T2> GroupBy<TResult>(Expression<Func<T1, T2, TResult>> expression, bool condition = true)
         {
-            GroupBy(string.Join(",", ExpressionUtil.BuildColumns(expression, _param, false).Select(s => s.Value)), condition);
+            if (condition)
+            {
+                GroupBy(string.Join(",", ExpressionUtil.BuildColumns(expression, _param, false).Select(s => s.Value)));
+            }
             return this;
         }
         public IQueryable<T1, T2> Having(string expression, bool condition = true)
@@ -772,7 +786,10 @@ namespace Dapper.Common
         }
         public IQueryable<T1, T2> Having(Expression<Func<T1, T2, bool>> expression, bool condition = true)
         {
-            Having(string.Join(",", ExpressionUtil.BuildColumns(expression, _param, false).Select(s => s.Value)), condition);
+            if (condition)
+            {
+                Having(string.Join(",", ExpressionUtil.BuildColumns(expression, _param, false).Select(s => s.Value)));
+            }
             return this;
         }
         public IQueryable<T1, T2> OrderBy(string orderBy, bool condition = true)
@@ -789,12 +806,18 @@ namespace Dapper.Common
         }
         public IQueryable<T1, T2> OrderBy<TResult>(Expression<Func<T1, T2, TResult>> expression, bool condition = true)
         {
-            OrderBy(string.Join(",", ExpressionUtil.BuildColumns(expression, _param, false).Select(s => string.Format("{0} ASC", s.Value))), condition);
+            if (condition)
+            {
+                OrderBy(string.Join(",", ExpressionUtil.BuildColumns(expression, _param, false).Select(s => string.Format("{0} ASC", s.Value))));
+            }
             return this;
         }
         public IQueryable<T1, T2> OrderByDescending<TResult>(Expression<Func<T1, T2, TResult>> expression, bool condition = true)
         {
-            OrderBy(string.Join(",", ExpressionUtil.BuildColumns(expression, _param, false).Select(s => string.Format("{0} DESC", s.Value))), condition);
+            if (condition)
+            {
+                OrderBy(string.Join(",", ExpressionUtil.BuildColumns(expression, _param, false).Select(s => string.Format("{0} DESC", s.Value))));
+            }
             return this;
         }
         public IQueryable<T1, T2> Page(int index, int count, out long total, bool condition = true)
@@ -836,7 +859,10 @@ namespace Dapper.Common
         }
         public IQueryable<T1, T2> Where(Expression<Func<T1, T2, bool>> expression, bool condition = true)
         {
-            Where(ExpressionUtil.BuildExpression(expression, _param, false), null, condition);
+            if (condition)
+            {
+                Where(ExpressionUtil.BuildExpression(expression, _param, false), null);
+            }
             return this;
         }
         public IEnumerable<TResult> Select<TResult>(string columns = null, bool buffered = true, int? timeout = null)
@@ -1055,8 +1081,8 @@ namespace Dapper.Common
     public class SqlQuery<T1, T2, T3> : IQueryable<T1, T2, T3> where T1 : class where T2 : class where T3 : class
     {
         #region constructor
-        public ISession _session { get; }
-        public SqlQuery(ISession session = null)
+        public IDbContext _session { get; }
+        public SqlQuery(IDbContext session = null)
         {
             _session = session;
             _param = new Dictionary<string, object>();
@@ -1092,7 +1118,10 @@ namespace Dapper.Common
         }
         public IQueryable<T1, T2, T3> GroupBy<TResult>(Expression<Func<T1, T2, T3, TResult>> expression, bool condition = true)
         {
-            GroupBy(string.Join(",", ExpressionUtil.BuildColumns(expression, _param, false).Select(s => s.Value)), condition);
+            if (condition)
+            {
+                GroupBy(string.Join(",", ExpressionUtil.BuildColumns(expression, _param, false).Select(s => s.Value)));
+            }
             return this;
         }
         public IQueryable<T1, T2, T3> Having(string expression, bool condition = true)
@@ -1105,7 +1134,10 @@ namespace Dapper.Common
         }
         public IQueryable<T1, T2, T3> Having(Expression<Func<T1, T2, T3, bool>> expression, bool condition = true)
         {
-            Having(string.Join(",", ExpressionUtil.BuildColumns(expression, _param, false).Select(s => s.Value)), condition);
+            if (condition)
+            {
+                Having(string.Join(",", ExpressionUtil.BuildColumns(expression, _param, false).Select(s => s.Value)));
+            }
             return this;
         }
         public IQueryable<T1, T2, T3> OrderBy(string orderBy, bool condition = true)
@@ -1122,12 +1154,18 @@ namespace Dapper.Common
         }
         public IQueryable<T1, T2, T3> OrderBy<TResult>(Expression<Func<T1, T2, T3, TResult>> expression, bool condition = true)
         {
-            OrderBy(string.Join(",", ExpressionUtil.BuildColumns(expression, _param, false).Select(s => string.Format("{0} ASC", s.Value))), condition);
+            if (condition)
+            {
+                OrderBy(string.Join(",", ExpressionUtil.BuildColumns(expression, _param, false).Select(s => string.Format("{0} ASC", s.Value))));
+            }
             return this;
         }
         public IQueryable<T1, T2, T3> OrderByDescending<TResult>(Expression<Func<T1, T2, T3, TResult>> expression, bool condition = true)
         {
-            OrderBy(string.Join(",", ExpressionUtil.BuildColumns(expression, _param, false).Select(s => string.Format("{0} DESC", s.Value))), condition);
+            if (condition)
+            {
+                OrderBy(string.Join(",", ExpressionUtil.BuildColumns(expression, _param, false).Select(s => string.Format("{0} DESC", s.Value))));
+            }
             return this;
         }
         public IQueryable<T1, T2, T3> Page(int index, int count, out long total, bool condition = true)
@@ -1169,7 +1207,10 @@ namespace Dapper.Common
         }
         public IQueryable<T1, T2, T3> Where(Expression<Func<T1, T2, T3, bool>> expression, bool condition = true)
         {
-            Where(ExpressionUtil.BuildExpression(expression, _param, false), null, condition);
+            if (condition)
+            {
+                Where(ExpressionUtil.BuildExpression(expression, _param, false), null);
+            }
             return this;
         }
         public IEnumerable<TResult> Select<TResult>(string columns = null, bool buffered = true, int? timeout = null)

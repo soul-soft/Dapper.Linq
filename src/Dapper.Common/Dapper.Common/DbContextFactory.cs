@@ -9,7 +9,7 @@ using static Dapper.SqlMapper;
 
 namespace Dapper.Common
 {
-    public interface ISession : IDisposable
+    public interface IDbContext : IDisposable
     {
         bool? Buffered { get; set; }
         int? Timeout { get; set; }
@@ -30,14 +30,14 @@ namespace Dapper.Common
         IDbConnection Connection { get; }
         IDbTransaction Transaction { get; }
         DataSourceType SourceType { get; }
-        SessionState State { get; }
+        DbContextState State { get; }
         void Open(bool beginTransaction, IsolationLevel? level = null);
         Task OpenAsync(bool beginTransaction, IsolationLevel? level = null);
         void Commit();
         void Rollback();
         void Close();
     }
-    internal class Session : ISession
+    internal class DbContext : IDbContext
     {
         public DataSourceType SourceType { get; private set; }
         public List<Logger> Loggers { get; private set; }
@@ -45,12 +45,12 @@ namespace Dapper.Common
         public IDbConnection Connection { get; }
         public bool? Buffered { get; set; }
         public int? Timeout { get; set; }
-        public SessionState State { get; private set; }
-        public Session(IDbConnection connection, DataSourceType sourceType)
+        public DbContextState State { get; private set; }
+        public DbContext(IDbConnection connection, DataSourceType sourceType)
         {
             Connection = connection;
             SourceType = sourceType;
-            State = SessionState.Closed;
+            State = DbContextState.Closed;
         }
         public void Open(bool beginTransaction, IsolationLevel? level = null)
         {
@@ -63,11 +63,11 @@ namespace Dapper.Common
                 Connection.Open();
                 Transaction = level == null ? Connection.BeginTransaction() : Connection.BeginTransaction(level.Value);
             }
-            State = SessionState.Open;
+            State = DbContextState.Open;
         }
         public async Task OpenAsync(bool beginTransaction, IsolationLevel? level = null)
         {
-            State = SessionState.Open;
+            State = DbContextState.Open;
             if (!(Connection is DbConnection))
             {
                 throw new InvalidOperationException("Async operations require use of a DbConnection or an already-open IDbConnection");
@@ -85,7 +85,7 @@ namespace Dapper.Common
         public void Close()
         {
             Connection.Close();
-            State = SessionState.Closed;
+            State = DbContextState.Closed;
         }
         public void Commit()
         {
@@ -93,7 +93,7 @@ namespace Dapper.Common
             {
                 Transaction.Commit();
                 Transaction.Dispose();
-                State = SessionState.Commit;
+                State = DbContextState.Commit;
             }
         }
         public void Rollback()
@@ -102,7 +102,7 @@ namespace Dapper.Common
             {
                 Transaction.Rollback();
                 Transaction.Dispose();
-                State = SessionState.Rollback;
+                State = DbContextState.Rollback;
             }
         }
         public void Dispose()
@@ -199,10 +199,10 @@ namespace Dapper.Common
         }
 
     }
-    internal class SessionProxy : ISession
+    internal class DbContextProxy : IDbContext
     {
-        private ISession _target = null;
-        public SessionProxy(ISession target)
+        private IDbContext _target = null;
+        public DbContextProxy(IDbContext target)
         {
             _target = target;
             Loggers = new List<Logger>();
@@ -213,7 +213,7 @@ namespace Dapper.Common
 
         public IDbTransaction Transaction => _target.Transaction;
 
-        public SessionState State => _target.State;
+        public DbContextState State => _target.State;
 
         public DataSourceType SourceType => _target.SourceType;
 
@@ -235,7 +235,7 @@ namespace Dapper.Common
                     Value = null,
                     Buffered = Buffered,
                     Timeout = Timeout,
-                    Text = nameof(SessionProxy.Close),
+                    Text = nameof(DbContextProxy.Close),
                     ExecuteTime = watch.ElapsedMilliseconds
                 });
             }
@@ -589,16 +589,16 @@ namespace Dapper.Common
             }
         }
     }
-    public enum SessionState
+    public enum DbContextState
     {
         Closed = 0,
         Open = 1,
         Commit = 2,
         Rollback = 3,
     }
-    public class SessionFactory
+    public class DbContextFactory
     {
-        static SessionFactory()
+        static DbContextFactory()
         {
             DefaultTypeMap.MatchNamesWithUnderscores = true;
         }
@@ -626,18 +626,18 @@ namespace Dapper.Common
                 }
             }
         }
-        public static ISession GetSession(string name = null)
+        public static IDbContext GetDbContext(string name = null)
         {
             var datasource = GetDataSource(name);
-            ISession session = null;
+            IDbContext session = null;
 
             if (datasource.UseProxy)
             {
-                session = new SessionProxy(new Session(datasource.Source(), datasource.SourceType));
+                session = new DbContextProxy(new DbContext(datasource.Source(), datasource.SourceType));
             }
             else
             {
-                session = new Session(datasource.Source(), datasource.SourceType);
+                session = new DbContext(datasource.Source(), datasource.SourceType);
             }
             return session;
         }

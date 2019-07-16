@@ -319,7 +319,6 @@ namespace Dapper.Common.Util
                 names.Push(member.Member.Name);
                 exps.Push(member.Expression);
                 mifs.Push(member.Member);
-
                 tempExpression = member.Expression;
             }
             if (names.Count > 0)

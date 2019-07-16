@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFrameworks>net45;netstandard2.0</TargetFrameworks>
-    <Version>1.5.0.3</Version>
+    <Version>1.5.0.4</Version>
     <Description>dapper,linq to sql,mysql,sqlserver,sqlite</Description>
     <Authors>wangjianfeng</Authors>
     <PackageProjectUrl>https://github.com/1448376744/Dapper.Common</PackageProjectUrl>

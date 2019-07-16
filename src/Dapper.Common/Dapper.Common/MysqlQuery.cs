@@ -11,10 +11,10 @@ namespace Dapper.Common
     public class MysqlQuery<T> : IQueryable<T> where T : class
     {
         #region constructor
-        public ISession _session { get; }
-        public MysqlQuery(ISession session = null)
+        public IDbContext _dbcontext { get; }
+        public MysqlQuery(IDbContext dbcontext = null)
         {
-            _session = session;
+            _dbcontext = dbcontext;
             _param = new Dictionary<string, object>();
         }
         public MysqlQuery(Dictionary<string, object> param)
@@ -77,7 +77,10 @@ namespace Dapper.Common
         }
         public IQueryable<T> GroupBy<TResult>(Expression<Func<T, TResult>> expression, bool condition = true)
         {
-            GroupBy(string.Join(",", ExpressionUtil.BuildColumns(expression, _param).Select(s => s.Value)), condition);
+            if (condition)
+            {
+                GroupBy(string.Join(",", ExpressionUtil.BuildColumns(expression, _param).Select(s => s.Value)));
+            }
             return this;
         }
         public IQueryable<T> Having(string expression, bool condition = true)
@@ -90,7 +93,10 @@ namespace Dapper.Common
         }
         public IQueryable<T> Having(Expression<Func<T, bool>> expression, bool condition = true)
         {
-            Having(string.Join(",", ExpressionUtil.BuildColumns(expression, _param).Select(s => s.Value)), condition);
+            if (condition)
+            {
+                Having(string.Join(",", ExpressionUtil.BuildColumns(expression, _param).Select(s => s.Value)));
+            }
             return this;
         }
         public IQueryable<T> OrderBy(string orderBy, bool condition = true)
@@ -107,12 +113,18 @@ namespace Dapper.Common
         }
         public IQueryable<T> OrderBy<TResult>(Expression<Func<T, TResult>> expression, bool condition = true)
         {
-            OrderBy(string.Join(",", ExpressionUtil.BuildColumns(expression, _param).Select(s => string.Format("{0} ASC", s.Value))), condition);
+            if (condition)
+            {
+                OrderBy(string.Join(",", ExpressionUtil.BuildColumns(expression, _param).Select(s => string.Format("{0} ASC", s.Value))));
+            }
             return this;
         }
         public IQueryable<T> OrderByDescending<TResult>(Expression<Func<T, TResult>> expression, bool condition = true)
         {
-            OrderBy(string.Join(",", ExpressionUtil.BuildColumns(expression, _param).Select(s => string.Format("{0} DESC", s.Value))), condition);
+            if (condition)
+            {
+                OrderBy(string.Join(",", ExpressionUtil.BuildColumns(expression, _param).Select(s => string.Format("{0} DESC", s.Value))));
+            }
             return this;
         }
         public IQueryable<T> Page(int index, int count, out long total, bool condition = true)
@@ -196,134 +208,137 @@ namespace Dapper.Common
         }
         public IQueryable<T> Where(Expression<Func<T, bool>> expression, bool condition = true)
         {
-            Where(ExpressionUtil.BuildExpression(expression, _param), null, condition);
+            if (condition)
+            {
+                Where(ExpressionUtil.BuildExpression(expression, _param), null);
+            }
             return this;
         }
         public int Delete(bool condition = true, int? timeout = null)
         {
-            if (condition && _session != null)
+            if (condition && _dbcontext != null)
             {
                 var sql = BuildDelete();
-                return _session.Execute(sql, _param, timeout);
+                return _dbcontext.Execute(sql, _param, timeout);
             }
             return 0;
         }
         public async Task<int> DeleteAsync(bool condition = true, int? timeout = null)
         {
-            if (condition && _session != null)
+            if (condition && _dbcontext != null)
             {
                 var sql = BuildDelete();
-                return await _session.ExecuteAsync(sql, _param, timeout);
+                return await _dbcontext.ExecuteAsync(sql, _param, timeout);
             }
             return 0;
         }
         public int Insert(T entity, bool condition = true, int? timeout = null)
         {
-            if (condition && _session != null)
+            if (condition && _dbcontext != null)
             {
                 var sql = BuildInsert();
-                return _session.Execute(sql, entity, timeout);
+                return _dbcontext.Execute(sql, entity, timeout);
             }
             return 0;
         }
         public async Task<int> InsertAsync(T entity, bool condition = true, int? timeout = null)
         {
-            if (condition && _session != null)
+            if (condition && _dbcontext != null)
             {
                 var sql = BuildInsert();
-                return await _session.ExecuteAsync(sql, entity, timeout);
+                return await _dbcontext.ExecuteAsync(sql, entity, timeout);
             }
             return 0;
         }
         public long InsertReturnId(T entity, bool condition = true, int? timeout = null)
         {
-            if (condition && _session != null)
+            if (condition && _dbcontext != null)
             {
                 var sql = BuildInsert();
                 sql = string.Format("{0};SELECT @@IDENTITY;", sql);
-                return _session.ExecuteScalar<long>(sql, entity, timeout);
+                return _dbcontext.ExecuteScalar<long>(sql, entity, timeout);
             }
             return 0;
         }
         public async Task<long> InsertReturnIdAsync(T entity, bool condition = true, int? timeout = null)
         {
-            if (condition && _session != null)
+            if (condition && _dbcontext != null)
             {
                 var sql = BuildInsert();
                 sql = string.Format("{0};SELECT @@IDENTITY;", sql);
-                return await _session.ExecuteScalarAsync<long>(sql, entity, timeout);
+                return await _dbcontext.ExecuteScalarAsync<long>(sql, entity, timeout);
             }
             return 0;
         }
         public int Insert(IEnumerable<T> entitys, bool condition = true, int? timeout = null)
         {
-            if (condition && _session != null)
+            if (condition && _dbcontext != null)
             {
                 var sql = BuildInsert();
-                return _session.Execute(sql, entitys, timeout);
+                return _dbcontext.Execute(sql, entitys, timeout);
             }
             return 0;
         }
         public async Task<int> InsertAsync(IEnumerable<T> entitys, bool condition = true, int? timeout = null)
         {
-            if (condition && _session != null)
+            if (condition && _dbcontext != null)
             {
                 var sql = BuildInsert();
-                return await _session.ExecuteAsync(sql, entitys, timeout);
+                return await _dbcontext.ExecuteAsync(sql, entitys, timeout);
             }
             return 0;
         }
         public int Update(bool condition = true, int? timeout = null)
         {
-            if (condition && _session != null && _setBuffer.Length > 0)
+            if (condition && _dbcontext != null && _setBuffer.Length > 0)
             {
                 var sql = BuildUpdate(false);
-                return _session.Execute(sql, _param, timeout);
+                return _dbcontext.Execute(sql, _param, timeout);
             }
             return 0;
         }
         public async Task<int> UpdateAsync(bool condition = true, int? timeout = null)
         {
-            if (condition && _session != null && _setBuffer.Length > 0)
+            if (condition && _dbcontext != null && _setBuffer.Length > 0)
             {
                 var sql = BuildUpdate(false);
-                return await _session.ExecuteAsync(sql, _param, timeout);
+                return await _dbcontext.ExecuteAsync(sql, _param, timeout);
             }
             return 0;
         }
         public int Update(T entity, bool condition = true, int? timeout = null)
         {
-            if (condition && _session != null)
+            if (condition && _dbcontext != null)
             {
                 var sql = BuildUpdate();
-                return _session.Execute(sql, entity, timeout);
+                return _dbcontext.Execute(sql, entity, timeout);
             }
             return 0;
         }
         public async Task<int> UpdateAsync(T entity, bool condition = true, int? timeout = null)
         {
-            if (condition && _session != null)
+            if (condition && _dbcontext != null)
             {
                 var sql = BuildUpdate();
-                return await _session.ExecuteAsync(sql, entity, timeout);
+                return await _dbcontext.ExecuteAsync(sql, entity, timeout);
             }
             return 0;
         }
         public int Update(IEnumerable<T> entitys, bool condition = true, int? timeout = null)
         {
-            if (condition && _session != null)
+            if (condition && _dbcontext != null)
             {
                 var sql = BuildUpdate();
-                return _session.Execute(sql, entitys, timeout);
+                return _dbcontext.Execute(sql, entitys, timeout);
             }
             return 0;
         }
         public async Task<int> UpdateAsync(IEnumerable<T> entitys, bool condition = true, int? timeout = null)
         {
-            if (condition && _session != null)
+            if (condition && _dbcontext != null)
             {
                 var sql = BuildUpdate();
-                return await _session.ExecuteAsync(sql, entitys, timeout);
+                return await _dbcontext.ExecuteAsync(sql, entitys, timeout);
             }
             return 0;
         }
@@ -365,10 +380,10 @@ namespace Dapper.Common
             {
                 _columnBuffer.Append(colums);
             }
-            if (_session != null)
+            if (_dbcontext != null)
             {
                 var sql = BuildSelect();
-                return _session.Query<T>(sql, _param, buffered, timeout);
+                return _dbcontext.Query<T>(sql, _param, buffered, timeout);
             }
             return new List<T>();
         }
@@ -378,10 +393,10 @@ namespace Dapper.Common
             {
                 _columnBuffer.Append(colums);
             }
-            if (_session != null)
+            if (_dbcontext != null)
             {
                 var sql = BuildSelect();
-                return await _session.QueryAsync<T>(sql, _param, timeout);
+                return await _dbcontext.QueryAsync<T>(sql, _param, timeout);
             }
             return new List<T>();
         }
@@ -391,10 +406,10 @@ namespace Dapper.Common
             {
                 _columnBuffer.Append(columns);
             }
-            if (_session != null)
+            if (_dbcontext != null)
             {
                 var sql = BuildSelect();
-                return _session.Query<TResult>(sql, _param, buffered, timeout);
+                return _dbcontext.Query<TResult>(sql, _param, buffered, timeout);
             }
             return new List<TResult>();
         }
@@ -404,10 +419,10 @@ namespace Dapper.Common
             {
                 _columnBuffer.Append(columns);
             }
-            if (_session != null)
+            if (_dbcontext != null)
             {
                 var sql = BuildSelect();
-                return await _session.QueryAsync<TResult>(sql, _param, timeout);
+                return await _dbcontext.QueryAsync<TResult>(sql, _param, timeout);
             }
             return new List<TResult>();
         }
@@ -431,10 +446,10 @@ namespace Dapper.Common
                 {
                     _columnBuffer.Append(columns);
                 }
-                if (_session != null)
+                if (_dbcontext != null)
                 {
                     var sql = BuildCount();
-                    return _session.ExecuteScalar<long>(sql, _param, timeout);
+                    return _dbcontext.ExecuteScalar<long>(sql, _param, timeout);
                 }
             }
             return 0;
@@ -447,10 +462,10 @@ namespace Dapper.Common
                 {
                     _columnBuffer.Append(columns);
                 }
-                if (_session != null)
+                if (_dbcontext != null)
                 {
                     var sql = BuildCount();
-                    return await _session.ExecuteScalarAsync<long>(sql, _param, timeout);
+                    return await _dbcontext.ExecuteScalarAsync<long>(sql, _param, timeout);
                 }
             }
             return 0;
@@ -465,19 +480,19 @@ namespace Dapper.Common
         }
         public bool Exists(bool condition = true, int? timeout = null)
         {
-            if (condition && _session != null)
+            if (condition && _dbcontext != null)
             {
                 var sql = BuildExists();
-                return _session.ExecuteScalar<int>(sql, _param, timeout) > 0;
+                return _dbcontext.ExecuteScalar<int>(sql, _param, timeout) > 0;
             }
             return false;
         }
         public async Task<bool> ExistsAsync(bool condition = true, int? timeout = null)
         {
-            if (condition && _session != null)
+            if (condition && _dbcontext != null)
             {
                 var sql = BuildExists();
-                return await _session.ExecuteScalarAsync<int>(sql, _param, timeout) > 0;
+                return await _dbcontext.ExecuteScalarAsync<int>(sql, _param, timeout) > 0;
             }
             return false;
         }
@@ -487,10 +502,10 @@ namespace Dapper.Common
             {
                 var column = ExpressionUtil.BuildColumn(expression, _param).First();
                 _sumBuffer.AppendFormat("{0}", column.Value);
-                if (_session != null)
+                if (_dbcontext != null)
                 {
                     var sql = BuildSum();
-                    return _session.ExecuteScalar<TResult>(sql, _param, timeout);
+                    return _dbcontext.ExecuteScalar<TResult>(sql, _param, timeout);
                 }
             }
             return default;
@@ -501,10 +516,10 @@ namespace Dapper.Common
             {
                 var column = ExpressionUtil.BuildColumn(expression, _param).First();
                 _sumBuffer.AppendFormat("{0}", column.Value);
-                if (_session != null)
+                if (_dbcontext != null)
                 {
                     var sql = BuildSum();
-                    return await _session.ExecuteScalarAsync<TResult>(sql, _param, timeout);
+                    return await _dbcontext.ExecuteScalarAsync<TResult>(sql, _param, timeout);
                 }
             }
             return default;
@@ -692,10 +707,10 @@ namespace Dapper.Common
     public class MysqlQuery<T1, T2> : IQueryable<T1, T2> where T1 : class where T2 : class
     {
         #region constructor
-        public ISession _session { get; }
-        public MysqlQuery(ISession session = null)
+        public IDbContext _dbcontext { get; }
+        public MysqlQuery(IDbContext dbcontext = null)
         {
-            _session = session;
+            _dbcontext = dbcontext;
             _param = new Dictionary<string, object>();
         }
         public MysqlQuery(Dictionary<string, object> param)
@@ -727,7 +742,10 @@ namespace Dapper.Common
         }
         public IQueryable<T1, T2> GroupBy<TResult>(Expression<Func<T1, T2, TResult>> expression, bool condition = true)
         {
-            GroupBy(string.Join(",", ExpressionUtil.BuildColumns(expression, _param, false).Select(s => s.Value)), condition);
+            if (condition)
+            {
+                GroupBy(string.Join(",", ExpressionUtil.BuildColumns(expression, _param, false).Select(s => s.Value)));
+            }
             return this;
         }
         public IQueryable<T1, T2> Having(string expression, bool condition = true)
@@ -740,7 +758,10 @@ namespace Dapper.Common
         }
         public IQueryable<T1, T2> Having(Expression<Func<T1, T2, bool>> expression, bool condition = true)
         {
-            Having(string.Join(",", ExpressionUtil.BuildColumns(expression, _param, false).Select(s => s.Value)), condition);
+            if (condition)
+            {
+                Having(string.Join(",", ExpressionUtil.BuildColumns(expression, _param, false).Select(s => s.Value)));
+            }
             return this;
         }
         public IQueryable<T1, T2> OrderBy(string orderBy, bool condition = true)
@@ -757,12 +778,19 @@ namespace Dapper.Common
         }
         public IQueryable<T1, T2> OrderBy<TResult>(Expression<Func<T1, T2, TResult>> expression, bool condition = true)
         {
-            OrderBy(string.Join(",", ExpressionUtil.BuildColumns(expression, _param, false).Select(s => string.Format("{0} ASC", s.Value))), condition);
+            if (condition)
+            {
+                OrderBy(string.Join(",", ExpressionUtil.BuildColumns(expression, _param, false).Select(s => string.Format("{0} ASC", s.Value))));
+            }
             return this;
         }
         public IQueryable<T1, T2> OrderByDescending<TResult>(Expression<Func<T1, T2, TResult>> expression, bool condition = true)
         {
-            OrderBy(string.Join(",", ExpressionUtil.BuildColumns(expression, _param, false).Select(s => string.Format("{0} DESC", s.Value))), condition);
+            if (condition)
+            {
+                OrderBy(string.Join(",", ExpressionUtil.BuildColumns(expression, _param, false).Select(s => string.Format("{0} DESC", s.Value))));
+
+            }
             return this;
         }
         public IQueryable<T1, T2> Page(int index, int count, out long total, bool condition = true)
@@ -804,7 +832,10 @@ namespace Dapper.Common
         }
         public IQueryable<T1, T2> Where(Expression<Func<T1, T2, bool>> expression, bool condition = true)
         {
-            Where(ExpressionUtil.BuildExpression(expression, _param, false), null, condition);
+            if (condition)
+            {
+                Where(ExpressionUtil.BuildExpression(expression, _param, false), null);
+            }
             return this;
         }
         public IEnumerable<TResult> Select<TResult>(string columns = null, bool buffered = true, int? timeout = null)
@@ -813,10 +844,10 @@ namespace Dapper.Common
             {
                 _columnBuffer.Append(columns);
             }
-            if (_session != null)
+            if (_dbcontext != null)
             {
                 var sql = BuildSelect();
-                return _session.Query<TResult>(sql, _param, buffered, timeout);
+                return _dbcontext.Query<TResult>(sql, _param, buffered, timeout);
             }
             return new List<TResult>();
         }
@@ -826,10 +857,10 @@ namespace Dapper.Common
             {
                 _columnBuffer.Append(columns);
             }
-            if (_session != null)
+            if (_dbcontext != null)
             {
                 var sql = BuildSelect();
-                return await _session.QueryAsync<TResult>(sql, _param, timeout);
+                return await _dbcontext.QueryAsync<TResult>(sql, _param, timeout);
             }
             return new List<TResult>();
         }
@@ -853,10 +884,10 @@ namespace Dapper.Common
                 {
                     _columnBuffer.Append(columns);
                 }
-                if (_session != null)
+                if (_dbcontext != null)
                 {
                     var sql = BuildCount();
-                    return _session.ExecuteScalar<long>(sql, _param, timeout);
+                    return _dbcontext.ExecuteScalar<long>(sql, _param, timeout);
                 }
             }
             return 0;
@@ -869,10 +900,10 @@ namespace Dapper.Common
                 {
                     _columnBuffer.Append(columns);
                 }
-                if (_session != null)
+                if (_dbcontext != null)
                 {
                     var sql = BuildCount();
-                    return await _session.ExecuteScalarAsync<long>(sql, _param, timeout);
+                    return await _dbcontext.ExecuteScalarAsync<long>(sql, _param, timeout);
                 }
             }
             return 0;
@@ -995,10 +1026,10 @@ namespace Dapper.Common
     public class MysqlQuery<T1, T2, T3> : IQueryable<T1, T2, T3> where T1 : class where T2 : class where T3 : class
     {
         #region constructor
-        public ISession _session { get; }
-        public MysqlQuery(ISession session = null)
+        public IDbContext _dbcontext { get; }
+        public MysqlQuery(IDbContext dbcontext = null)
         {
-            _session = session;
+            _dbcontext = dbcontext;
             _param = new Dictionary<string, object>();
         }
         public MysqlQuery(Dictionary<string, object> param)
@@ -1030,7 +1061,10 @@ namespace Dapper.Common
         }
         public IQueryable<T1, T2, T3> GroupBy<TResult>(Expression<Func<T1, T2, T3, TResult>> expression, bool condition = true)
         {
-            GroupBy(string.Join(",", ExpressionUtil.BuildColumns(expression, _param, false).Select(s => s.Value)), condition);
+            if (condition)
+            {
+                GroupBy(string.Join(",", ExpressionUtil.BuildColumns(expression, _param, false).Select(s => s.Value)));
+            }
             return this;
         }
         public IQueryable<T1, T2, T3> Having(string expression, bool condition = true)
@@ -1043,7 +1077,10 @@ namespace Dapper.Common
         }
         public IQueryable<T1, T2, T3> Having(Expression<Func<T1, T2, T3, bool>> expression, bool condition = true)
         {
-            Having(string.Join(",", ExpressionUtil.BuildColumns(expression, _param, false).Select(s => s.Value)), condition);
+            if (condition)
+            {
+                Having(string.Join(",", ExpressionUtil.BuildColumns(expression, _param, false).Select(s => s.Value)));
+            }
             return this;
         }
         public IQueryable<T1, T2, T3> OrderBy(string orderBy, bool condition = true)
@@ -1060,12 +1097,18 @@ namespace Dapper.Common
         }
         public IQueryable<T1, T2, T3> OrderBy<TResult>(Expression<Func<T1, T2, T3, TResult>> expression, bool condition = true)
         {
-            OrderBy(string.Join(",", ExpressionUtil.BuildColumns(expression, _param, false).Select(s => string.Format("{0} ASC", s.Value))), condition);
+            if (condition)
+            {
+                OrderBy(string.Join(",", ExpressionUtil.BuildColumns(expression, _param, false).Select(s => string.Format("{0} ASC", s.Value))));
+            }
             return this;
         }
         public IQueryable<T1, T2, T3> OrderByDescending<TResult>(Expression<Func<T1, T2, T3, TResult>> expression, bool condition = true)
         {
-            OrderBy(string.Join(",", ExpressionUtil.BuildColumns(expression, _param, false).Select(s => string.Format("{0} DESC", s.Value))), condition);
+            if (condition)
+            {
+                OrderBy(string.Join(",", ExpressionUtil.BuildColumns(expression, _param, false).Select(s => string.Format("{0} DESC", s.Value))), condition);
+            }
             return this;
         }
         public IQueryable<T1, T2, T3> Page(int index, int count, out long total, bool condition = true)
@@ -1107,7 +1150,10 @@ namespace Dapper.Common
         }
         public IQueryable<T1, T2, T3> Where(Expression<Func<T1, T2, T3, bool>> expression, bool condition = true)
         {
-            Where(ExpressionUtil.BuildExpression(expression, _param, false), null, condition);
+            if (condition)
+            {
+                Where(ExpressionUtil.BuildExpression(expression, _param, false), null);
+            }
             return this;
         }
         public IEnumerable<TResult> Select<TResult>(string columns = null, bool buffered = true, int? timeout = null)
@@ -1116,10 +1162,10 @@ namespace Dapper.Common
             {
                 _columnBuffer.Append(columns);
             }
-            if (_session != null)
+            if (_dbcontext != null)
             {
                 var sql = BuildSelect();
-                return _session.Query<TResult>(sql, _param, buffered, timeout);
+                return _dbcontext.Query<TResult>(sql, _param, buffered, timeout);
             }
             return new List<TResult>();
         }
@@ -1129,10 +1175,10 @@ namespace Dapper.Common
             {
                 _columnBuffer.Append(columns);
             }
-            if (_session != null)
+            if (_dbcontext != null)
             {
                 var sql = BuildSelect();
-                return await _session.QueryAsync<TResult>(sql, _param, timeout);
+                return await _dbcontext.QueryAsync<TResult>(sql, _param, timeout);
             }
             return new List<TResult>();
         }
@@ -1156,10 +1202,10 @@ namespace Dapper.Common
                 {
                     _columnBuffer.Append(columns);
                 }
-                if (_session != null)
+                if (_dbcontext != null)
                 {
                     var sql = BuildCount();
-                    return _session.ExecuteScalar<long>(sql, _param, timeout);
+                    return _dbcontext.ExecuteScalar<long>(sql, _param, timeout);
                 }
             }
             return 0;
@@ -1172,10 +1218,10 @@ namespace Dapper.Common
                 {
                     _columnBuffer.Append(columns);
                 }
-                if (_session != null)
+                if (_dbcontext != null)
                 {
                     var sql = BuildCount();
-                    return await _session.ExecuteScalarAsync<long>(sql, _param, timeout);
+                    return await _dbcontext.ExecuteScalarAsync<long>(sql, _param, timeout);
                 }
             }
             return 0;
