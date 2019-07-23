@@ -145,6 +145,10 @@ namespace Dapper.Common.Util
             {
                 _build.AppendFormat("'{0}'", node.Value);
             }
+            else if(node.Value is Enum)
+            {
+                _build.AppendFormat("'{0}'", Convert.ToInt32(node.Value));
+            }
             else
             {
                 _build.AppendFormat("{0}", node.Value);
@@ -183,7 +187,10 @@ namespace Dapper.Common.Util
                 {
                     value = string.Format("%{0}%", value);
                 }
-
+            }
+            else if(value is Enum)
+            {
+                value = Convert.ToInt32(value);
             }
             var key = string.Format("@{0}{1}", _paramName, _param.Count);
             _param.Add(key, value);

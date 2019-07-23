@@ -397,7 +397,7 @@
       ]
     },
     "Dapper/1.60.6": {
-      "sha512": "mmnJNhKMeF2KhvVXDoVQlFxre8aJAo71YBJrKqFlvuqzYC2QiXUq94/GCDBJzU7paq4GqpkV2glw3308TcGibw==",
+      "sha512": "ZqK3znlm8dapfO8M0vCgV5+wJrl5Uv00WYmj27wQ6zufSLcklVNJ2fdVMUj59o89p+lmRD6QivTRe0Gdfm6UAQ==",
       "type": "package",
       "path": "dapper/1.60.6",
       "files": [
@@ -414,7 +414,7 @@
       ]
     },
     "Microsoft.NETCore.Platforms/1.1.0": {
-      "sha512": "kz0PEW2lhqygehI/d6XsPCQzD7ff7gUJaVGPVETX611eadGsA3A877GdSlU0LRVMCTH/+P3o2iDTak+S08V2+A==",
+      "sha512": "bLpT1f/SFlO1CzqXG12KnJzpZs6lv24uX2Rzi4Fmm0noJpNlnWRVryuO3yK18Ca04t/YHcO1e1Z0WDfjseqNzw==",
       "type": "package",
       "path": "microsoft.netcore.platforms/1.1.0",
       "files": [
@@ -444,7 +444,7 @@
       ]
     },
     "Microsoft.Win32.Registry/4.4.0": {
-      "sha512": "dA36TlNVn/XfrZtmf0fiI/z1nd3Wfp2QVzTdj26pqgP9LFWq0i1hYEUAW50xUjGFYn1+/cP3KGuxT2Yn1OUNBQ==",
+      "sha512": "LsK5GyV3JEhOJGigiVOQVkWPHHWXNJrwK/HrILIN1WhO3LJPW7b69qWtK5sDMp68Uw4cF21nZr5ylRc5s8iawg==",
       "type": "package",
       "path": "microsoft.win32.registry/4.4.0",
       "files": [
@@ -738,7 +738,7 @@
       ]
     },
     "System.Data.SqlClient/4.4.0": {
-      "sha512": "fxb9ghn1k1Ua7FFdlvtiBOD4/PsQvD/fk2KnhS+FK7VC6OggEx6P+lP1P0+KMb5V2dqS1+FbR7HCenoqzJMNIA==",
+      "sha512": "yuMDT9o4j0n3XnH7o7EYliyjUYPQ4RBo9tTNA+M6/KQKMcKXKGqHoq2gCb2sEHCRs5HjTwRlwT/F1JVdYaNaDA==",
       "type": "package",
       "path": "system.data.sqlclient/4.4.0",
       "files": [
@@ -1294,7 +1294,7 @@
       ]
     },
     "System.Reflection.TypeExtensions/4.4.0": {
-      "sha512": "dkmh/ySlwnXJp/1qYP9uyKkCK1CXR/REFzl7abHcArxBcV91mY2CgrrzSRA5Z/X4MevJWwXsklGRdR3A7K9zbg==",
+      "sha512": "JRxOAH6by+wn1gNnZc9jf2HbO/szhMJuLY2w44nEW77354WntXlFzWSVkx6280Uvcl3URZ/At+444vjX0/X1Aw==",
       "type": "package",
       "path": "system.reflection.typeextensions/4.4.0",
       "files": [
@@ -1529,7 +1529,7 @@
       ]
     },
     "System.Security.AccessControl/4.4.0": {
-      "sha512": "2NRFPX/V81ucKQmqNgGBZrKGH/5ejsvivSGMRum0SMgPnJxwhuNkzVS1+7gC3R2X0f57CtwrPrXPPSe6nOp82g==",
+      "sha512": "UPF+s4KctOCpk7dpBe3QtZ1AzFEHKdhOtiNDLxGnD/nxKsVbsow5OClTy8c7yOObw/Evbv95xRwZfYZ4wLV4fA==",
       "type": "package",
       "path": "system.security.accesscontrol/4.4.0",
       "files": [
@@ -1569,7 +1569,7 @@
       ]
     },
     "System.Security.Principal.Windows/4.4.0": {
-      "sha512": "pP+AOzt1o3jESOuLmf52YQTF7H3Ng9hTnrOESQiqsnl2IbBh1HInsAMHYtoh75iUYV0OIkHmjvveraYB6zM97w==",
+      "sha512": "yNxhQZ5oJb2Q7VqNj1Af6e+9KXzHcXJdv+eE+1Lp2+FYBwmVLQs2LfQpeSfz5RxorwlV0EpNbkLatPScb+XEWw==",
       "type": "package",
       "path": "system.security.principal.windows/4.4.0",
       "files": [
@@ -1676,7 +1676,7 @@
       ]
     },
     "System.Text.Encoding.CodePages/4.4.0": {
-      "sha512": "6JX7ZdaceBiLKLkYt8zJcp4xTJd1uYyXXEkPw6mnlUIjh1gZPIVKPtRXPmY5kLf6DwZmf5YLwR3QUrRonl7l0A==",
+      "sha512": "epF1P00AFbqPy5jZx3fpEn5qwlBDZ+dck71xYc/jLibfY6BtoFKOqoj84YHcQWV9HcWb7M13aVJ61XCdK8/3XA==",
       "type": "package",
       "path": "system.text.encoding.codepages/4.4.0",
       "files": [
@@ -1871,16 +1871,16 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\14483\\.nuget\\packages\\": {},
+    "C:\\Users\\chaeyeon\\.nuget\\packages\\": {},
     "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder": {}
   },
   "project": {
-    "version": "1.5.0.4",
+    "version": "1.5.0.5",
     "restore": {
       "projectUniqueName": "C:\\Dapper.Common\\src\\Dapper.Common\\Dapper.Common\\Dapper.Common.csproj",
       "projectName": "Dapper.Common",
       "projectPath": "C:\\Dapper.Common\\src\\Dapper.Common\\Dapper.Common\\Dapper.Common.csproj",
-      "packagesPath": "C:\\Users\\14483\\.nuget\\packages\\",
+      "packagesPath": "C:\\Users\\chaeyeon\\.nuget\\packages\\",
       "outputPath": "C:\\Dapper.Common\\src\\Dapper.Common\\Dapper.Common\\obj\\",
       "projectStyle": "PackageReference",
       "crossTargeting": true,
@@ -1888,7 +1888,7 @@
         "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
       ],
       "configFilePaths": [
-        "C:\\Users\\14483\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Users\\chaeyeon\\AppData\\Roaming\\NuGet\\NuGet.Config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
       "originalTargetFrameworks": [
