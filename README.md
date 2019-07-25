@@ -66,5 +66,15 @@ var row = context.From<Student>()
     .Where(a => a.Id == 16 && a.Version = student.Version)
     .Update();
 
+//由于id字段的注解[key=Column.PrimaryKey]，故使用id更新
+ //filter:指定不更新的字段
+ context.From<Student>()
+     .Filter(a => a.SchoolId)
+     .Update(new Student()
+     {
+         Id = 2,
+         CreateTime = DateTime.Now
+     });
+
 ```
   
