@@ -33,7 +33,7 @@ var row2 = context.From<Student>().Insert(new List<Student>()
         Name = "jar",
     },
 });
-
+//UPDATE `student` SET `age` = (`age` + @Age0),`name` = (select `name` from `school` where (`id` = @Id1)) WHERE (`id` = 16)
 ```
 
 ## UPDATE
