@@ -37,7 +37,6 @@ var row2 = context.From<Student>().Insert(new List<Student>()
 ```
 
 ## UPDATE
-* set
 ``` C#
  //param
  var age = 20;
