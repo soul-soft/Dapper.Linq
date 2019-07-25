@@ -38,43 +38,46 @@ var row2 = context.From<Student>().Insert(new List<Student>()
 
 ## UPDATE
 ``` C#
- //param
- var age = 20;
- DateTime? time = null;
- var sid = 1;
+//param
+var age = 20;
+DateTime? time = null;
+var sid = 1;
 
- //subquery
- var subquery = new SubQuery<School>()
-     .Where(a => a.Id == sid)
-     .Select(s => s.Name);
+//subquery
+var subquery = new SubQuery<School>()
+    .Where(a => a.Id == sid)
+    .Select(s => s.Name);
 
- var row = context.From<Student>()
-     .Set(a => a.Age, a => a.Age + age)
-     .Set(a => a.Name, subquery)
-     .Set(a => a.CreateTime, time, time != null)
-     .Where(a => a.Id == 16)
-     .Update();
+var row1 = context.From<Student>()
+    .Set(a => a.Age, a => a.Age + age)
+    .Set(a => a.Name, subquery)
+    .Set(a => a.CreateTime, time, time != null)
+    .Where(a => a.Id == 16)
+    .Update();
+
+//function
+context.From<Student>()
+    .Set(a => a.Name, a => MysqlFun.REPLACE(a.Name, "a", "b"))
+    .Where(a => a.Id == 14)
+    .Update();
 
 //lock
 var student = context.From<Student>()
     .Where(a => a.Id == 16)
     .Single();
-
-var row = context.From<Student>()
+var row2 = context.From<Student>()
     .Set(a => a.Age, 80)
     .Set(a => a.Version, Guid.NewGuid().ToString())
     .Where(a => a.Id == 16 && a.Version = student.Version)
     .Update();
 
-//由于id字段的注解[key=Column.PrimaryKey]，故使用id更新
- //filter:指定不更新的字段
- context.From<Student>()
-     .Filter(a => a.SchoolId)
-     .Update(new Student()
-     {
-         Id = 2,
-         CreateTime = DateTime.Now
-     });
-
+//entity
+var row3 = context.From<Student>()
+    .Filter(a => a.SchoolId)
+    .Update(new Student()
+    {
+        Id = 2,
+        CreateTime = DateTime.Now
+    });
 ```
   
