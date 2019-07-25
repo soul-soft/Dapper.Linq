@@ -55,6 +55,17 @@ var row2 = context.From<Student>().Insert(new List<Student>()
      .Set(a => a.CreateTime, time, time != null)
      .Where(a => a.Id == 16)
      .Update();
-//UPDATE `student` SET `age` = (`age` + @Age0),`name` = (select `name` from `school` where (`id` = @Id1)) WHERE (`id` = 16)
+
+//lock
+var student = context.From<Student>()
+    .Where(a => a.Id == 16)
+    .Single();
+
+var row = context.From<Student>()
+    .Set(a => a.Age, 80)
+    .Set(a => a.Version, Guid.NewGuid().ToString())
+    .Where(a => a.Id == 16 && a.Version = student.Version)
+    .Update();
+
 ```
   
