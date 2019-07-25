@@ -68,7 +68,7 @@ var student = context.From<Student>()
 var row2 = context.From<Student>()
     .Set(a => a.Age, 80)
     .Set(a => a.Version, Guid.NewGuid().ToString())
-    .Where(a => a.Id == 16 && a.Version = student.Version)
+    .Where(a => a.Id == 16 && a.Version == student.Version)
     .Update();
 
 //entity
@@ -80,4 +80,17 @@ var row3 = context.From<Student>()
         CreateTime = DateTime.Now
     });
 ```
-  
+## DELETE
+``` C#
+ var row1 = context.From<Student>()
+      .Where(a => a.Id == 16)
+      .Delete();
+
+ var subquery = new SubQuery<School>()
+     .Where(a => a.Id >= 0)
+     .Select(a => a.Id);
+
+ var row2 = context.From<Student>()
+      .Where(a => Operator.In(a.Id, subquery))
+      .Delete();
+```
