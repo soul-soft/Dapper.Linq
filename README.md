@@ -35,4 +35,26 @@ var row2 = context.From<Student>().Insert(new List<Student>()
 });
 
 ```
+
+## UPDATE
+* set
+``` C#
+ //param
+ var age = 20;
+ DateTime? time = null;
+ var sid = 1;
+
+ //subquery
+ var subquery = new SubQuery<School>()
+     .Where(a => a.Id == sid)
+     .Select(s => s.Name);
+
+ var row = context.From<Student>()
+     .Set(a => a.Age, a => a.Age + age)
+     .Set(a => a.Name, subquery)
+     .Set(a => a.CreateTime, time, time != null)
+     .Where(a => a.Id == 16)
+     .Update();
+
+```
   
