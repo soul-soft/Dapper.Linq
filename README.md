@@ -10,6 +10,7 @@
 
 ## INSERET
 ```
+//由于id[isIdentity=true]，因此sql不会显示设置id值   
  var row1 = context.From<Student>().Insert(new Student()
 {
     Status = Status.None,
