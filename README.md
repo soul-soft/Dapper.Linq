@@ -270,10 +270,12 @@ var expression = ExpressionUtil.BuildExpression(item, values, prefix);
 ```
 ## Object to Sql
 
-### DEMO1 Case When Then Else
-** step1: implement ISqlBuilder
+### DEMO.1 Case When Then Else
+
+#### step1: implement
 ``` C#
- public class Case<T> : ISqlBuilder
+//Dapper.common doesn't care how you implement it, it only concerns the result of build.
+public class Case<T> : ISqlBuilder
 {
     private List<Expression> _whens = new List<Expression>();
     private List<string> _thens = new List<string>();
@@ -312,3 +314,235 @@ var expression = ExpressionUtil.BuildExpression(item, values, prefix);
 }
 
 ```
+#### step2: use
+
+``` C#
+//case
+var caseWhen = new Case<Student>()
+    .When(a => a.Age <= 18)
+    .Then("children")
+    .When(a => a.Age <= 40)
+    .Then("Youth")
+    .Else("Old");
+
+//The "caseWhen" object is still an ISqlBuild instance at run time, not a string
+//The engine passes in parameters and calls the "caseWhen.Build" method of the instance
+var students1 = context.From<Student>()
+    .Where(a => caseWhen == "Old" || caseWhen == "Youth")
+    .Select(s => new
+    {
+        s.Id,
+        GroupAge = (string)caseWhen
+    });
+
+```
+
+### DEMO.2 Complex Function
+
+#### step1: implement
+
+``` C#
+ public class DateAdd<T> : ISqlBuilder
+ {
+     public string Column { get; set; }
+     public int Expr { get; set; }
+     public string Unit { get; set; }
+     public Dictionary<string, object> Values { get; set; }
+
+     public string Build(Dictionary<string, object> values, string prefix)
+     {
+         return "DATE_ADD(" + Column + ",INTERVAL " + Expr + " " + Unit + ")";
+     }
+     public DateAdd(Expression<Func<T, DateTime?>> column, int expr, string unit)
+     {
+         this.Column = ExpressionUtil.BuildColumn(column, null, null).FirstOrDefault().Value;
+         this.Expr = expr;
+         this.Unit = unit;
+     }
+     public static bool operator <(DateTime? t1, DateAdd<T> t2)
+     {
+         return false;
+     }
+     public static bool operator <(DateAdd<T> t1, DateTime? t2)
+     {
+         return false;
+     }
+     public static bool operator >(DateTime? t1, DateAdd<T> t2)
+     {
+         return false;
+     }
+     public static bool operator >(DateAdd<T> t1, DateTime? t2)
+     {
+         return false;
+     }
+     public static explicit operator DateTime(DateAdd<T> d) => DateTime.Now;
+ }
+
+```
+
+#### step2: use
+
+``` C#
+ var adddayfun = new DateAdd<Student>(a => a.CreateTime, 1, "day");
+
+ //in columus
+ var student1 = context.From<Student>()
+     .Select(s => new
+     {
+         s.Id,
+         DateTime = (DateTime)adddayfun //just for type inference
+     });
+
+ //in expression
+ var student2 = context.From<Student>()
+     .Where(a => adddayfun > DateTime.Now)
+     .Select();
+
+```
+### DEMO.3 Window Function
+
+#### step1: implement
+
+``` C#
+ public class WinFun<T> : ISqlBuilder
+ {
+     string _partition { get; set; }
+     string _orderby { get; set; }
+     private string _methodName { get; set; }
+     public WinFun<T> ROW_NUMBER()
+     {
+         _methodName = nameof(ROW_NUMBER);
+         return this;
+     }
+     public WinFun<T> PARTITION<TResult>(Expression<Func<T, TResult>> columns)
+     {
+         var cls = ExpressionUtil.BuildColumns(columns, null, null);
+         _partition += string.Join(",", cls.Select(s => s.Value));
+         return this;
+     }
+     public WinFun<T> ORDERBY<TResult>(Expression<Func<T, TResult>> columns, bool asc = true)
+     {
+         var cls = ExpressionUtil.BuildColumns(columns, null, null);
+         _orderby += string.Join(",", cls.Select(s => s.Value));
+         _orderby += !asc ? "DESC" : "ASC";
+         return this;
+     }
+     /*If there are no parameters in the expression, there is no need to build in build-method*/
+     public string Build(Dictionary<string, object> values, string prefix)
+     {
+         if (_methodName == nameof(ROW_NUMBER))
+         {
+             return string.Format("ROW_NUMBER()OVER(ORDER BY {0})", _orderby);
+         }
+         throw new NotImplementedException();
+     }
+
+     public static implicit operator ulong(WinFun<T> d) => 0;
+ }
+
+```
+#### step2: use
+
+``` C#
+ var winFun = new WinFun<Student>()
+     .ORDERBY(a => a.Age)
+     .ROW_NUMBER();
+
+ var student1 = context.From<Student>()
+    .Select(s => new
+    {
+        s.Id,
+        s.Name,
+        s.Age,
+        RowNum = (ulong)winFun
+    });
+    
+```
+### DEMO.4 Subquery
+
+#### step1: implement
+
+``` C#
+public class SubQuery<T> : ISubQuery where T : class
+{
+    private Expression _where { get; set; }
+    private Expression _column { get; set; }
+    private string _method { get; set; }
+    public string Build(Dictionary<string, object> values, string prefix)
+    {
+        var table = EntityUtil.GetTable<T>();
+        var column = ExpressionUtil.BuildColumn(_column, values, prefix).SingleOrDefault().Value;
+        var where = ExpressionUtil.BuildExpression(_where, values, prefix);
+        if (_method == nameof(this.Select))
+        {
+            return string.Format("(select {0} from {1} where {2})", column, table.TableName, where);
+        }
+        if (_method == nameof(this.Count))
+        {
+            return string.Format("(select count({0}) from {1} where {2})", column, table.TableName, where);
+        }
+        throw new NotImplementedException();
+    }
+    public SubQuery<T> Where(Expression<Func<T, bool>> expression)
+    {
+        _where = expression;
+        return this;
+    }
+    public SubQuery<T> Select<TResut>(Expression<Func<T, TResut>> expression)
+    {
+        _method = nameof(this.Select);
+        _column = expression;
+        return this;
+    }
+    public SubQuery<T> Count<TResut>(Expression<Func<T, TResut>> expression)
+    {
+        _method = nameof(this.Count);
+        _column = expression;
+        return this;
+    }
+
+    public override bool Equals(object obj)
+    {
+        return obj is SubQuery<T> query &&
+               EqualityComparer<Expression>.Default.Equals(_where, query._where) &&
+               EqualityComparer<Expression>.Default.Equals(_column, query._column) &&
+               _method == query._method;
+    }
+
+    public override int GetHashCode()
+    {
+        return HashCode.Combine(_where, _column, _method);
+    }
+
+    public static bool operator <(object t1, SubQuery<T> t2)
+    {
+        return false;
+    }
+    public static bool operator ==(object t1, SubQuery<T> t2)
+    {
+        return false;
+    }
+    public static bool operator !=(object t1, SubQuery<T> t2)
+    {
+        return false;
+    }
+    public static bool operator <=(object t1, SubQuery<T> t2)
+    {
+        return false;
+    }
+    public static bool operator >=(object t1, SubQuery<T> t2)
+    {
+        return false;
+    }
+    public static bool operator >(object t1, SubQuery<T> t2)
+    {
+        return false;
+    }
+
+```
+
+#### step2: use
+
+```
+```
+
