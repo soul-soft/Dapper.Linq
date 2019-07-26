@@ -226,7 +226,11 @@ var students2 = context.From<Student>()
 var student3 = context.From<Student>()
     .Where(a => a.CreateTime == DateTime.Now.Date)
     .Select();
-
+//lock
+var students4 = context.From<Student>()
+   .With(LockType.FOR_UPADTE)
+   .Select();    
+   
 //exists1
 var flag1 = context.From<Student>()
     .Where(a => a.Id > 50)
