@@ -260,3 +260,9 @@ var disinct = context.From<Student>()
     .Select(s => s.Name);
 
 ```
+## Expression To Sql
+``` C#
+var prefix = "@";
+var values = new Dictionary<string, object>();
+var express = ExpressionUtil.BuildExpression(item, values, prefix);
+```
