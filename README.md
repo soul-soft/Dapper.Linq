@@ -6,7 +6,17 @@
   3. QQGroup:642555086
 
 ## CONFIG
+``` C#
+ DbContextFactory.AddDataSource(new DataSource()
+ {
+     Default = true,
+     Name = "mysql",
+     ConnectionFacotry = () => new MySql.Data.MySqlClient.MySqlConnection("server=localhost;user id=root;password=1024;database=test;"),
+     DatasourceType = DatasourceType.MYSQL,
+     UseProxy = true//use static proxy,for logger
+ });
 
+```
 
 ## INSERET
 ``` C#
