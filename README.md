@@ -223,7 +223,7 @@ var students2 = context.From<Student>()
     .Select();
 ```
 ## task page
-```
+``` C#
  var students = context.From<Student>()
      .Page(1, 10, out long total)
      .Select();
