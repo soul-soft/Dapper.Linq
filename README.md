@@ -124,3 +124,32 @@ using (var context = DbContextFactory.GetDbContext())
          .Delete();
 }
 ```
+## Select 
+``` C#
+ //single
+ var student = context.From<Student>()
+     .Where(a => a.Id == 19)
+     .Single();
+
+ //subquery
+ var id = 0;
+ var age = 50;
+ var subquery = new SubQuery<School>()
+    .Where(a => a.Id >= id)
+    .Select(a => a.Id);
+
+ //Verify that subquery parameters are written to the current query
+ var students2 = context.From<Student>()
+     .OrderBy(a => a.Age)
+     .Where(a => a.Id >= Operator.Any(subquery) && a.Age > age)
+     .Select();
+
+ //Partial columns
+ var students3 = context.From<Student>()
+    .Select(s => new
+    {
+        s.Id,
+        s.Age
+    });
+
+```
