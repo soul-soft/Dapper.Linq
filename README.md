@@ -222,7 +222,7 @@ var students2 = context.From<Student>()
     .Where(a => a.Id > 2 || a.Age > 20, param.Type == 8)
     .Select();
 ```
-## task page
+## Task page
 ``` C#
  var students = context.From<Student>()
      .Page(1, 10, out long total)
@@ -324,11 +324,13 @@ var disinct = context.From<Student>()
 ```
 
 ## Expression To Sql
-``` C#
 
+``` C#
 var prefix = "@";
 var values = new Dictionary<string, object>();
+Expression<Func<Student,bool>> expression = s => s.Age>40; 
 var expression = ExpressionUtil.BuildExpression(item, values, prefix);
+var 
 
 ```
 ## Object to Sql
@@ -633,7 +635,6 @@ var student1 = context.From<Student>()
 var subquery2 = new SubQuery<School>()
    .Where<Student,School>((a,b) => a.SchoolId==b.Id)
    .Select(s => s.Name);
-
 
 var student2 = context.From<Student>()
     .Select(s=>new
