@@ -1,425 +1,647 @@
-# Dapper.Common QQ群：642555086
+# Dapper.Common
 
-#### 性能:基于Dapper
-* Dapper性能：[https://github.com/StackExchange/Dapper/blob/master/Readme.md]
-* 博客园：[https://www.cnblogs.com/chaeyeon/p/11028480.html]
-* Dapper.Common SQL构建性能：
-* PS：常量直接获取，如果是变量将采用反射，否则将采用动态编译，性能：常量>变量>函数
-```
+## About author
+  1. Email:1448376744@qq.com
+  2. QQ:1448376744
+  3. QQGroup:642555086
 
-//这段代码将构建一条基础查询语句，2W次不超过400ms！！！基本等价与手写SQL
-for(var i = 0;i < 20000; i++)
-{
-  var query = new MysqlQuery<Member>();
-  query.Where(a => a.Id == i).Single();
-  sql = query.BuildSelect();
-}
-
-```
-
-#### 架构:高可维护性，可扩展性
-* ExpressionUtil：提供linq to sql 的构建工具类
-
-* ExtensionUtil：扩展in，like，regexp等关键词，ID!=null,ID==null,将解析成为ID is null,ID is not null,切记:列在左，值在右
-
-* IQueryable：构建完整查询语句的抽象接口
-
-* MysqlQuery：构建mysql查询的实例，实现IQueryable接口，直接创建对象，不设置Session可只构建sql
-
-* SqlQuery：构建sqlserver查询的实例，实现IQueryable接口
-
-* ISession：数据库会话，一个Session对应一个Connection对象，代表一次会话，实现IDisposable接口，using只负责关闭连接不处理事务，事务请try...catch提交或回滚
-
-* Session：实现ISession接口，Timeout和Buffered如果设置则优先使用Session中的配置
-
-* SessionProxy:实现ISession对Session进行静态代理，记录日志信息，如果有异常便于调试，由于VS出现异常将退出程序，请在catch分析session实例中的Loggers
-
-* SessionFactor:用于配置数据源，创建会话，
-
-* Attribute:中包含对表，字段，函数的注解，用于解决：字段映射，自定义函数
-
-* 绝大部分接口都可以传递一个condition以决定是否执行
-
-#### 配置：多数据源
-```
-//可以配置多个数据源，UseProxy将开启代理，记录sql，查询耗时，name是获取数据源的标识，只需要执行一次，请写在静态代码块或者Asp启动事件中
- SessionFactory.AddDataSource(new DataSource()
-    {
-        SourceType = DataSourceType.MYSQL,
-        Source = () => new MySql.Data.MySqlClient.MySqlConnection("server=127.0.0.1;user id=root;password=1024;database=test;pooling=True;minpoolsize=1;maxpoolsize=10;connectiontimeout=180;"),
-        UseProxy = true,
-        Name = "mysql",
-    });
-var session = SessionFactor.GetSession("mysql");
-```
-#### Insert
-```
-var session = SessionFactor.GetSession();
-//新增单个
-var row = session.From<Member>().Insert(new Member 
-{
-    Name="Dapper"
-});
-
-//新增多个
-var row = session.From<Member>().Insert(new List<Member>()
-{
-    new Member()
-    {
-      Name="Dapper"
-    },
-    new Member()
-    {
-      Name="Common"
-    }
-});
-
-//返回Identity
-var id = session.From<Member>().InsertReturnId(new Member()
-{
-    Name="Dapper"
-});
-
-```
-#### Update
-* 根据主键，整体更新
-```
-
-//这将更新Member类的所有字段，假设还有Balance,此时将更新成NULL，支持更新一个List<Member>
-session.From<Member>().Update(new Member
-{
-    Id = 1,
-    Name = "Dapper"
-});
-
-//Filter指定Name,Balance列不更新，或只过滤余额 f=>f.Balance，select的时候可以过滤掉不想查询的列
-session.From<Member>()
-  .Filter(f=>new 
-  {
-    f.Name,
-    f.Balance
-  })
-  .Update(new Member
-  {
-    Id=1,
-    Name="Dapper"
-  });
-```
-* 更新部分列
-```
-var member = session.Where(a=>a.id==1).Signle();
-//乐观锁
-var row =  session.From<Member>()
-    //column,value
-    .Set(a => a.Balance,100)
-    .Set(a => a.Version,Datetime.Now)
-    .Where(a => a.Id == 1 && a.Version == member.Version)
-    .Update(true);//绝大部分接口都可以传递一个condition，已决定是否执行
-if(row==0) 
-  session.Rollbakc();
-
-//value为一个表达式
-var row = session.From<Member>()
-     //column,expr
-    .Set(a => a.Name,a => DbFun.Replace(a.Name, "ff", "cc"))
-     //Balance在原来基础上加100,这种方法可以防止丢失更新
-    .Set(a => a.Balance,a => a.Balance + 100)
-    .Update();
-    
-```
-#### Delete
-```
-//delete all
-var row = session.From<Member>().Delete();
-
-var row = session.From<Member>()
-    .Where(a=>a.Id ==2)
-    .Delete();
-    
-var row = session.From<Member>()
-    .Where(a=>a.Id.In(new int[]{1,2,3}))
-    .Delete();
-```
-
-#### Transaction
-* 如果不使用事务
- ```
-  using(var session = SessionFactory.GetSession())
-  {
-    session.From<Member>().Insert(new Member()
-    {
-        NickName="dapper"
-    });
-  }
- ```
-* 如果使用事务:推荐使用AOP完成，不懂加群
-```
-  using(vaar session = SessionFactory.GetSession())
-  {
-    try
-    {
-     //打开事物
-     session.Open(true);
-     session.From<Member>().Insert(new Member()
-      {
-          NickName="dapper"
-      });
-      session.From<Member>().Where(a=>a.Id=2).Delete();
-      session.Commit();
-    }
-    catch
-    {
-      //一定要通过异常机制来处理事物
-      session.Rollback();
-    }   
-  }
-```
-
-#### Count
-```
-var count = session.From<Member>().Where(a=>a.id>2).Count();
-
-var count = session.From<Member>().Count(s=>new 
-{
-   s.NickName,
-   s.Balance
-});
-
-var count = session.Frm<Member>()
-.Distinct()
-.Count(s=>new 
-{
-   s.NickName,
-   s.Balance
-});
-
-```
-
-#### Sum
-```
-var total = session.From<Member>().Where(a=>a.Id>0).Sum(s=>s.Balace);
-
-var total = session.From<Member>().Sum(s=>s.Balace*10*s.Id);
-
-```
-
-### Filter
-
-```
-Filter 在Select,Insert,Update,时可以过滤掉不要的字段
-
-```
-
-#### Single
-
-```
-var member = session.From<Member>().Where(a=>a.Id==1).Single();
-
-var balance = session.From<Member>().Where(a=>a.Id==1).Single(s=>s.Balace);
-
-var info = session.From<Member>().Where(a=>a.Id==2).Single(s=>new {s.NickName,s.Gander});
-
-```
-
-#### Page
-```
-var param=
-{
- NickName="zs",
- Id = null,
- Index = 1,
- Count = 10
-}
-
-var list = session.From<Member>()
-  //当param.Id!=null成立时，执行a.Id==param条件
-  .Where(a=>a.Id==param.Id,param.Id!=null)
-  .Where(a=>a.NickName.Like(param.NickName),!string.IsNull(param.NickName))
-  .OrderBy(a=>a.Balance)
-  .OrderByDescending(a=>a.Id)
-  //分页一定要写在group,where，having 之后
-  .Page(param.Index,param.Count,out long total)
-  .Select();
-```
-
-#### Group By
-
-```
- var list = select.From<Member>()
-   .GroupBy(a=>a.NickName)
-   .Having(a=>DbFun.Count(NickName)>2)
-   //支持匿名类型但不建议使用
-   .Select(a=>new 
-   {
-     a.NickName,
-     SUM = DbFun.Sum(a.Balace)，
-     Count = DbFun.Count(1L)
-   });
- 
-```
-
-#### Take
- ```
- //获取前8个
- var list = session.From<Member>().Take(8).Select();
- ```
-#### Skip
-```
- //从下标为5开始获取十个，等价于MYSQL中的LIMIT
- var list = session.From<Member>().Skip(5,10).Select();
-```
-#### Join
-
-```
-var list = session.From<MemberBill, Member, MemberOrder>()
-        .Join<Member,MemberBill>((a, b) => a.Id == b.MemberId)
-        .Join<Member, MemberOrder>((a, b) => a.Id == b.MemberId,JoinType.Left)
-        .Select((a, b, c) => new
-        {
-            b.Id,
-            b.NickName,
-            c.OrderName
-        });
-```
-
-#### Mapper
-```
- TableAttribute("t_member")
- public class Member
+## Config
+``` C#
+ DbContextFactory.AddDataSource(new DataSource()
  {
-    //分别标识：字段名、主键，自增列，SQLSERVER，一定要标识自增列，否则INSERT时将向自增赋值，而引发异常
-    [ColumnAttribu("ID",ColumnKey.Primary,true)]
-    public int? Id { get; set; }
-    //通过`COLUMN_NAME`，来映射关键词
-    [ColumnAttribu("`GROUP`",ColumnKey.None)]
-    public int? Group { get; set;}
- }
-```
-
-#### Function
+     Default = true,
+     Name = "mysql",
+     ConnectionFacotry = () => new MySql.Data.MySqlClient.MySqlConnection("server=localhost;user id=root;password=1024;database=test;"),
+     DatasourceType = DatasourceType.MYSQL,
+     UseProxy = true//use static proxy,for logger
+ });
 
 ```
-//注意虽然可以使用匿名类型，但是dapper对匿名类型映射不友好，
-public static DBFUN
+
+## Insert
+``` C#
+IDbContext context = null;
+try
 {
-    [Function]//必须用该特性标识为数据库函数    
-    public long? COUNT<T>(T column)
+    context = DbContextFactory.GetDbContext();
+    //because set "id[isIdentity=true]"，so not set "id" value
+    var row1 = context.From<Student>().Insert(new Student()
     {
-       return default(T);
-    }
-    [Function]//必须用该特性标识为数据库函数 
-    //ParameterAttribute:标记特殊参数：关键字参数
-    public T COUNT<T>([Parameter]string distinct,T column)
+        Grade = Grade.A,
+        CreateTime = DateTime.Now,
+        Name = "jack",
+    });
+    //batch added
+    var row2 = context.From<Student>().Insert(new List<Student>()
     {
-       return default(T);
-    }
-    [Function]//必须用该特性标识为数据库函数,尽量返回大的数据类型 
-    public decimal Sum(object o)
-    {
-       return default(T);
-    }
-}
-//DEMO:可以标识该字段为特殊参数：特殊参数之后不加逗号
-session.From<Member>().GroupBy(g=>g.NickName).Select(s=>new 
-{
-   s.NickName,
-   Count=DBFUN.COUNT("DISTINCT ,",1)
-})
-
-```
-#### SqlString
-```
-   //where,orderby,groupby,having，都可以插入sql片段
-   //如果case返回的是0，1，2，3，4，5数字类型
-   //则PriceRange也应该是int类型（应该用int64）,此时PriceRange=range，PriceRange类型推断为string类型
-   //解决方案：PriceRange = Convert.ToInt64(range),只支持conver来将sql片段进行转换
-   var range = @"(CASE WHEN sale_price <= 10 THEN '0' 
-                    WHEN sale_price <= 20 THEN '1'
-                    WHEN sale_price <= 30 THEN '2'
-                    WHEN sale_price <= 50 THEN '3'
-                    WHEN sale_price <= 100 THEN '4'
-                    ELSE 5 END)";
-                       
-    var list = Session.From<SaleOrderItem>()
-        .Where("id=@id",p=>p.Add("@id",1))//为了防止sql注入应该使用参数化
-        .GroupBy(range)
-        .Select(s => new
+        new Student()
         {
-            PriceRange = range,
-            GoodsCount = DbFun.Sum(s.GoodsNum)
+            Grade = Grade.C,
+            CreateTime = DateTime.Now,
+            Name = "tom",
+        },
+         new Student()
+        {
+            Grade = Grade.F,
+            CreateTime = DateTime.Now,
+            Name = "jar",
+        },
+    });
+}
+catch (Exception e)
+{
+    //debug sql logger
+    Console.WriteLine(context.Loggers);
+}
+finally
+{
+    context.Close();
+}
+
+```
+
+## Update
+``` C#
+using (var context = DbContextFactory.GetDbContext())
+{
+    //param
+    var age = 20;
+    DateTime? time = null;
+    var sid = 1;
+
+    //subquery
+    var subquery = new SubQuery<School>()
+        .Where(a => a.Id == sid)
+        .Select(s => s.Name);
+
+    var row1 = context.From<Student>()
+        .Set(a => a.Age, a => a.Age + age)
+        .Set(a => a.Name, subquery)
+        .Set(a => a.CreateTime, time, time != null)
+        .Where(a => a.Id == 16)
+        .Update();
+
+    //function
+    context.From<Student>()
+        .Set(a => a.Name, a => MysqlFun.REPLACE(a.Name, "a", "b"))
+        .Where(a => a.Id == 14)
+        .Update();
+
+    //lock
+    var student = context.From<Student>()
+        .Where(a => a.Id == 16)
+        .Single();
+    var row2 = context.From<Student>()
+        .Set(a => a.Age, 80)
+        .Set(a => a.Version, Guid.NewGuid().ToString())
+        .Where(a => a.Id == 16 && a.Version == student.Version)
+        .Update();
+
+    //entity
+    var row3 = context.From<Student>()
+        .Filter(a => a.SchoolId)
+        .Update(new Student()
+        {
+            Id = 2,
+            CreateTime = DateTime.Now
         });
+
 ```
-#### 自定义分页-该策略可适用于百万级别
+## Delete
+``` C#
+using (var context = DbContextFactory.GetDbContext())
+{
+    var row1 = context.From<Student>()
+         .Where(a => a.Id == 16)
+         .Delete();
+
+    var subquery = new SubQuery<School>()
+        .Where(a => a.Id >= 0)
+        .Select(a => a.Id);
+
+    var row2 = context.From<Student>()
+         .Where(a => Operator.In(a.Id, subquery))
+         .Delete();
+}
 ```
- //该策略可适用于百万级别，单表条件查询
-//思想:先只查满足条件的id，并分页，然后where in (idArray)查详情
- public static Dapper.Extension.IQueryable<T> SPage<T>(this Dapper.Extension.IQueryable<T> queryable, int index, int count, out long total) where T : class, new()
+## Transaction
+
+``` C#
+  IDbContext dbContext = null;
+  try
   {
-      total = 0;
-      if (index <= 90000)
+      dbContext = DbContextFactory.GetDbContext();
+      dbContext.From<Student>().Insert(new Student()
       {
-          //采用limit
-          queryable.Page(index, count, out total);
-      }
-      //对mysql进行扩展
-      else if (queryable is MysqlQuery<T> mysqlQuery)
+          Name="stduent1"
+      });
+      //throw new Exception("rollback");
+      dbContext.From<School>().Insert(new School()
       {
-          total = queryable.Count();
-          var table = EntityUtil.GetTable<T>();
-          var idName = table.Columns.Find(f => f.ColumnKey == ColumnKey.Primary).ColumnName;
-          //先只查询主键字段并分页
-          var where = mysqlQuery._whereBuffer.Length > 0 ? "where " + mysqlQuery._whereBuffer : "";
-          var orderby = mysqlQuery._orderBuffer.Length > 0 ? "order by" + mysqlQuery._orderBuffer : "";
-          var sql = string.Format("select {0} from {1} {2} {3} limit {4},{5}", idName, table.TableName, where, orderby, (index - 1) * count, count);
-          var idArray = mysqlQuery._session.Query<long>(sql, mysqlQuery._param);
-          //重置
-          mysqlQuery._whereBuffer.Clear();
-          //新建条件
-          if (idArray.Count() > 0)
-          {
-              queryable.Where(string.Format("{0} in @idArray", idName), p => p.Add("@idArray", idArray));
-          }
-      }
-      return queryable;
+          Name = "school1"
+      });
+      dbContext.Commit();
+  }
+  catch (Exception)
+  {
+      dbContext?.Rollback();
+      throw;
+  }
+  finally
+  {
+      dbContext?.Close();
   }
 
+```
 
-var row = Session.From<Member>()
-     .SPage(2,2,out long total)
+## Select 
+``` C#
+ //single
+ var student = context.From<Student>()
+     .Where(a => a.Id == 19)
+     .Single();
+
+ //subquery
+ var id = 0;
+ var age = 50;
+ var subquery = new SubQuery<School>()
+    .Where(a => a.Id >= id)
+    .Select(a => a.Id);
+
+ //Verify that subquery parameters are written to the current query
+ var students2 = context.From<Student>()
+     .OrderBy(a => a.Age)
+     .Where(a => a.Id >= Operator.Any(subquery) && a.Age > age)
      .Select();
+
+ //Partial columns
+ var students3 = context.From<Student>()
+    .Select(s => new
+    {
+        s.Id,
+        s.Age
+    });
+
+```
+## Group by
+```C#
+  var students = context.From<Student>()
+      .GroupBy(a => a.Age)
+      .Having(a => MysqlFun.Count(1L) > 2)
+      .Select(s => new
+      {
+          Count = MysqlFun.Count(1L),
+          s.Age,
+      });
+
+```
+## Dynamic query
+``` C#
+var param = new Student()
+{
+    Name = "zs",
+    Grade = Grade.B,
+    SchoolId = null,
+    Id = null,
+    Type = 5
+};
+
+//Multiple Where Connections with AND
+var students = context.From<Student>()
+    .Where(a => a.Id == param.Id, param.Id != null)
+    .Where(a => Operator.Contains(a.Name, param.Name), param.Name != null)
+    .Where(a => a.Grade == param.Grade, param.Grade != null)
+    .Where(a => a.Id > 2 || a.Age < 80, param.Type == 5)
+    .Select();
+
+
+var students2 = context.From<Student>()
+    .Where(a => a.Id == param.Id, param.Id != null)
+    .Where(a => a.Grade == param.Grade, param.Grade != null)
+    .Where(a => Operator.StartsWith(a.Name, param.Name), param.Name != null)
+    .Where(a => a.Id > 2 || a.Age > 20, param.Type == 8)
+    .Select();
+```
+## task page
+``` C#
+ var students = context.From<Student>()
+     .Page(1, 10, out long total)
+     .Select();
+```
+## Join
+``` C#
+ var students = context.From<Student, School>()
+     .Join((a, b) => a.SchoolId == b.Id)
+     .Select((a, b) => new
+     {
+         a.Id,
+         StuName = a.Name,
+         SchName = b.Name
+     });
+
+```
+## Other query
+``` C#
+//limit 0,10
+var students1 = context.From<Student>()
+    .Take(10)
+    .Select();
+
+//limit 10,20 
+var students2 = context.From<Student>()
+   .Skip(10, 20)
+   .Select();
+
+//Calling functions in expressions is not recommended, but n-tier attribute access is supported
+var student3 = context.From<Student>()
+    .Where(a => a.CreateTime == DateTime.Now.Date)
+    .Select();
+//lock
+var students4 = context.From<Student>()
+   .With(LockType.FOR_UPADTE)
+   .Select();    
+   
+//exists1
+var flag1 = context.From<Student>()
+    .Where(a => a.Id > 50)
+    .Exists();
+
+//exists2
+var subquery = new SubQuery<School>()
+    .Where(a => a.Id >= 2)
+    .Select(a => a.Id);
+var flag2 = context.From<Student>()
+    .Where(a => Operator.Exists(subquery))
+    .Count();
+
+//count
+var count = context.From<Student>()
+   .Where(a => a.Id > 50)
+   .Count();
+
+//sum
+var sum = context.From<Student>()
+ .Where(a => a.Id > 50)
+ .Sum(s => s.Id * s.Age);
+
+//distinct
+var disinct = context.From<Student>()
+    .Distinct()
+    .Select(s => s.Name);
+
+```
+## Custom Function
+
+* step1
+``` C#
+ public static class MysqlFun
+ {
+     [Function]
+     public static string REPLACE(string column,string oldstr,string newstr)
+     {
+         return string.Empty;
+     }
+     [Function]
+     public static T Count<T>(T column)
+     {
+         return default;
+     }
+   
+ }
+
+```
+* 2 step2
+
+``` C#
+ var students = context.From<Student>()
+     .GroupBy(a => a.Age)
+     .Having(a => MysqlFun.Count(1L) > 2)
+     .Select(s => new
+     {
+         Count = MysqlFun.Count(1L),
+         s.Age,
+     });
+```
+
+## Expression To Sql
+``` C#
+
+var prefix = "@";
+var values = new Dictionary<string, object>();
+var expression = ExpressionUtil.BuildExpression(item, values, prefix);
+
+```
+## Object to Sql
+
+### DEMO.1 Case When Then Else
+
+#### step1: implement
+``` C#
+//Dapper.common doesn't care how you implement it, it only concerns the result of build.
+public class Case<T> : ISqlBuilder
+{
+    private List<Expression> _whens = new List<Expression>();
+    private List<string> _thens = new List<string>();
+    string _else = null;
+    public string Build(Dictionary<string, object> values, string prefix)
+    {
+        var sb = new StringBuilder();
+        foreach (var item in _whens)
+        {
+            var express = ExpressionUtil.BuildExpression(item, values, prefix);
+            sb.AppendFormat(" WHEN {0} THEN '{1}'", express, _thens[_whens.IndexOf(item)]);
+        }
+        if (_else != null)
+        {
+            sb.AppendFormat(" ELSE '{0}'", _else);
+        }
+        return string.Format("(CASE {0} END)", sb);
+    }
+    public static implicit operator string(Case<T> d) => string.Empty;
+    public Case<T> When(Expression<Func<T, bool>> expression)
+    {
+        new Dictionary<string, object>();
+        _whens.Add(expression);
+        return this;
+    }
+    public Case<T> Then(string value)
+    {
+        _thens.Add(value);
+        return this;
+    }
+    public Case<T> Else(string value)
+    {
+        _else = value;
+        return this;
+    }
+}
+
+```
+#### step2: use
+
+``` C#
+//case
+var caseWhen = new Case<Student>()
+    .When(a => a.Age <= 18)
+    .Then("children")
+    .When(a => a.Age <= 40)
+    .Then("Youth")
+    .Else("Old");
+
+//The "caseWhen" object is still an ISqlBuild instance at run time, not a string
+//The engine passes in parameters and calls the "caseWhen.Build" method of the instance
+var students1 = context.From<Student>()
+    .Where(a => caseWhen == "Old" || caseWhen == "Youth")
+    .Select(s => new
+    {
+        s.Id,
+        GroupAge = (string)caseWhen
+    });
+
+```
+
+### DEMO.2 Complex Function
+
+#### step1: implement
+
+``` C#
+ public class DateAdd<T> : ISqlBuilder
+ {
+     public string Column { get; set; }
+     public int Expr { get; set; }
+     public string Unit { get; set; }
+     public Dictionary<string, object> Values { get; set; }
+
+     public string Build(Dictionary<string, object> values, string prefix)
+     {
+         return "DATE_ADD(" + Column + ",INTERVAL " + Expr + " " + Unit + ")";
+     }
+     public DateAdd(Expression<Func<T, DateTime?>> column, int expr, string unit)
+     {
+         this.Column = ExpressionUtil.BuildColumn(column, null, null).FirstOrDefault().Value;
+         this.Expr = expr;
+         this.Unit = unit;
+     }
+     public static bool operator <(DateTime? t1, DateAdd<T> t2)
+     {
+         return false;
+     }
+     public static bool operator <(DateAdd<T> t1, DateTime? t2)
+     {
+         return false;
+     }
+     public static bool operator >(DateTime? t1, DateAdd<T> t2)
+     {
+         return false;
+     }
+     public static bool operator >(DateAdd<T> t1, DateTime? t2)
+     {
+         return false;
+     }
+     public static explicit operator DateTime(DateAdd<T> d) => DateTime.Now;
+ }
+
+```
+
+#### step2: use
+
+``` C#
+ var adddayfun = new DateAdd<Student>(a => a.CreateTime, 1, "day");
+
+ //in columus
+ var student1 = context.From<Student>()
+     .Select(s => new
+     {
+         s.Id,
+         DateTime = (DateTime)adddayfun //just for type inference
+     });
+
+ //in expression
+ var student2 = context.From<Student>()
+     .Where(a => adddayfun > DateTime.Now)
+     .Select();
+
+```
+### DEMO.3 Window Function
+
+#### step1: implement
+
+``` C#
+ public class WinFun<T> : ISqlBuilder
+ {
+     string _partition { get; set; }
+     string _orderby { get; set; }
+     private string _methodName { get; set; }
+     public WinFun<T> ROW_NUMBER()
+     {
+         _methodName = nameof(ROW_NUMBER);
+         return this;
+     }
+     public WinFun<T> PARTITION<TResult>(Expression<Func<T, TResult>> columns)
+     {
+         var cls = ExpressionUtil.BuildColumns(columns, null, null);
+         _partition += string.Join(",", cls.Select(s => s.Value));
+         return this;
+     }
+     public WinFun<T> ORDERBY<TResult>(Expression<Func<T, TResult>> columns, bool asc = true)
+     {
+         var cls = ExpressionUtil.BuildColumns(columns, null, null);
+         _orderby += string.Join(",", cls.Select(s => s.Value));
+         _orderby += !asc ? "DESC" : "ASC";
+         return this;
+     }
+     /*If there are no parameters in the expression, there is no need to build in build-method*/
+     public string Build(Dictionary<string, object> values, string prefix)
+     {
+         if (_methodName == nameof(ROW_NUMBER))
+         {
+             return string.Format("ROW_NUMBER()OVER(ORDER BY {0})", _orderby);
+         }
+         throw new NotImplementedException();
+     }
+
+     public static implicit operator ulong(WinFun<T> d) => 0;
+ }
+
+```
+#### step2: use
+
+``` C#
+ var winFun = new WinFun<Student>()
+     .ORDERBY(a => a.Age)
+     .ROW_NUMBER();
+
+ var student1 = context.From<Student>()
+    .Select(s => new
+    {
+        s.Id,
+        s.Name,
+        s.Age,
+        RowNum = (ulong)winFun
+    });
     
 ```
-#### Extension
+### DEMO.4 Subquery
 
-* IQueryable
-```
-public class MVCBase
+#### step1: implement
+
+``` C#
+public class SubQuery<T> : ISubQuery where T : class
 {
-  public int PageIndex {get;set;}
-  public int PageCount {get;set;}
-  public int PageTotal {get;set;}
-  public int QueryAll {get;set;}
-}
-public static CustomExtension
-{
-    IQueryable<T> ToPage(this IQueryable<T> queryable,MVCBase mvc)
+    private Expression _where { get; set; }
+    private Expression _column { get; set; }
+    private string _method { get; set; }
+    private bool _useSignTable = true;
+    public string Build(Dictionary<string, object> values, string prefix)
     {
-        //condition:mvc.QueryAll!=1
-        queryable.Page(mvc.PageIndex,mvc.PageCount,out long total,mvc.QueryAll!=1)
-        //返回总页数
-        mvc.PageTotal = (int)(mvc.PageIndex+mvc.PageCount-1)*mvc.PageCount;
+        var table = EntityUtil.GetTable<T>();
+        var column = ExpressionUtil.BuildColumn(_column, values, prefix).SingleOrDefault().Value;
+        var where = ExpressionUtil.BuildExpression(_where, values, prefix, _useSignTable);
+        if (_method == nameof(this.Select))
+        {
+            return string.Format("(select {0} from {1} where {2})", column, table.TableName, where);
+        }
+        if (_method == nameof(this.Count))
+        {
+            return string.Format("(select count({0}) from {1} where {2})", column, table.TableName, where);
+        }
+        throw new NotImplementedException();
+    }
+    public SubQuery<T> Where(Expression<Func<T, bool>> expression)
+    {
+        _where = expression;
         return this;
-    }   
+    }
+    public SubQuery<T> Where<T1, T2>(Expression<Func<T1, T2, bool>> expression)
+    {
+        _useSignTable = false;
+        _where = expression;
+        return this;
+    }
+    public SubQuery<T> Select<TResut>(Expression<Func<T, TResut>> expression)
+    {
+        _method = nameof(this.Select);
+        _column = expression;
+        return this;
+    }
+    public SubQuery<T> Count<TResut>(Expression<Func<T, TResut>> expression)
+    {
+        _method = nameof(this.Count);
+        _column = expression;
+        return this;
+    }
+
+    public override bool Equals(object obj)
+    {
+        return obj is SubQuery<T> query &&
+               EqualityComparer<Expression>.Default.Equals(_where, query._where) &&
+               EqualityComparer<Expression>.Default.Equals(_column, query._column) &&
+               _method == query._method;
+    }
+
+    public override int GetHashCode()
+    {
+        return HashCode.Combine(_where, _column, _method);
+    }
+
+    public static bool operator <(object t1, SubQuery<T> t2)
+    {
+        return false;
+    }
+    public static bool operator ==(object t1, SubQuery<T> t2)
+    {
+        return false;
+    }
+    public static bool operator !=(object t1, SubQuery<T> t2)
+    {
+        return false;
+    }
+    public static bool operator <=(object t1, SubQuery<T> t2)
+    {
+        return false;
+    }
+    public static bool operator >=(object t1, SubQuery<T> t2)
+    {
+        return false;
+    }
+    public static bool operator >(object t1, SubQuery<T> t2)
+    {
+        return false;
+    }
+
+    public static explicit operator string(SubQuery<T> v)=> string.Empty;
+    
 }
-```
 
-* Lambda Expression
 
 ```
-//1.
-  Expression<Member,bool> expr = a=>a.NickName=='%132%' || a.Id.In(new []{1,8});
-  var param = new Dictionary<string,>
-  var exprstr = ExpressionUtil.BuildExpression(expr,param);
-  var lsit = session.From<Member>().Where(exprestr).Select();
+
+#### step2: use
+
+``` C#
+
+//in where
+var subquery1 = new SubQuery<Student>()
+    .Where(a => a.Id <= 15)
+    .Select(s => s.Age);
+
+var student1 = context.From<Student>()
+    .Where(a=>a.Age>=Operator.Any(subquery1))
+    .Select();
+
+//in columns
+var subquery2 = new SubQuery<School>()
+   .Where<Student,School>((a,b) => a.SchoolId==b.Id)
+   .Select(s => s.Name);
+
+
+var student2 = context.From<Student>()
+    .Select(s=>new
+    {
+        s.Id,
+        StudentName = s.Name,
+        SchoolName = (string)subquery2//just for build
+    });
+
 ```
 
