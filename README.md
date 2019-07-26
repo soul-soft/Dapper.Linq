@@ -270,8 +270,8 @@ var expression = ExpressionUtil.BuildExpression(item, values, prefix);
 ```
 ## Object to Sql
 
-### Case When Then Else
-* 1 implement ISqlBuilder
+### DEMO1 Case When Then Else
+** step1: implement ISqlBuilder
 ``` C#
  public class Case<T> : ISqlBuilder
 {
