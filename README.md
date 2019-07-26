@@ -1,11 +1,11 @@
 # Dapper.Common
 
-## 联系作者
+## About author
   1. Email:1448376744@qq.com
   2. QQ:1448376744
   3. QQGroup:642555086
 
-## CONFIG
+## Config
 ``` C#
  DbContextFactory.AddDataSource(new DataSource()
  {
@@ -18,7 +18,7 @@
 
 ```
 
-## INSERET
+## Insert
 ``` C#
 IDbContext context = null;
 try
@@ -60,7 +60,7 @@ finally
 
 ```
 
-## UPDATE
+## Update
 ``` C#
 using (var context = DbContextFactory.GetDbContext())
 {
@@ -107,7 +107,7 @@ using (var context = DbContextFactory.GetDbContext())
         });
 
 ```
-## DELETE
+## Delete
 ``` C#
 using (var context = DbContextFactory.GetDbContext())
 {
@@ -124,7 +124,37 @@ using (var context = DbContextFactory.GetDbContext())
          .Delete();
 }
 ```
-## SELECT 
+## Transaction
+
+``` C#
+  IDbContext dbContext = null;
+  try
+  {
+      dbContext = DbContextFactory.GetDbContext();
+      dbContext.From<Student>().Insert(new Student()
+      {
+          Name="stduent1"
+      });
+      //throw new Exception("rollback");
+      dbContext.From<School>().Insert(new School()
+      {
+          Name = "school1"
+      });
+      dbContext.Commit();
+  }
+  catch (Exception)
+  {
+      dbContext?.Rollback();
+      throw;
+  }
+  finally
+  {
+      dbContext?.Close();
+  }
+
+```
+
+## Select 
 ``` C#
  //single
  var student = context.From<Student>()
@@ -153,7 +183,7 @@ using (var context = DbContextFactory.GetDbContext())
     });
 
 ```
-## GROUPBY
+## Group by
 ```C#
   var students = context.From<Student>()
       .GroupBy(a => a.Age)
@@ -165,7 +195,7 @@ using (var context = DbContextFactory.GetDbContext())
       });
 
 ```
-## DYNAMIC QUERY
+## Dynamic query
 ``` C#
 var param = new Student()
 {
@@ -192,13 +222,13 @@ var students2 = context.From<Student>()
     .Where(a => a.Id > 2 || a.Age > 20, param.Type == 8)
     .Select();
 ```
-## TAKE PAGE
+## task page
 ```
  var students = context.From<Student>()
      .Page(1, 10, out long total)
      .Select();
 ```
-## JOIN
+## Join
 ``` C#
  var students = context.From<Student, School>()
      .Join((a, b) => a.SchoolId == b.Id)
@@ -210,7 +240,7 @@ var students2 = context.From<Student>()
      });
 
 ```
-## OTHER QUERY
+## Other query
 ``` C#
 //limit 0,10
 var students1 = context.From<Student>()
