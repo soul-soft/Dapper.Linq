@@ -33,11 +33,6 @@ namespace Dapper.Common
     {
 
     }
-    [AttributeUsage(AttributeTargets.Parameter)]
-    public class ParameterAttribute : Attribute
-    {
-
-    }
     public enum ColumnKey
     {
         None,

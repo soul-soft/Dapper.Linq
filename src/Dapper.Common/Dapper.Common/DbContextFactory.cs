@@ -29,7 +29,7 @@ namespace Dapper.Common
         Task<IEnumerable<dynamic>> QueryAsync(string sql, object param = null, int? commandTimeout = null, CommandType? commandType = null);
         IDbConnection Connection { get; }
         IDbTransaction Transaction { get; }
-        DataSourceType SourceType { get; }
+        DatasourceType SourceType { get; }
         DbContextState State { get; }
         void Open(bool beginTransaction, IsolationLevel? level = null);
         Task OpenAsync(bool beginTransaction, IsolationLevel? level = null);
@@ -37,16 +37,16 @@ namespace Dapper.Common
         void Rollback();
         void Close();
     }
-    internal class DbContext : IDbContext
+    public class DbContext : IDbContext
     {
-        public DataSourceType SourceType { get; private set; }
-        public List<Logger> Loggers { get; private set; }
+        public DatasourceType SourceType { get;  set; }
+        public List<Logger> Loggers { get;  set; }
         public IDbTransaction Transaction { get; private set; }
         public IDbConnection Connection { get; }
         public bool? Buffered { get; set; }
         public int? Timeout { get; set; }
         public DbContextState State { get; private set; }
-        public DbContext(IDbConnection connection, DataSourceType sourceType)
+        public DbContext(IDbConnection connection, DatasourceType sourceType)
         {
             Connection = connection;
             SourceType = sourceType;
@@ -135,15 +135,15 @@ namespace Dapper.Common
         }
         public IQueryable<T> From<T>() where T : class
         {
-            if (SourceType == DataSourceType.MYSQL)
+            if (SourceType == DatasourceType.MYSQL)
             {
-                return new MysqlQuery<T>(this);
+                return new MySqlQuery<T>(this);
             }
-            else if (SourceType == DataSourceType.SQLSERVER)
+            else if (SourceType == DatasourceType.SQLSERVER)
             {
                 return new SqlQuery<T>(this);
             }
-            else if (SourceType == DataSourceType.SQLITE)
+            else if (SourceType == DatasourceType.SQLITE)
             {
                 return new SQLiteQuery<T>(this);
             }
@@ -151,15 +151,15 @@ namespace Dapper.Common
         }
         public IQueryable<T1, T2> From<T1, T2>() where T1 : class where T2 : class
         {
-            if (SourceType == DataSourceType.MYSQL)
+            if (SourceType == DatasourceType.MYSQL)
             {
                 return new MysqlQuery<T1, T2>(this);
             }
-            else if (SourceType == DataSourceType.SQLSERVER)
+            else if (SourceType == DatasourceType.SQLSERVER)
             {
                 return new SqlQuery<T1, T2>(this);
             }
-            else if (SourceType == DataSourceType.SQLITE)
+            else if (SourceType == DatasourceType.SQLITE)
             {
                 return new SQLiteQuery<T1, T2>(this);
             }
@@ -167,15 +167,15 @@ namespace Dapper.Common
         }
         public IQueryable<T1, T2, T3> From<T1, T2, T3>() where T1 : class where T2 : class where T3 : class
         {
-            if (SourceType == DataSourceType.MYSQL)
+            if (SourceType == DatasourceType.MYSQL)
             {
                 return new MysqlQuery<T1, T2, T3>(this);
             }
-            else if (SourceType == DataSourceType.SQLSERVER)
+            else if (SourceType == DatasourceType.SQLSERVER)
             {
                 return new SqlQuery<T1, T2, T3>(this);
             }
-            else if (SourceType == DataSourceType.SQLITE)
+            else if (SourceType == DatasourceType.SQLITE)
             {
                 return new SQLiteQuery<T1, T2, T3>(this);
             }
@@ -199,7 +199,7 @@ namespace Dapper.Common
         }
 
     }
-    internal class DbContextProxy : IDbContext
+    public class DbContextProxy : IDbContext
     {
         private IDbContext _target = null;
         public DbContextProxy(IDbContext target)
@@ -207,7 +207,7 @@ namespace Dapper.Common
             _target = target;
             Loggers = new List<Logger>();
         }
-        public List<Logger> Loggers { get; private set; }
+        public List<Logger> Loggers { get;  set; }
 
         public IDbConnection Connection => _target.Connection;
 
@@ -215,7 +215,7 @@ namespace Dapper.Common
 
         public DbContextState State => _target.State;
 
-        public DataSourceType SourceType => _target.SourceType;
+        public DatasourceType SourceType => _target.SourceType;
 
         public bool? Buffered { get => _target.Buffered; set => _target.Buffered = value; }
         public int? Timeout { get => _target.Timeout; set => _target.Timeout = value; }
@@ -351,15 +351,15 @@ namespace Dapper.Common
         }
         public IQueryable<T> From<T>() where T : class
         {
-            if (SourceType == DataSourceType.MYSQL)
+            if (SourceType == DatasourceType.MYSQL)
             {
-                return new MysqlQuery<T>(this);
+                return new MySqlQuery<T>(this);
             }
-            else if (SourceType == DataSourceType.SQLSERVER)
+            else if (SourceType == DatasourceType.SQLSERVER)
             {
                 return new SqlQuery<T>(this);
             }
-            else if (SourceType == DataSourceType.SQLITE)
+            else if (SourceType == DatasourceType.SQLITE)
             {
                 return new SQLiteQuery<T>(this);
             }
@@ -367,15 +367,15 @@ namespace Dapper.Common
         }
         public IQueryable<T1, T2> From<T1, T2>() where T1 : class where T2 : class
         {
-            if (SourceType == DataSourceType.MYSQL)
+            if (SourceType == DatasourceType.MYSQL)
             {
                 return new MysqlQuery<T1, T2>(this);
             }
-            else if (SourceType == DataSourceType.SQLSERVER)
+            else if (SourceType == DatasourceType.SQLSERVER)
             {
                 return new SqlQuery<T1, T2>(this);
             }
-            else if (SourceType == DataSourceType.SQLITE)
+            else if (SourceType == DatasourceType.SQLITE)
             {
                 return new SQLiteQuery<T1, T2>(this);
             }
@@ -383,15 +383,15 @@ namespace Dapper.Common
         }
         public IQueryable<T1, T2, T3> From<T1, T2, T3>() where T1 : class where T2 : class where T3 : class
         {
-            if (SourceType == DataSourceType.MYSQL)
+            if (SourceType == DatasourceType.MYSQL)
             {
                 return new MysqlQuery<T1, T2, T3>(this);
             }
-            if (SourceType == DataSourceType.SQLSERVER)
+            if (SourceType == DatasourceType.SQLSERVER)
             {
                 return new SqlQuery<T1, T2, T3>(this);
             }
-            else if (SourceType == DataSourceType.SQLITE)
+            else if (SourceType == DatasourceType.SQLITE)
             {
                 return new SQLiteQuery<T1, T2, T3>(this);
             }
@@ -633,28 +633,29 @@ namespace Dapper.Common
 
             if (datasource.UseProxy)
             {
-                session = new DbContextProxy(new DbContext(datasource.Source(), datasource.SourceType));
+                session = new DbContextProxy(new DbContext(datasource.ConnectionFacotry(), datasource.DatasourceType));
             }
             else
             {
-                session = new DbContext(datasource.Source(), datasource.SourceType);
+                session = new DbContext(datasource.ConnectionFacotry(), datasource.DatasourceType);
             }
             return session;
         }
     }
     public class DataSource
     {
-        public Func<IDbConnection> Source { get; set; }
-        public DataSourceType SourceType { get; set; }
+        public Func<IDbConnection> ConnectionFacotry { get; set; }
+        public DatasourceType DatasourceType { get; set; }
         public string Name { get; set; }
         public bool UseProxy { get; set; }
         public bool Default { get; set; }
     }
-    public enum DataSourceType
+    public enum DatasourceType
     {
         MYSQL,
         SQLSERVER,
         ORACLE,
-        SQLITE
+        SQLITE,
+        NONE
     }
 }

@@ -11,6 +11,7 @@ namespace Dapper.Common.Util
         private StringBuilder _build = new StringBuilder();
         private Dictionary<string, object> _param { get; set; }
         private string _paramName = "Name";
+        private string _prefix { get; set; }
         private string _operatorMethod { get; set; }
         private string _operator { get; set; }
         private bool _singleTable { get; set; }
@@ -33,11 +34,24 @@ namespace Dapper.Common.Util
         {
             if (node.Method.DeclaringType == typeof(Operator))
             {
-                _build.Append("(");
+                var notInclude =
+                    node.Method.Name == nameof(Operator.All)
+                    || node.Method.Name == nameof(Operator.Any)
+                    || node.Method.Name == nameof(Operator.Exists)
+                    || node.Method.Name == nameof(Operator.NotExists);
+                _build.AppendFormat("{0}", notInclude && node.Arguments.Count == 1 ? "" : "(");
                 if (node.Arguments.Count == 1)
                 {
-                    Visit(node.Arguments[0]);
-                    _build.AppendFormat(" {0} ", Operator.GetOperator(node.Method.Name));
+                    if (notInclude)
+                    {
+                        _build.AppendFormat("{0}", Operator.GetOperator(node.Method.Name));
+                        Visit(node.Arguments[0]);
+                    }
+                    else
+                    {
+                        Visit(node.Arguments[0]);
+                        _build.AppendFormat(" {0} ", Operator.GetOperator(node.Method.Name));
+                    }
                 }
                 else if (node.Arguments.Count == 2)
                 {
@@ -56,7 +70,7 @@ namespace Dapper.Common.Util
                     _build.AppendFormat(" {0} ", Operator.GetOperator(ExpressionType.AndAlso));
                     Visit(node.Arguments[2]);
                 }
-                _build.Append(")");
+                _build.AppendFormat("{0}", notInclude && node.Arguments.Count == 1 ? "" : ")");
             }
             else if (node.Method.GetCustomAttributes(typeof(FunctionAttribute), true).Length > 0)
             {
@@ -64,11 +78,6 @@ namespace Dapper.Common.Util
                 var parameters = node.Method.GetParameters();
                 for (int i = 0; i < node.Arguments.Count; i++)
                 {
-                    if (parameters[i].GetCustomAttributes(typeof(ParameterAttribute), true).Length > 0)
-                    {
-                        _build.Append((node.Arguments[i] as ConstantExpression).Value);
-                        continue;
-                    }
                     Visit(node.Arguments[i]);
                     if (i + 1 != node.Arguments.Count)
                     {
@@ -109,13 +118,13 @@ namespace Dapper.Common.Util
         protected override Expression VisitNew(NewExpression node)
         {
             SetValue(node);
-            return node; 
+            return node;
         }
         protected override Expression VisitUnary(UnaryExpression node)
         {
             if (node.NodeType == ExpressionType.Not)
             {
-                _build.AppendFormat("{0}", Operator.GetOperator(ExpressionType.Not));
+                _build.AppendFormat("{0} ", Operator.GetOperator(ExpressionType.Not));
             }
             Visit(node.Operand);
             return node;
@@ -128,11 +137,11 @@ namespace Dapper.Common.Util
             }
             else if (_operator == "LIKE" || _operator == "NOT LIKE")
             {
-                if (_operatorMethod == nameof(Operator.LikeLeft) || _operatorMethod == nameof(Operator.NotLikeLeft))
+                if (_operatorMethod == nameof(Operator.EndsWith) || _operatorMethod == nameof(Operator.NotEndsWith))
                 {
                     _build.AppendFormat("'%{0}'", node.Value);
                 }
-                else if (_operatorMethod == nameof(Operator.NotLikeRight) || _operatorMethod == nameof(Operator.LikeRight))
+                else if (_operatorMethod == nameof(Operator.StartsWith) || _operatorMethod == nameof(Operator.NotStartsWith))
                 {
                     _build.AppendFormat("'{0}%'", node.Value);
                 }
@@ -145,7 +154,7 @@ namespace Dapper.Common.Util
             {
                 _build.AppendFormat("'{0}'", node.Value);
             }
-            else if(node.Value is Enum)
+            else if (node.Value is Enum)
             {
                 _build.AppendFormat("'{0}'", Convert.ToInt32(node.Value));
             }
@@ -173,43 +182,51 @@ namespace Dapper.Common.Util
         public void SetValue(Expression expression)
         {
             var value = GetValue(expression);
-            if (_operator == "LIKE" || _operator == "NOT LIKE")
+            if (value is ISqlBuilder sqlBuilder)
             {
-                if (_operatorMethod == nameof(Operator.LikeLeft) || _operatorMethod == nameof(Operator.NotLikeLeft))
-                {
-                    value = string.Format("%{0}", value);
-                }
-                else if (_operatorMethod == nameof(Operator.NotLikeRight) || _operatorMethod == nameof(Operator.LikeRight))
-                {
-                    value = string.Format("{0}%", value);
-                }
-                else
-                {
-                    value = string.Format("%{0}%", value);
-                }
+                _build.Append(sqlBuilder.Build(_param, _prefix));
             }
-            else if(value is Enum)
+            else
             {
-                value = Convert.ToInt32(value);
+                if (_operator == "LIKE" || _operator == "NOT LIKE")
+                {
+                    if (_operatorMethod == nameof(Operator.EndsWith) || _operatorMethod == nameof(Operator.NotEndsWith))
+                    {
+                        value = string.Format("%{0}", value);
+                    }
+                    else if (_operatorMethod == nameof(Operator.StartsWith) || _operatorMethod == nameof(Operator.NotStartsWith))
+                    {
+                        value = string.Format("{0}%", value);
+                    }
+                    else
+                    {
+                        value = string.Format("%{0}%", value);
+                    }
+                }
+                else if (value is Enum)
+                {
+                    value = Convert.ToInt32(value);
+                }
+                var key = string.Format("{0}{1}{2}", _prefix, _paramName, _param.Count);
+                _param.Add(key, value);
+                _build.Append(key);
             }
-            var key = string.Format("@{0}{1}", _paramName, _param.Count);
-            _param.Add(key, value);
-            _build.Append(key);
         }
         #endregion
 
         #region public
-        public static string BuildExpression(Expression expression, Dictionary<string, object> param, bool singleTable = true)
+        public static string BuildExpression(Expression expression, Dictionary<string, object> param, string prefix, bool singleTable = true)
         {
             var visitor = new ExpressionUtil
             {
-                _param = param,
+                _param = param ?? new Dictionary<string, object>(),
                 _singleTable = singleTable,
+                _prefix = prefix ?? "@",
             };
             visitor.Visit(expression);
             return visitor._build.ToString();
         }
-        public static Dictionary<string, string> BuildColumns(Expression expression, Dictionary<string, object> param, bool singleTable = true)
+        public static Dictionary<string, string> BuildColumns(Expression expression, Dictionary<string, object> param, string prefix, bool singleTable = true)
         {
             var columns = new Dictionary<string, string>();
             if (expression is LambdaExpression)
@@ -221,7 +238,7 @@ namespace Dapper.Common.Util
                 var initExpression = (expression as MemberInitExpression);
                 for (int i = 0; i < initExpression.Bindings.Count; i++)
                 {
-                    var column = string.Empty;
+                    var columnName = string.Empty;
                     Expression argument = (initExpression.Bindings[i] as MemberAssignment).Expression;
                     if (argument is UnaryExpression)
                     {
@@ -229,18 +246,26 @@ namespace Dapper.Common.Util
                     }
                     if (argument is MethodCallExpression && (argument as MethodCallExpression).Method.DeclaringType == typeof(Convert))
                     {
-                        column = GetValue((argument as MethodCallExpression).Arguments[0]).ToString();
+                        var value = GetValue((argument as MethodCallExpression).Arguments[0]);
+                        if (value is ISqlBuilder sqlBuilder)
+                        {
+                            columnName = sqlBuilder.Build(param, prefix);
+                        }
+                        else
+                        {
+                            columnName = value.ToString();
+                        }
                     }
-                    else if (argument is ConstantExpression || (argument is MemberExpression && (argument as MemberExpression).Expression is ConstantExpression))
+                    else if (argument is ConstantExpression)
                     {
-                        column = GetValue(argument).ToString();
+                        columnName = GetValue(argument).ToString();
                     }
                     else
                     {
-                        column = BuildExpression(argument, param, singleTable);
+                        columnName = BuildExpression(argument, param, prefix, singleTable);
                     }
                     var name = initExpression.Bindings[i].Member.Name;
-                    columns.Add(name, column);
+                    columns.Add(name, columnName);
                 }
             }
             else if (expression is NewExpression)
@@ -252,41 +277,41 @@ namespace Dapper.Common.Util
                     var argument = newExpression.Arguments[i];
                     if (argument is MethodCallExpression && (argument as MethodCallExpression).Method.DeclaringType == typeof(Convert))
                     {
-                        columnName = GetValue((argument as MethodCallExpression).Arguments[0]).ToString();
+                        var value = GetValue((argument as MethodCallExpression).Arguments[0]);
+                        if (value is ISqlBuilder sqlBuilder)
+                        {
+                            columnName = sqlBuilder.Build(param, prefix);
+                        }
+                        else
+                        {
+                            columnName = value.ToString();
+                        }
                     }
-                    else if (argument is ConstantExpression || (argument is MemberExpression && (argument as MemberExpression).Expression is ConstantExpression))
+                    else if (argument is ConstantExpression)
                     {
                         columnName = GetValue(argument).ToString();
                     }
                     else
                     {
-                        columnName = BuildExpression(argument, param, singleTable);
+                        columnName = BuildExpression(argument, param, prefix, singleTable);
                     }
                     var name = newExpression.Members[i].Name;
                     columns.Add(name, columnName);
                 }
             }
-            else if (expression is MemberExpression)
-            {
-                var memberExpression = (expression as MemberExpression);
-                var name = memberExpression.Member.Name;
-                var columnName = EntityUtil.GetColumn(memberExpression.Expression.Type, f => f.CSharpName == name)?.ColumnName ?? name;
-                if (!singleTable)
-                {
-                    var tableName = EntityUtil.GetTable(memberExpression.Expression.Type).TableName;
-                    columnName = string.Format("{0}.{1}", tableName, columnName);
-                }
-                columns.Add(name, columnName);
-            }
             else
             {
                 var name = string.Format("COLUMN0");
-                var columnName = BuildExpression(expression, param, singleTable);
+                if (expression is MemberExpression memberExpression)
+                {
+                    name = memberExpression.Member.Name;
+                }
+                var columnName = BuildExpression(expression, param, prefix, singleTable);
                 columns.Add(name, columnName);
             }
             return columns;
         }
-        public static Dictionary<string, string> BuildColumn(Expression expression, Dictionary<string, object> param, bool singleTable = true)
+        public static Dictionary<string, string> BuildColumn(Expression expression, Dictionary<string, object> param, string prefix, bool singleTable = true)
         {
             if (expression is LambdaExpression)
             {
@@ -309,7 +334,11 @@ namespace Dapper.Common.Util
             else
             {
                 var name = string.Format("COLUMN0");
-                var build = BuildExpression(expression, param, singleTable);
+                if (expression is MemberExpression memberExpression)
+                {
+                    name = memberExpression.Member.Name;
+                }
+                var build = BuildExpression(expression, param, prefix, singleTable);
                 column.Add(name, build);
                 return column;
             }
@@ -320,9 +349,8 @@ namespace Dapper.Common.Util
             var exps = new Stack<Expression>();
             var mifs = new Stack<System.Reflection.MemberInfo>();
             var tempExpression = expression;
-            while (tempExpression is MemberExpression)
+            while (tempExpression is MemberExpression member)
             {
-                var member = tempExpression as MemberExpression;
                 names.Push(member.Member.Name);
                 exps.Push(member.Expression);
                 mifs.Push(member.Member);
@@ -350,9 +378,9 @@ namespace Dapper.Common.Util
                 }
                 return value;
             }
-            else if (expression is ConstantExpression)
+            else if (expression is ConstantExpression constant)
             {
-                return (tempExpression as ConstantExpression).Value;
+                return constant.Value;
             }
             else
             {

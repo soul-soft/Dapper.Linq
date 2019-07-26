@@ -9,59 +9,91 @@ namespace Dapper.Common
     public static class Operator
     {
         #region extension
-        public static bool In(this ValueType column, IEnumerable enumerable)
+        public static bool In(ValueType column, IEnumerable enumerable)
         {
             return true;
         }
-        public static bool In(this ValueType column, params ValueType[] value)
+        public static bool In(ValueType column, params ValueType[] value)
         {
             return true;
         }
-        public static bool NotIn(this ValueType column, IEnumerable enumerable)
+        public static bool In(ValueType column, ISubQuery subuery)
         {
             return true;
         }
-        public static bool NotIn(this ValueType column, params ValueType[] value)
+        public static bool NotIn(ValueType column, IEnumerable enumerable)
         {
             return true;
         }
-        public static bool In(this string column, IEnumerable enumerable)
+        public static bool NotIn(ValueType column, params ValueType[] value)
         {
             return true;
         }
-        public static bool In(this string column, params string[] value)
+        public static bool NotIn(ValueType column, ISubQuery subuery)
         {
             return true;
         }
-        public static bool NotIn(this string column, IEnumerable enumerable)
+        public static bool In(string column, IEnumerable enumerable)
         {
             return true;
         }
-        public static bool NotIn(this string column, params string[] value)
+        public static bool In(string column, params string[] value)
         {
             return true;
         }
-        public static bool Like(this string column, string text)
+        public static bool In(string column, ISubQuery subquery)
         {
             return true;
         }
-        public static bool NotLike(this string column, string text)
+        public static bool NotIn(string column, IEnumerable enumerable)
         {
             return true;
         }
-        public static bool LikeLeft(string column, string text)
+        public static bool NotIn(string column, params string[] value)
         {
             return true;
         }
-        public static bool NotLikeLeft(string column, string text)
+        public static bool NotIn(string column, ISubQuery subquery)
         {
             return true;
         }
-        public static bool LikeRight(string column, string text)
+        public static T Any<T>(T subquery) where T : ISubQuery
+        {
+            return default;
+        }
+        public static T All<T>(T subuery) where T : ISubQuery
+        {
+            return default;
+        }
+        public static bool Exists(ISubQuery subquery)
         {
             return true;
         }
-        public static bool NotLikeRight(string column, string text)
+        public static bool NotExists(ISubQuery subuery)
+        {
+            return true;
+        }
+        public static bool Contains(string column, string text)
+        {
+            return true;
+        }
+        public static bool NotContains(string column, string text)
+        {
+            return true;
+        }
+        public static bool StartsWith(string column, string text)
+        {
+            return true;
+        }
+        public static bool NotStartsWith(string column, string text)
+        {
+            return true;
+        }
+        public static bool EndsWith(string column, string text)
+        {
+            return true;
+        }
+        public static bool NotEndsWith(string column, string text)
         {
             return true;
         }
@@ -96,44 +128,55 @@ namespace Dapper.Common
         {
             switch (operatorType)
             {
-                case "In":
+                case nameof(Operator.In):
                     operatorType = "IN";
                     break;
-                case "NotIn":
+                case nameof(Operator.NotIn):
                     operatorType = "NOT IN";
                     break;
-                case "Like":
-                case "LikeLeft":
-                case "LikeRight":
+                case nameof(Operator.Any):
+                    operatorType = "ANY";
+                    break;
+                case nameof(Operator.All):
+                    operatorType = "ALL";
+                    break;
+                case nameof(Operator.Exists):
+                    operatorType = "EXISTS";
+                    break;
+                case nameof(Operator.NotExists):
+                    operatorType = "NOT EXISTS";
+                    break;
+                case nameof(Operator.Contains):
+                case nameof(Operator.StartsWith):
+                case nameof(Operator.EndsWith):
                     operatorType = "LIKE";
                     break;
-                case "NotLike":
-                case "NotLikeLeft":
-                case "NotLikeRight":
+                case nameof(Operator.NotContains):
+                case nameof(Operator.NotStartsWith):
+                case nameof(Operator.NotEndsWith):
                     operatorType = "NOT LIKE";
                     break;
-                case "IsNull":
+                case nameof(Operator.IsNull):
                     operatorType = "IS NULL";
                     break;
-                case "IsNotNull":
+                case nameof(Operator.IsNotNull):
                     operatorType = "IS NOT NULL";
                     break;
-                case "Between":
+                case nameof(Operator.Between):
                     operatorType = "BETWEEN";
                     break;
-                case "NotBetween":
+                case nameof(Operator.NotBetween):
                     operatorType = "NOT BETWEEN";
                     break;
-                case "Regexp":
+                case nameof(Operator.Regexp):
                     operatorType = "REGEXP";
                     break;
-                case "NotRegexp":
+                case nameof(Operator.NotRegexp):
                     operatorType = "NOT REGEXP";
                     break;
             }
             return operatorType;
         }
-
         public static string GetOperator(ExpressionType type)
         {
             var condition = string.Empty;
@@ -181,7 +224,6 @@ namespace Dapper.Common
                 case ExpressionType.Not:
                     condition = "NOT";
                     break;
-
             }
             return condition;
         }
