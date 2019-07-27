@@ -131,6 +131,7 @@ using (var context = DbContextFactory.GetDbContext())
   try
   {
       dbContext = DbContextFactory.GetDbContext();
+      dbContext.Open(true);
       dbContext.From<Student>().Insert(new Student()
       {
           Name="stduent1"
@@ -310,7 +311,7 @@ var disinct = context.From<Student>()
  }
 
 ```
-* 2 step2
+* step2
 
 ``` C#
  var students = context.From<Student>()
