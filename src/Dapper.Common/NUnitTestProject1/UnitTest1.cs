@@ -152,6 +152,7 @@ namespace Tests
             try
             {
                 dbContext = DbContextFactory.GetDbContext();
+                dbContext.Open(true);
                 dbContext.From<Student>().Insert(new Student()
                 {
                     Name="stduent1"
@@ -295,7 +296,7 @@ namespace Tests
         }
         #endregion
 
-        #region Other Query
+        #region Query£∫≤‚ ‘∆‰À˚≤È—Ø[Other Query]
         [Test]
         public void Other()
         {

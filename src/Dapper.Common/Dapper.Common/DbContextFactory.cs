@@ -153,7 +153,7 @@ namespace Dapper.Common
         {
             if (SourceType == DatasourceType.MYSQL)
             {
-                return new MysqlQuery<T1, T2>(this);
+                return new MySqlQuery<T1, T2>(this);
             }
             else if (SourceType == DatasourceType.SQLSERVER)
             {
@@ -169,7 +169,7 @@ namespace Dapper.Common
         {
             if (SourceType == DatasourceType.MYSQL)
             {
-                return new MysqlQuery<T1, T2, T3>(this);
+                return new MySqlQuery<T1, T2, T3>(this);
             }
             else if (SourceType == DatasourceType.SQLSERVER)
             {
@@ -369,7 +369,7 @@ namespace Dapper.Common
         {
             if (SourceType == DatasourceType.MYSQL)
             {
-                return new MysqlQuery<T1, T2>(this);
+                return new MySqlQuery<T1, T2>(this);
             }
             else if (SourceType == DatasourceType.SQLSERVER)
             {
@@ -385,7 +385,7 @@ namespace Dapper.Common
         {
             if (SourceType == DatasourceType.MYSQL)
             {
-                return new MysqlQuery<T1, T2, T3>(this);
+                return new MySqlQuery<T1, T2, T3>(this);
             }
             if (SourceType == DatasourceType.SQLSERVER)
             {

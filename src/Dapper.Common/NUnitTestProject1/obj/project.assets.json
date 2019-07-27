@@ -7119,11 +7119,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Dapper.Common\\src\\Dapper.Common\\NUnitTestProject1\\NUnitTestProject1.csproj",
+      "projectUniqueName": "D:\\Dapper.Common\\src\\Dapper.Common\\NUnitTestProject1\\NUnitTestProject1.csproj",
       "projectName": "NUnitTestProject1",
-      "projectPath": "C:\\Dapper.Common\\src\\Dapper.Common\\NUnitTestProject1\\NUnitTestProject1.csproj",
+      "projectPath": "D:\\Dapper.Common\\src\\Dapper.Common\\NUnitTestProject1\\NUnitTestProject1.csproj",
       "packagesPath": "C:\\Users\\14483\\.nuget\\packages\\",
-      "outputPath": "C:\\Dapper.Common\\src\\Dapper.Common\\NUnitTestProject1\\obj\\",
+      "outputPath": "D:\\Dapper.Common\\src\\Dapper.Common\\NUnitTestProject1\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
@@ -7142,8 +7142,8 @@
       "frameworks": {
         "netcoreapp2.2": {
           "projectReferences": {
-            "C:\\Dapper.Common\\src\\Dapper.Common\\Dapper.Common\\Dapper.Common.csproj": {
-              "projectPath": "C:\\Dapper.Common\\src\\Dapper.Common\\Dapper.Common\\Dapper.Common.csproj"
+            "D:\\Dapper.Common\\src\\Dapper.Common\\Dapper.Common\\Dapper.Common.csproj": {
+              "projectPath": "D:\\Dapper.Common\\src\\Dapper.Common\\Dapper.Common\\Dapper.Common.csproj"
             }
           }
         }

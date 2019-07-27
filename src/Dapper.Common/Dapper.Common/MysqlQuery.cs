@@ -709,18 +709,18 @@ namespace Dapper.Common
         }
         #endregion
     }
-    public class MysqlQuery<T1, T2> : IQueryable<T1, T2> where T1 : class where T2 : class
+    public class MySqlQuery<T1, T2> : IQueryable<T1, T2> where T1 : class where T2 : class
     {
         #region constructor
         public IDbContext _dbcontext { get; }
         public string _prefix { get; }
-        public MysqlQuery(IDbContext dbcontext = null)
+        public MySqlQuery(IDbContext dbcontext = null)
         {
             _prefix = "@";
             _dbcontext = dbcontext;
             _param = new Dictionary<string, object>();
         }
-        public MysqlQuery(Dictionary<string, object> param)
+        public MySqlQuery(Dictionary<string, object> param)
         {
             _prefix = "@";
             _param = param;
@@ -1033,17 +1033,17 @@ namespace Dapper.Common
         }
         #endregion
     }
-    public class MysqlQuery<T1, T2, T3> : IQueryable<T1, T2, T3> where T1 : class where T2 : class where T3 : class
+    public class MySqlQuery<T1, T2, T3> : IQueryable<T1, T2, T3> where T1 : class where T2 : class where T3 : class
     {
         #region constructor
         public IDbContext _dbcontext { get; }
         public string _prefix { get; }
-        public MysqlQuery(IDbContext dbcontext = null)
+        public MySqlQuery(IDbContext dbcontext = null)
         {
             _dbcontext = dbcontext;
             _param = new Dictionary<string, object>();
         }
-        public MysqlQuery(Dictionary<string, object> param)
+        public MySqlQuery(Dictionary<string, object> param)
         {
             _param = param;
         }
