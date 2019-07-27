@@ -330,7 +330,7 @@ var disinct = context.From<Student>()
 var prefix = "@";
 var values = new Dictionary<string, object>();
 Expression<Func<Student,bool>> expression = s => s.Age>40; 
-var expression = ExpressionUtil.BuildExpression(item, values, prefix);
+var expression = ExpressionUtil.BuildExpression(item, expression, prefix);
 var 
 
 ```
