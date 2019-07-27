@@ -331,7 +331,6 @@ var prefix = "@";
 var values = new Dictionary<string, object>();
 Expression<Func<Student,bool>> expression = s => s.Age>40; 
 var expression = ExpressionUtil.BuildExpression(item, expression, prefix);
-var 
 
 ```
 ## Object to Sql
