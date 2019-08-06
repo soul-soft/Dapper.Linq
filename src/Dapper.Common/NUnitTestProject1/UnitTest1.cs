@@ -20,7 +20,7 @@ namespace Tests
             DbContextFactory.AddDataSource(new DataSource()
             {
                 Default = true,
-                Name = "mysql",
+                DatasourceName = "mysql",
                 ConnectionFacotry = () => new MySql.Data.MySqlClient.MySqlConnection("server=localhost;user id=root;password=1024;database=test;"),
                 DatasourceType = DatasourceType.MYSQL,
                 UseProxy = true//use static proxy,for logger
@@ -155,7 +155,7 @@ namespace Tests
                 dbContext.Open(true);
                 dbContext.From<Student>().Insert(new Student()
                 {
-                    Name="stduent1"
+                    Name = "stduent1"
                 });
                 //throw new Exception("rollback");
                 dbContext.From<School>().Insert(new School()
@@ -180,33 +180,45 @@ namespace Tests
         [Test]
         public void Select()
         {
+
             using (var context = DbContextFactory.GetDbContext())
             {
-                //single
-                var student = context.From<Student>()
-                    .Where(a => a.Id == 19)
-                    .Single();
+                try
+                {
+                    //single
+                    var c = Grade.A;
+                    var student = context.From<Student>()
+                        .Where(a => !a.IsDelete && a.Id>3)
+                        .Single();
 
-                //subquery
-                var id = 0;
-                var age = 50;
-                var subquery = new SubQuery<School>()
-                   .Where(a => a.Id >= id)
-                   .Select(a => a.Id);
+                    //subquery
+                    var id = 0;
+                    var age = 50;
+                    var subquery = new SubQuery<School>()
+                       .Where(a => a.Id >= id)
+                       .Select(a => a.Id);
 
-                //Verify that subquery parameters are written to the current query
-                var students2 = context.From<Student>()
-                    .OrderBy(a => a.Age)
-                    .Where(a => a.Id >= Operator.Any(subquery) && a.Age > age)
-                    .Select();
+                    //Verify that subquery parameters are written to the current query
+                    var students2 = context.From<Student>()
+                        .OrderBy(a => a.Age)
+                        .Where(a => a.Id >= Operator.Any(subquery) && a.Age > age)
+                        .Select();
 
-                //Partial columns
-                var students3 = context.From<Student>()
-                   .Select(s => new
-                   {
-                       s.Id,
-                       s.Age
-                   });
+                    //Partial columns
+                    var students3 = context.From<Student>()
+                       .Select(s => new
+                       {
+                           s.Id,
+                           s.Age
+                       });
+                }
+                catch (Exception e)
+                {
+
+                    throw;
+                }
+               
+
             }
         }
         #endregion
@@ -451,17 +463,17 @@ namespace Tests
                     .Select(s => s.Age);
 
                 var student1 = context.From<Student>()
-                    .Where(a=>a.Age>=Operator.Any(subquery1))
+                    .Where(a => a.Age >= Operator.Any(subquery1))
                     .Select();
 
                 //in columns
                 var subquery2 = new SubQuery<School>()
-                   .Where<Student,School>((a,b) => a.SchoolId==b.Id)
+                   .Where<Student, School>((a, b) => a.SchoolId == b.Id)
                    .Select(s => s.Name);
 
 
                 var student2 = context.From<Student>()
-                    .Select(s=>new
+                    .Select(s => new
                     {
                         s.Id,
                         StudentName = s.Name,

@@ -12,6 +12,5 @@ namespace Dapper.Common
     }
     public interface ISubQuery : ISqlBuilder
     {
-
     }
 }

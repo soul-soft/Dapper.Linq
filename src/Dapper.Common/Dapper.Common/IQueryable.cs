@@ -15,7 +15,7 @@ namespace Dapper.Common
         IQueryable<T> GroupBy(string expression, bool condition = true);
         IQueryable<T> GroupBy<TResult>(Expression<Func<T, TResult>> expression, bool condition = true);
         IQueryable<T> Where(string expression, bool condition = true);
-        IQueryable<T> Where(Expression<Func<T, bool>> expression, bool condition = true);
+        IQueryable<T> Where(Expression<Func<T, bool?>> expression, bool condition = true);
         IQueryable<T> OrderBy(string orderBy, bool condition = true);
         IQueryable<T> OrderBy<TResult>(Expression<Func<T, TResult>> expression, bool condition = true);
         IQueryable<T> OrderByDescending<TResult>(Expression<Func<T, TResult>> expression, bool condition = true);
@@ -23,7 +23,7 @@ namespace Dapper.Common
         IQueryable<T> Take(int count, bool condition = true);
         IQueryable<T> Page(int index, int count, out long total, bool condition = true);
         IQueryable<T> Having(string expression, bool condition = true);
-        IQueryable<T> Having(Expression<Func<T, bool>> expression, bool condition = true);
+        IQueryable<T> Having(Expression<Func<T, bool?>> expression, bool condition = true);
         IQueryable<T> Filter<TResult>(Expression<Func<T, TResult>> columns, bool condition = true);
         IQueryable<T> With(string lockType, bool condition = true);
         IQueryable<T> With(LockType lockType, bool condition = true);
@@ -66,11 +66,11 @@ namespace Dapper.Common
     public interface IQueryable<T1, T2>
     {
         IQueryable<T1, T2> Join(string expression);
-        IQueryable<T1, T2> Join(Expression<Func<T1, T2, bool>> expression, JoinType join = JoinType.Inner);
+        IQueryable<T1, T2> Join(Expression<Func<T1, T2, bool?>> expression, JoinType join = JoinType.Inner);
         IQueryable<T1, T2> GroupBy(string expression, bool condition = true);
         IQueryable<T1, T2> GroupBy<TResult>(Expression<Func<T1, T2, TResult>> expression, bool condition = true);
         IQueryable<T1, T2> Where(string expression, bool condition = true);
-        IQueryable<T1, T2> Where(Expression<Func<T1, T2, bool>> expression, bool condition = true);
+        IQueryable<T1, T2> Where(Expression<Func<T1, T2, bool?>> expression, bool condition = true);
         IQueryable<T1, T2> OrderBy(string orderBy, bool condition = true);
         IQueryable<T1, T2> OrderBy<TResult>(Expression<Func<T1, T2, TResult>> expression, bool condition = true);
         IQueryable<T1, T2> OrderByDescending<TResult>(Expression<Func<T1, T2, TResult>> expression, bool condition = true);
@@ -78,7 +78,7 @@ namespace Dapper.Common
         IQueryable<T1, T2> Take(int count, bool condition = true);
         IQueryable<T1, T2> Page(int index, int count, out long total, bool condition = true);
         IQueryable<T1, T2> Having(string expression, bool condition = true);
-        IQueryable<T1, T2> Having(Expression<Func<T1, T2, bool>> expression, bool condition = true);
+        IQueryable<T1, T2> Having(Expression<Func<T1, T2, bool?>> expression, bool condition = true);
         IQueryable<T1, T2> Distinct(bool condition = true);
         IEnumerable<TResult> Select<TResult>(string colums = null, bool buffered = true, int? timeout = null);
         Task<IEnumerable<TResult>> SelectAsync<TResult>(string colums = null, int? timeout = null);
@@ -90,11 +90,11 @@ namespace Dapper.Common
     public interface IQueryable<T1, T2, T3>
     {
         IQueryable<T1, T2, T3> Join(string expression);
-        IQueryable<T1, T2, T3> Join<E1, E2>(Expression<Func<E1, E2, bool>> expression, JoinType join = JoinType.Inner) where E1 : class where E2 : class;
+        IQueryable<T1, T2, T3> Join<E1, E2>(Expression<Func<E1, E2, bool?>> expression, JoinType join = JoinType.Inner) where E1 : class where E2 : class;
         IQueryable<T1, T2, T3> GroupBy(string expression, bool condition = true);
         IQueryable<T1, T2, T3> GroupBy<TResult>(Expression<Func<T1, T2, T3, TResult>> expression, bool condition = true);
         IQueryable<T1, T2, T3> Where(string expression, bool condition = true);
-        IQueryable<T1, T2, T3> Where(Expression<Func<T1, T2, T3, bool>> expression, bool condition = true);
+        IQueryable<T1, T2, T3> Where(Expression<Func<T1, T2, T3, bool?>> expression, bool condition = true);
         IQueryable<T1, T2, T3> OrderBy(string orderBy, bool condition = true);
         IQueryable<T1, T2, T3> OrderBy<TResult>(Expression<Func<T1, T2, T3, TResult>> expression, bool condition = true);
         IQueryable<T1, T2, T3> OrderByDescending<TResult>(Expression<Func<T1, T2, T3, TResult>> expression, bool condition = true);
@@ -102,7 +102,7 @@ namespace Dapper.Common
         IQueryable<T1, T2, T3> Take(int count, bool condition = true);
         IQueryable<T1, T2, T3> Page(int index, int count, out long total, bool condition = true);
         IQueryable<T1, T2, T3> Having(string expression, bool condition = true);
-        IQueryable<T1, T2, T3> Having(Expression<Func<T1, T2, T3, bool>> expression, bool condition = true);
+        IQueryable<T1, T2, T3> Having(Expression<Func<T1, T2, T3, bool?>> expression, bool condition = true);
         IQueryable<T1, T2, T3> Distinct(bool condition = true);
         IEnumerable<TResult> Select<TResult>(string colums = null, bool buffered = true, int? timeout = null);
         Task<IEnumerable<TResult>> SelectAsync<TResult>(string colums = null, int? timeout = null);
@@ -111,7 +111,6 @@ namespace Dapper.Common
         long Count(string columns = null, bool condition = true, int? timeout = null);
         Task<long> CountAsync(string columns = null, bool condition = true, int? timeout = null);
     }
-
     public enum LockType
     {
         FOR_UPADTE,

@@ -33,6 +33,8 @@ namespace NUnitTestProject1
         public DateTime? CreateTime { get; set; }
         [Column(isColumn:false)]
         public int? Type { get; set; }
+        [Column("`is_delete`")]
+        public bool IsDelete { get; set; }
     }
 
 

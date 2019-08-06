@@ -14,12 +14,12 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("mammothcode")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyCopyrightAttribute("wangjianfeng")]
-[assembly: System.Reflection.AssemblyDescriptionAttribute("dapper,linq to sql,subquery,windows function,mysql,sqlserver,sqlite")]
-[assembly: System.Reflection.AssemblyFileVersionAttribute("2.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("2.0.0.0")]
+[assembly: System.Reflection.AssemblyDescriptionAttribute("dapper,mysql,sqlserver,sqlite,linq to sql,subquery,windows function")]
+[assembly: System.Reflection.AssemblyFileVersionAttribute("2.0.0.1")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("2.0.0.1")]
 [assembly: System.Reflection.AssemblyProductAttribute("Dapper.Common")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Dapper.Common")]
-[assembly: System.Reflection.AssemblyVersionAttribute("2.0.0.0")]
+[assembly: System.Reflection.AssemblyVersionAttribute("2.0.0.1")]
 
 // 由 MSBuild WriteCodeFragment 类生成。
 

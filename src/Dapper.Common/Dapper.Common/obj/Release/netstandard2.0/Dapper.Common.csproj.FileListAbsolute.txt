@@ -1,12 +1,3 @@
-D:\Dapper.Common\Src\Dapper.Common\Dapper.Common\bin\Release\netstandard2.0\Dapper.Common.deps.json
-D:\Dapper.Common\Src\Dapper.Common\Dapper.Common\bin\Release\netstandard2.0\Dapper.Common.dll
-D:\Dapper.Common\Src\Dapper.Common\Dapper.Common\bin\Release\netstandard2.0\Dapper.Common.pdb
-D:\Dapper.Common\Src\Dapper.Common\Dapper.Common\obj\Release\netstandard2.0\Dapper.Common.csproj.CoreCompileInputs.cache
-D:\Dapper.Common\Src\Dapper.Common\Dapper.Common\obj\Release\netstandard2.0\Dapper.Common.AssemblyInfoInputs.cache
-D:\Dapper.Common\Src\Dapper.Common\Dapper.Common\obj\Release\netstandard2.0\Dapper.Common.AssemblyInfo.cs
-D:\Dapper.Common\Src\Dapper.Common\Dapper.Common\obj\Release\netstandard2.0\Dapper.Common.dll
-D:\Dapper.Common\Src\Dapper.Common\Dapper.Common\obj\Release\netstandard2.0\Dapper.Common.pdb
-D:\Dapper.Common\src\Dapper.Common\Dapper.Common\obj\Release\netstandard2.0\Dapper.Common.csprojAssemblyReference.cache
 C:\Dapper.Common\src\Dapper.Common\Dapper.Common\bin\Release\netstandard2.0\Dapper.Common.deps.json
 C:\Dapper.Common\src\Dapper.Common\Dapper.Common\bin\Release\netstandard2.0\Dapper.Common.dll
 C:\Dapper.Common\src\Dapper.Common\Dapper.Common\bin\Release\netstandard2.0\Dapper.Common.pdb
@@ -16,3 +7,11 @@ C:\Dapper.Common\src\Dapper.Common\Dapper.Common\obj\Release\netstandard2.0\Dapp
 C:\Dapper.Common\src\Dapper.Common\Dapper.Common\obj\Release\netstandard2.0\Dapper.Common.dll
 C:\Dapper.Common\src\Dapper.Common\Dapper.Common\obj\Release\netstandard2.0\Dapper.Common.pdb
 C:\Dapper.Common\src\Dapper.Common\Dapper.Common\obj\Release\netstandard2.0\Dapper.Common.csprojAssemblyReference.cache
+D:\Dapper.Common\src\Dapper.Common\Dapper.Common\bin\Release\netstandard2.0\Dapper.Common.deps.json
+D:\Dapper.Common\src\Dapper.Common\Dapper.Common\bin\Release\netstandard2.0\Dapper.Common.dll
+D:\Dapper.Common\src\Dapper.Common\Dapper.Common\bin\Release\netstandard2.0\Dapper.Common.pdb
+D:\Dapper.Common\src\Dapper.Common\Dapper.Common\obj\Release\netstandard2.0\Dapper.Common.csproj.CoreCompileInputs.cache
+D:\Dapper.Common\src\Dapper.Common\Dapper.Common\obj\Release\netstandard2.0\Dapper.Common.AssemblyInfoInputs.cache
+D:\Dapper.Common\src\Dapper.Common\Dapper.Common\obj\Release\netstandard2.0\Dapper.Common.AssemblyInfo.cs
+D:\Dapper.Common\src\Dapper.Common\Dapper.Common\obj\Release\netstandard2.0\Dapper.Common.dll
+D:\Dapper.Common\src\Dapper.Common\Dapper.Common\obj\Release\netstandard2.0\Dapper.Common.pdb

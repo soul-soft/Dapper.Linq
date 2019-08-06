@@ -94,7 +94,7 @@ namespace Dapper.Common
             }
             return this;
         }
-        public IQueryable<T> Having(Expression<Func<T, bool>> expression, bool condition = true)
+        public IQueryable<T> Having(Expression<Func<T, bool?>> expression, bool condition = true)
         {
             if (condition)
             {
@@ -211,7 +211,7 @@ namespace Dapper.Common
             }
             return this;
         }
-        public IQueryable<T> Where(Expression<Func<T, bool>> expression, bool condition = true)
+        public IQueryable<T> Where(Expression<Func<T, bool?>> expression, bool condition = true)
         {
             if (condition)
             {
@@ -544,7 +544,7 @@ namespace Dapper.Common
         public StringBuilder _countBuffer = new StringBuilder();
         public StringBuilder _sumBuffer = new StringBuilder();
         public StringBuilder _lock = new StringBuilder();
-        public Table _table = EntityUtil.GetTable<T>();
+        public EntityTable _table = EntityUtil.GetTable<T>();
         public int? pageIndex = null;
         public int? pageCount = null;
         #endregion
@@ -764,7 +764,7 @@ namespace Dapper.Common
             }
             return this;
         }
-        public IQueryable<T1, T2> Having(Expression<Func<T1, T2, bool>> expression, bool condition = true)
+        public IQueryable<T1, T2> Having(Expression<Func<T1, T2, bool?>> expression, bool condition = true)
         {
             if (condition)
             {
@@ -797,7 +797,6 @@ namespace Dapper.Common
             if (condition)
             {
                 OrderBy(string.Join(",", ExpressionUtil.BuildColumns(expression, _param, _prefix, false).Select(s => string.Format("{0} DESC", s.Value))));
-
             }
             return this;
         }
@@ -840,7 +839,7 @@ namespace Dapper.Common
             }
             return this;
         }
-        public IQueryable<T1, T2> Where(Expression<Func<T1, T2, bool>> expression, bool condition = true)
+        public IQueryable<T1, T2> Where(Expression<Func<T1, T2, bool?>> expression, bool condition = true)
         {
             if (condition)
             {
@@ -927,7 +926,7 @@ namespace Dapper.Common
             _join.Append(expression);
             return this;
         }
-        public IQueryable<T1, T2> Join(Expression<Func<T1, T2, bool>> expression, JoinType join = JoinType.Inner)
+        public IQueryable<T1, T2> Join(Expression<Func<T1, T2, bool?>> expression, JoinType join = JoinType.Inner)
         {
             var onExpression = ExpressionUtil.BuildExpression(expression, _param, _prefix, false);
             var table1Name = EntityUtil.GetTable<T1>().TableName;
@@ -1086,7 +1085,7 @@ namespace Dapper.Common
             }
             return this;
         }
-        public IQueryable<T1, T2, T3> Having(Expression<Func<T1, T2, T3, bool>> expression, bool condition = true)
+        public IQueryable<T1, T2, T3> Having(Expression<Func<T1, T2, T3, bool?>> expression, bool condition = true)
         {
             if (condition)
             {
@@ -1161,7 +1160,7 @@ namespace Dapper.Common
             }
             return this;
         }
-        public IQueryable<T1, T2, T3> Where(Expression<Func<T1, T2, T3, bool>> expression, bool condition = true)
+        public IQueryable<T1, T2, T3> Where(Expression<Func<T1, T2, T3, bool?>> expression, bool condition = true)
         {
             if (condition)
             {
@@ -1248,7 +1247,7 @@ namespace Dapper.Common
             _join.Append(expression);
             return this;
         }
-        public IQueryable<T1, T2, T3> Join<E1, E2>(Expression<Func<E1, E2, bool>> expression, JoinType join = JoinType.Inner) where E1 : class where E2 : class
+        public IQueryable<T1, T2, T3> Join<E1, E2>(Expression<Func<E1, E2, bool?>> expression, JoinType join = JoinType.Inner) where E1 : class where E2 : class
         {
             var onExpression = ExpressionUtil.BuildExpression(expression, _param, _prefix, false);
             var table1Name = EntityUtil.GetTable<E1>().TableName;

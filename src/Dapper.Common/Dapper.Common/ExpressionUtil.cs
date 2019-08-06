@@ -122,11 +122,20 @@ namespace Dapper.Common.Util
         }
         protected override Expression VisitUnary(UnaryExpression node)
         {
-            if (node.NodeType == ExpressionType.Not)
+            if ((node.Operand is MemberExpression mex) && (mex.Member is System.Reflection.PropertyInfo pif) && pif.PropertyType == typeof(bool))
+            {
+                var columnName = EntityUtil.GetColumn(mex.Expression.Type, f => f.CSharpName == mex.Member.Name)?.ColumnName ?? mex.Member.Name;
+                _build.AppendFormat("({0} = {1})", columnName, node.NodeType != ExpressionType.Not ? 1 : 0);
+            }
+            else if (node.NodeType == ExpressionType.Not)
             {
                 _build.AppendFormat("{0} ", Operator.GetOperator(ExpressionType.Not));
+                Visit(node.Operand);
             }
-            Visit(node.Operand);
+            else
+            {
+                Visit(node.Operand);
+            }
             return node;
         }
         protected override Expression VisitConstant(ConstantExpression node)
@@ -156,7 +165,11 @@ namespace Dapper.Common.Util
             }
             else if (node.Value is Enum)
             {
-                _build.AppendFormat("'{0}'", Convert.ToInt32(node.Value));
+                _build.AppendFormat("{0}", Convert.ToInt32(node.Value));
+            }
+            else if (node.Value is bool)
+            {
+                _build.AppendFormat("{0}", Convert.ToBoolean(node.Value) ? 1 : 0);
             }
             else
             {
@@ -207,6 +220,10 @@ namespace Dapper.Common.Util
                 {
                     value = Convert.ToInt32(value);
                 }
+                else if (value is bool)
+                {
+                    value = Convert.ToBoolean(value) ? 1 : 0;
+                }
                 var key = string.Format("{0}{1}{2}", _prefix, _paramName, _param.Count);
                 _param.Add(key, value);
                 _build.Append(key);
@@ -215,13 +232,13 @@ namespace Dapper.Common.Util
         #endregion
 
         #region public
-        public static string BuildExpression(Expression expression, Dictionary<string, object> param, string prefix, bool singleTable = true)
+        public static string BuildExpression(Expression expression, Dictionary<string, object> param, string prefix = "@", bool singleTable = true)
         {
             var visitor = new ExpressionUtil
             {
                 _param = param ?? new Dictionary<string, object>(),
                 _singleTable = singleTable,
-                _prefix = prefix ?? "@",
+                _prefix = prefix,
             };
             visitor.Visit(expression);
             return visitor._build.ToString();

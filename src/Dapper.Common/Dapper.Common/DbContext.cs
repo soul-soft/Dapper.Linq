@@ -201,7 +201,7 @@ namespace Dapper.Common
     }
     public class DbContextProxy : IDbContext
     {
-        private IDbContext _target = null;
+        public IDbContext _target = null;
         public DbContextProxy(IDbContext target)
         {
             _target = target;
@@ -611,13 +611,12 @@ namespace Dapper.Common
             }
             else
             {
-                return DataSource.Find(f => f.Name == name);
+                return DataSource.Find(f => f.DatasourceName == name);
             }
         }
         public static void AddDataSource(DataSource dataSource)
         {
             DataSource.Add(dataSource);
-
             if (dataSource.Default)
             {
                 foreach (var item in DataSource)
@@ -646,7 +645,7 @@ namespace Dapper.Common
     {
         public Func<IDbConnection> ConnectionFacotry { get; set; }
         public DatasourceType DatasourceType { get; set; }
-        public string Name { get; set; }
+        public string DatasourceName { get; set; }
         public bool UseProxy { get; set; }
         public bool Default { get; set; }
     }
