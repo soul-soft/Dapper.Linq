@@ -194,7 +194,6 @@ using (var context = DbContextFactory.GetDbContext())
           Count = MysqlFun.Count(1L),
           s.Age,
       });
-
 ```
 ## Dynamic query
 ``` C#
@@ -329,9 +328,8 @@ var disinct = context.From<Student>()
 ``` C#
 var prefix = "@";
 var values = new Dictionary<string, object>();
-Expression<Func<Student,bool>> expression = s => s.Age>40; 
-var expression = ExpressionUtil.BuildExpression(item, values, prefix);
-var 
+Expression<Func<Student,bool>> expression = s => s.Age > 40; 
+var expression = ExpressionUtil.BuildExpression(expression, values, prefix);
 
 ```
 ## Object to Sql
