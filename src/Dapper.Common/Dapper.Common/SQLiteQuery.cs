@@ -567,7 +567,7 @@ namespace Dapper.Common
                 var sql = string.Format("UPDATE {0} SET {1} WHERE {2}",
                     _table.TableName,
                     string.Join(",", colums.Select(s => string.Format("{0} = @{1}", s.ColumnName, s.CSharpName))),
-                    string.Format("{0} = @{1}", keyColumn.ColumnName, keyColumn.CSharpName)
+                    _whereBuffer.Length > 0 ? _whereBuffer.ToString() : string.Format("{0} = @{1}", keyColumn.ColumnName, keyColumn.CSharpName)
                     );
                 return sql;
             }
@@ -860,6 +860,11 @@ namespace Dapper.Common
             }
             return new List<TResult>();
         }
+        public TResult Single<TResult>(string columns = null, bool buffered = true, int? timeout = null)
+        {
+            Take(1);
+            return Select<TResult>(columns, buffered, timeout).SingleOrDefault();
+        }
         public async Task<IEnumerable<TResult>> SelectAsync<TResult>(string columns = null, int? timeout = null)
         {
             if (columns != null)
@@ -873,17 +878,32 @@ namespace Dapper.Common
             }
             return new List<TResult>();
         }
+        public async Task<TResult> SingleAsync<TResult>(string columns = null, int? timeout = null)
+        {
+            Take(1);
+            return (await SelectAsync<TResult>(columns, timeout)).SingleOrDefault();
+        }
         public IEnumerable<TResult> Select<TResult>(Expression<Func<T1, T2, TResult>> columns, bool buffered = true, int? timeout = null)
         {
             var columstr = string.Join(",",
                 ExpressionUtil.BuildColumns(columns, _param, _prefix, false).Select(s => string.Format("{0} AS {1}", s.Value, s.Key)));
             return Select<TResult>(columstr, buffered, timeout);
         }
+        public TResult Single<TResult>(Expression<Func<T1, T2, TResult>> columns, bool buffered = true, int? timeout = null)
+        {
+            Take(1);
+            return Select(columns, buffered, timeout).SingleOrDefault();
+        }
         public Task<IEnumerable<TResult>> SelectAsync<TResult>(Expression<Func<T1, T2, TResult>> columns, int? timeout = null)
         {
             var columstr = string.Join(",",
                 ExpressionUtil.BuildColumns(columns, _param, _prefix, false).Select(s => string.Format("{0} AS {1}", s.Value, s.Key)));
             return SelectAsync<TResult>(columstr, timeout);
+        }
+        public async Task<TResult> SingleAsync<TResult>(Expression<Func<T1, T2, TResult>> columns, int? timeout = null)
+        {
+            Take(1);
+            return (await SelectAsync(columns, timeout)).SingleOrDefault();
         }
         public long Count(string columns = null, bool codition = true, int? timeout = null)
         {
@@ -1180,6 +1200,11 @@ namespace Dapper.Common
             }
             return new List<TResult>();
         }
+        public TResult Single<TResult>(string columns = null, bool buffered = true, int? timeout = null)
+        {
+            Take(1);
+            return Select<TResult>(columns, buffered, timeout).SingleOrDefault();
+        }
         public async Task<IEnumerable<TResult>> SelectAsync<TResult>(string columns = null, int? timeout = null)
         {
             if (columns != null)
@@ -1193,17 +1218,32 @@ namespace Dapper.Common
             }
             return new List<TResult>();
         }
+        public async Task<TResult> SingleAsync<TResult>(string columns = null, int? timeout = null)
+        {
+            Take(1);
+            return (await SelectAsync<TResult>(columns, timeout)).SingleOrDefault();
+        }
         public IEnumerable<TResult> Select<TResult>(Expression<Func<T1, T2, T3, TResult>> columns, bool buffered = true, int? timeout = null)
         {
             var columstr = string.Join(",",
                 ExpressionUtil.BuildColumns(columns, _param, _prefix, false).Select(s => string.Format("{0} AS {1}", s.Value, s.Key)));
             return Select<TResult>(columstr, buffered, timeout);
         }
+        public TResult Single<TResult>(Expression<Func<T1, T2, T3, TResult>> columns, bool buffered = true, int? timeout = null)
+        {
+            Take(1);
+            return Select(columns, buffered, timeout).SingleOrDefault();
+        }
         public Task<IEnumerable<TResult>> SelectAsync<TResult>(Expression<Func<T1, T2, T3, TResult>> columns, int? timeout = null)
         {
             var columstr = string.Join(",",
                 ExpressionUtil.BuildColumns(columns, _param, _prefix, false).Select(s => string.Format("{0} AS {1}", s.Value, s.Key)));
             return SelectAsync<TResult>(columstr, timeout);
+        }
+        public async Task<TResult> SingleAsync<TResult>(Expression<Func<T1, T2, T3, TResult>> columns, int? timeout = null)
+        {
+            Take(1);
+            return (await SelectAsync(columns, timeout)).SingleOrDefault();
         }
         public long Count(string columns = null, bool codition = true, int? timeout = null)
         {
@@ -1247,6 +1287,362 @@ namespace Dapper.Common
             return this;
         }
         public IQueryable<T1, T2, T3> Join<E1, E2>(Expression<Func<E1, E2, bool?>> expression, JoinType join = JoinType.Inner) where E1 : class where E2 : class
+        {
+            var onExpression = ExpressionUtil.BuildExpression(expression, _param, _prefix, false);
+            var table1Name = EntityUtil.GetTable<E1>().TableName;
+            var table2Name = EntityUtil.GetTable<E2>().TableName;
+            var joinType = string.Format("{0} JOIN", join.ToString().ToUpper());
+            if (_tables.Count == 0)
+            {
+                _tables.Add(table1Name);
+                _tables.Add(table2Name);
+                Join(string.Format("{0} {1} {2} ON {3}", table1Name, joinType, table2Name, onExpression));
+            }
+            else if (_tables.Exists(a => table1Name == a))
+            {
+                _tables.Add(table2Name);
+                Join(string.Format("{0} {1} ON {2}", joinType, table2Name, onExpression));
+            }
+            else
+            {
+                _tables.Add(table1Name);
+                Join(string.Format("{0} {1} ON {2}", joinType, table1Name, onExpression));
+            }
+            return this;
+        }
+        #endregion
+
+        #region property
+        public Dictionary<string, object> _param { get; set; }
+        public StringBuilder _columnBuffer = new StringBuilder();
+        public StringBuilder _havingBuffer = new StringBuilder();
+        public StringBuilder _whereBuffer = new StringBuilder();
+        public StringBuilder _groupBuffer = new StringBuilder();
+        public StringBuilder _orderBuffer = new StringBuilder();
+        public StringBuilder _distinctBuffer = new StringBuilder();
+        public StringBuilder _countBuffer = new StringBuilder();
+        public StringBuilder _join = new StringBuilder();
+        public List<string> _tables = new List<string>();
+        public int? pageIndex = null;
+        public int? pageCount = null;
+        #endregion
+
+        #region build
+        public string BuildSelect()
+        {
+            var sqlBuffer = new StringBuilder("SELECT");
+            if (_distinctBuffer.Length > 0)
+            {
+                sqlBuffer.AppendFormat(" {0}", _distinctBuffer);
+            }
+            sqlBuffer.AppendFormat(" {0}", _columnBuffer);
+            sqlBuffer.AppendFormat(" FROM {0}", _join);
+            if (_whereBuffer.Length > 0)
+            {
+                sqlBuffer.AppendFormat(" WHERE {0}", _whereBuffer);
+            }
+            if (_groupBuffer.Length > 0)
+            {
+                sqlBuffer.AppendFormat(" GROUP BY {0}", _groupBuffer);
+            }
+            if (_havingBuffer.Length > 0)
+            {
+                sqlBuffer.AppendFormat(" HAVING {0}", _havingBuffer);
+            }
+            if (_orderBuffer.Length > 0)
+            {
+                sqlBuffer.AppendFormat(" ORDER BY {0}", _orderBuffer);
+            }
+            if (pageIndex != null && pageCount != null)
+            {
+                sqlBuffer.AppendFormat(" LIMIT {0},{1}", pageIndex, pageCount);
+            }
+            var sql = sqlBuffer.ToString();
+            return sql;
+        }
+        public string BuildCount()
+        {
+            var sqlBuffer = new StringBuilder("SELECT");
+            if (_columnBuffer.Length > 0)
+            {
+
+                sqlBuffer.Append(" COUNT(");
+                if (_distinctBuffer.Length > 0)
+                {
+                    sqlBuffer.AppendFormat("{0} ", _distinctBuffer);
+                }
+                sqlBuffer.AppendFormat("{0})", _columnBuffer);
+            }
+            else
+            {
+                if (_groupBuffer.Length > 0)
+                {
+                    sqlBuffer.Append(" 1 AS COUNT");
+                }
+                else
+                {
+                    sqlBuffer.AppendFormat(" COUNT(1)");
+                }
+            }
+            sqlBuffer.AppendFormat(" FROM {0}", _join);
+            if (_whereBuffer.Length > 0)
+            {
+                sqlBuffer.AppendFormat(" WHERE {0}", _whereBuffer);
+            }
+            if (_groupBuffer.Length > 0)
+            {
+                sqlBuffer.AppendFormat(" GROUP BY {0}", _groupBuffer);
+            }
+            if (_havingBuffer.Length > 0)
+            {
+                sqlBuffer.AppendFormat(" HAVING {0}", _havingBuffer);
+            }
+            if (_groupBuffer.Length > 0)
+            {
+                return string.Format("SELECT COUNT(1) FROM ({0}) AS T", sqlBuffer);
+            }
+            else
+            {
+                return sqlBuffer.ToString();
+            }
+        }
+        #endregion
+    }
+    public class SQLiteQuery<T1, T2, T3, T4> : IQueryable<T1, T2, T3, T4> where T1 : class where T2 : class where T3 : class where T4 : class
+    {
+        #region constructor
+        public IDbContext _dbcontext { get; }
+        public string _prefix { get; }
+        public SQLiteQuery(IDbContext dbcontext = null)
+        {
+            _prefix = "@";
+            _dbcontext = dbcontext;
+            _param = new Dictionary<string, object>();
+        }
+        public SQLiteQuery(Dictionary<string, object> param)
+        {
+            _prefix = "@";
+            _param = param;
+        }
+        #endregion
+
+        #region implement
+        public IQueryable<T1, T2, T3, T4> Distinct(bool condition = true)
+        {
+            if (condition)
+            {
+                _distinctBuffer.Append("DISTINCT");
+            }
+            return this;
+        }
+        public IQueryable<T1, T2, T3, T4> GroupBy(string expression, bool condition = true)
+        {
+            if (condition)
+            {
+                if (_groupBuffer.Length > 0)
+                {
+                    _groupBuffer.Append(",");
+                }
+                _groupBuffer.Append(expression);
+            }
+            return this;
+        }
+        public IQueryable<T1, T2, T3, T4> GroupBy<TResult>(Expression<Func<T1, T2, T3, T4, TResult>> expression, bool condition = true)
+        {
+            if (condition)
+            {
+                GroupBy(string.Join(",", ExpressionUtil.BuildColumns(expression, _param, _prefix, false).Select(s => s.Value)));
+            }
+            return this;
+        }
+        public IQueryable<T1, T2, T3, T4> Having(string expression, bool condition = true)
+        {
+            if (condition)
+            {
+                _havingBuffer.Append(expression);
+            }
+            return this;
+        }
+        public IQueryable<T1, T2, T3, T4> Having(Expression<Func<T1, T2, T3, T4, bool?>> expression, bool condition = true)
+        {
+            Having(string.Join(",", ExpressionUtil.BuildColumns(expression, _param, _prefix, false).Select(s => s.Value)), condition);
+            return this;
+        }
+        public IQueryable<T1, T2, T3, T4> OrderBy(string orderBy, bool condition = true)
+        {
+            if (condition)
+            {
+                if (_orderBuffer.Length > 0)
+                {
+                    _orderBuffer.Append(",");
+                }
+                _orderBuffer.Append(orderBy);
+            }
+            return this;
+        }
+        public IQueryable<T1, T2, T3, T4> OrderBy<TResult>(Expression<Func<T1, T2, T3, T4, TResult>> expression, bool condition = true)
+        {
+            if (condition)
+            {
+                OrderBy(string.Join(",", ExpressionUtil.BuildColumns(expression, _param, _prefix, false).Select(s => string.Format("{0} ASC", s.Value))));
+            }
+            return this;
+        }
+        public IQueryable<T1, T2, T3, T4> OrderByDescending<TResult>(Expression<Func<T1, T2, T3, T4, TResult>> expression, bool condition = true)
+        {
+            if (condition)
+            {
+                OrderBy(string.Join(",", ExpressionUtil.BuildColumns(expression, _param, _prefix, false).Select(s => string.Format("{0} DESC", s.Value))));
+            }
+            return this;
+        }
+        public IQueryable<T1, T2, T3, T4> Page(int index, int count, out long total, bool condition = true)
+        {
+            total = 0;
+            if (condition)
+            {
+                Skip(count * (index - 1), count);
+                total = Count();
+            }
+            return this;
+        }
+        public IQueryable<T1, T2, T3, T4> Skip(int index, int count, bool condition = true)
+        {
+            if (condition)
+            {
+                pageIndex = index;
+                pageCount = count;
+            }
+            return this;
+        }
+        public IQueryable<T1, T2, T3, T4> Take(int count, bool condition = true)
+        {
+            if (condition)
+            {
+                Skip(0, count);
+            }
+            return this;
+        }
+        public IQueryable<T1, T2, T3, T4> Where(string expression, bool condition = true)
+        {
+            if (condition)
+            {
+                if (_whereBuffer.Length > 0)
+                {
+                    _whereBuffer.AppendFormat(" {0} ", Operator.GetOperator(ExpressionType.AndAlso));
+                }
+                _whereBuffer.Append(expression);
+            }
+            return this;
+        }
+        public IQueryable<T1, T2, T3, T4> Where(Expression<Func<T1, T2, T3, T4, bool?>> expression, bool condition = true)
+        {
+            if (condition)
+            {
+                Where(ExpressionUtil.BuildExpression(expression, _param, _prefix, false));
+            }
+            return this;
+        }
+        public IEnumerable<TResult> Select<TResult>(string columns = null, bool buffered = true, int? timeout = null)
+        {
+            if (columns != null)
+            {
+                _columnBuffer.Append(columns);
+            }
+            if (_dbcontext != null)
+            {
+                var sql = BuildSelect();
+                return _dbcontext.Query<TResult>(sql, _param, buffered, timeout);
+            }
+            return new List<TResult>();
+        }
+        public TResult Single<TResult>(string columns = null, bool buffered = true, int? timeout = null)
+        {
+            Take(1);
+            return Select<TResult>(columns, buffered, timeout).SingleOrDefault();
+        }
+        public async Task<IEnumerable<TResult>> SelectAsync<TResult>(string columns = null, int? timeout = null)
+        {
+            if (columns != null)
+            {
+                _columnBuffer.Append(columns);
+            }
+            if (_dbcontext != null)
+            {
+                var sql = BuildSelect();
+                return await _dbcontext.QueryAsync<TResult>(sql, _param, timeout);
+            }
+            return new List<TResult>();
+        }
+        public async Task<TResult> SingleAsync<TResult>(string columns = null, int? timeout = null)
+        {
+            Take(1);
+            return (await SelectAsync<TResult>(columns, timeout)).SingleOrDefault();
+        }
+        public IEnumerable<TResult> Select<TResult>(Expression<Func<T1, T2, T3, T4, TResult>> columns, bool buffered = true, int? timeout = null)
+        {
+            var columstr = string.Join(",",
+                ExpressionUtil.BuildColumns(columns, _param, _prefix, false).Select(s => string.Format("{0} AS {1}", s.Value, s.Key)));
+            return Select<TResult>(columstr, buffered, timeout);
+        }
+        public TResult Single<TResult>(Expression<Func<T1, T2, T3, T4, TResult>> columns, bool buffered = true, int? timeout = null)
+        {
+            Take(1);
+            return Select(columns, buffered, timeout).SingleOrDefault();
+        }
+        public Task<IEnumerable<TResult>> SelectAsync<TResult>(Expression<Func<T1, T2, T3, T4, TResult>> columns, int? timeout = null)
+        {
+            var columstr = string.Join(",",
+                ExpressionUtil.BuildColumns(columns, _param, _prefix, false).Select(s => string.Format("{0} AS {1}", s.Value, s.Key)));
+            return SelectAsync<TResult>(columstr, timeout);
+        }
+        public async Task<TResult> SingleAsync<TResult>(Expression<Func<T1, T2, T3, T4, TResult>> columns, int? timeout = null)
+        {
+            Take(1);
+            return (await SelectAsync(columns, timeout)).SingleOrDefault();
+        }
+        public long Count(string columns = null, bool codition = true, int? timeout = null)
+        {
+            if (codition)
+            {
+                if (columns != null)
+                {
+                    _columnBuffer.Append(columns);
+                }
+                if (_dbcontext != null)
+                {
+                    var sql = BuildCount();
+                    return _dbcontext.ExecuteScalar<long>(sql, _param, timeout);
+                }
+            }
+            return 0;
+        }
+        public async Task<long> CountAsync(string columns = null, bool codition = true, int? timeout = null)
+        {
+            if (codition)
+            {
+                if (columns != null)
+                {
+                    _columnBuffer.Append(columns);
+                }
+                if (_dbcontext != null)
+                {
+                    var sql = BuildCount();
+                    return await _dbcontext.ExecuteScalarAsync<long>(sql, _param, timeout);
+                }
+            }
+            return 0;
+        }
+        public IQueryable<T1, T2, T3, T4> Join(string expression)
+        {
+            if (_join.Length > 0)
+            {
+                _join.Append(" ");
+            }
+            _join.Append(expression);
+            return this;
+        }
+        public IQueryable<T1, T2, T3, T4> Join<E1, E2>(Expression<Func<E1, E2, bool?>> expression, JoinType join = JoinType.Inner) where E1 : class where E2 : class
         {
             var onExpression = ExpressionUtil.BuildExpression(expression, _param, _prefix, false);
             var table1Name = EntityUtil.GetTable<E1>().TableName;

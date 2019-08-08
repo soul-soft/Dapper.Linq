@@ -39,8 +39,8 @@ namespace Dapper.Common
     }
     public class DbContext : IDbContext
     {
-        public DatasourceType SourceType { get;  set; }
-        public List<Logger> Loggers { get;  set; }
+        public DatasourceType SourceType { get; set; }
+        public List<Logger> Loggers { get; set; }
         public IDbTransaction Transaction { get; private set; }
         public IDbConnection Connection { get; }
         public bool? Buffered { get; set; }
@@ -181,6 +181,22 @@ namespace Dapper.Common
             }
             throw new NotImplementedException();
         }
+        public IQueryable<T1, T2, T3, T4> From<T1, T2, T3, T4>() where T1 : class where T2 : class where T3 : class where T4 : class
+        {
+            if (SourceType == DatasourceType.MYSQL)
+            {
+                return new MySqlQuery<T1, T2, T3, T4>(this);
+            }
+            else if (SourceType == DatasourceType.SQLSERVER)
+            {
+                return new SqlQuery<T1, T2, T3, T4>(this);
+            }
+            else if (SourceType == DatasourceType.SQLITE)
+            {
+                return new SQLiteQuery<T1, T2, T3, T4>(this);
+            }
+            throw new NotImplementedException();
+        }
         public IEnumerable<T> Query<T>(string sql, object param = null, bool buffered = true, int? commandTimeout = null, CommandType? commandType = null)
         {
             return Connection.Query<T>(sql, param, Transaction, Buffered != null ? Buffered.Value : buffered, Timeout != null ? Timeout.Value : commandTimeout, commandType);
@@ -207,7 +223,7 @@ namespace Dapper.Common
             _target = target;
             Loggers = new List<Logger>();
         }
-        public List<Logger> Loggers { get;  set; }
+        public List<Logger> Loggers { get; set; }
 
         public IDbConnection Connection => _target.Connection;
 
@@ -394,6 +410,22 @@ namespace Dapper.Common
             else if (SourceType == DatasourceType.SQLITE)
             {
                 return new SQLiteQuery<T1, T2, T3>(this);
+            }
+            throw new NotImplementedException();
+        }
+        public IQueryable<T1, T2, T3, T4> From<T1, T2, T3, T4>() where T1 : class where T2 : class where T3 : class where T4 : class
+        {
+            if (SourceType == DatasourceType.MYSQL)
+            {
+                return new MySqlQuery<T1, T2, T3, T4>(this);
+            }
+            if (SourceType == DatasourceType.SQLSERVER)
+            {
+                return new SqlQuery<T1, T2, T3, T4>(this);
+            }
+            else if (SourceType == DatasourceType.SQLITE)
+            {
+                return new SQLiteQuery<T1, T2, T3, T4>(this);
             }
             throw new NotImplementedException();
         }

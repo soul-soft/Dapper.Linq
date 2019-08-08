@@ -2081,7 +2081,7 @@
           "lib/netstandard1.3/System.Xml.XPath.XmlDocument.dll": {}
         }
       },
-      "Dapper.Common/2.0.0.1": {
+      "Dapper.Common/2.0.0.2": {
         "type": "project",
         "framework": ".NETStandard,Version=v2.0",
         "dependencies": {
@@ -7096,7 +7096,7 @@
         "system.xml.xpath.xmldocument.nuspec"
       ]
     },
-    "Dapper.Common/2.0.0.1": {
+    "Dapper.Common/2.0.0.2": {
       "type": "project",
       "path": "../Dapper.Common/Dapper.Common.csproj",
       "msbuildProject": "../Dapper.Common/Dapper.Common.csproj"
@@ -7104,7 +7104,7 @@
   },
   "projectFileDependencyGroups": {
     ".NETCoreApp,Version=v2.2": [
-      "Dapper.Common >= 2.0.0.1",
+      "Dapper.Common >= 2.0.0.2",
       "Microsoft.NET.Test.Sdk >= 15.9.0",
       "Microsoft.NETCore.App >= 2.2.0",
       "MySql.Data >= 8.0.17",

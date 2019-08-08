@@ -22,7 +22,7 @@ namespace Tests
                 Default = true,
                 DatasourceName = "mysql",
                 ConnectionFacotry = () => new MySql.Data.MySqlClient.MySqlConnection("server=localhost;user id=root;password=1024;database=test;"),
-                DatasourceType = DatasourceType.MYSQL,
+                DatasourceType = DatasourceType.SQLSERVER,
                 UseProxy = true//use static proxy,for logger
             });
         }
@@ -78,6 +78,15 @@ namespace Tests
         {
             using (var context = DbContextFactory.GetDbContext())
             {
+                //reset where
+                context.From<Student>()
+                    .Where(a => a.Version == "12" && a.Id == 12)
+                    .Update(new Student()
+                    {
+                        Version = "14",
+                        Age = 20,
+                        Id = 14
+                    });
                 //param
                 var age = 20;
                 DateTime? time = null;
@@ -188,8 +197,11 @@ namespace Tests
                     //single
                     var c = Grade.A;
                     var student = context.From<Student>()
-                        .Where(a => !a.IsDelete && a.Id>3)
-                        .Single();
+                        .Where(a => a.IsDelete)
+                        .Single(s => new
+                        {
+                            s.IsDelete
+                        });
 
                     //subquery
                     var id = 0;
@@ -204,7 +216,7 @@ namespace Tests
                         .Where(a => a.Id >= Operator.Any(subquery) && a.Age > age)
                         .Select();
 
-                    //Partial columns
+                    ////Partial columns
                     var students3 = context.From<Student>()
                        .Select(s => new
                        {
@@ -217,7 +229,7 @@ namespace Tests
 
                     throw;
                 }
-               
+
 
             }
         }

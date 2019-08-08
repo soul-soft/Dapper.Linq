@@ -15,3 +15,4 @@ D:\Dapper.Common\src\Dapper.Common\Dapper.Common\obj\Release\netstandard2.0\Dapp
 D:\Dapper.Common\src\Dapper.Common\Dapper.Common\obj\Release\netstandard2.0\Dapper.Common.AssemblyInfo.cs
 D:\Dapper.Common\src\Dapper.Common\Dapper.Common\obj\Release\netstandard2.0\Dapper.Common.dll
 D:\Dapper.Common\src\Dapper.Common\Dapper.Common\obj\Release\netstandard2.0\Dapper.Common.pdb
+D:\Dapper.Common\src\Dapper.Common\Dapper.Common\obj\Release\netstandard2.0\Dapper.Common.csprojAssemblyReference.cache

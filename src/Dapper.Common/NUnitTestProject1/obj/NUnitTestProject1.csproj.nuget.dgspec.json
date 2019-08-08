@@ -5,7 +5,7 @@
   },
   "projects": {
     "D:\\Dapper.Common\\src\\Dapper.Common\\Dapper.Common\\Dapper.Common.csproj": {
-      "version": "2.0.0.1",
+      "version": "2.0.0.2",
       "restore": {
         "projectUniqueName": "D:\\Dapper.Common\\src\\Dapper.Common\\Dapper.Common\\Dapper.Common.csproj",
         "projectName": "Dapper.Common",

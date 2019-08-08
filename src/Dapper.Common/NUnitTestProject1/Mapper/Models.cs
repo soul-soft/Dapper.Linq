@@ -48,4 +48,16 @@ namespace NUnitTestProject1
         [Column("`address`")]
         public string Address { get; set; }
     }
+
+
+    [Table("`school`")]
+    public class Goods
+    {
+        [Column("`id`", ColumnKey.Primary, true)]
+        public int? Id { get; set; }
+        [Column("`name`")]
+        public string Name { get; set; }
+        [Column("`address`")]
+        public string Address { get; set; }
+    }
 }
