@@ -85,24 +85,34 @@ using (var context = DbContextFactory.GetDbContext())
     context.From<Student>()
         .Set(a => a.Name, a => MysqlFun.REPLACE(a.Name, "a", "b"))
         .Where(a => a.Id == 14)
-        .Update();
+        .Update();  
 
     //lock
     var student = context.From<Student>()
         .Where(a => a.Id == 16)
         .Single();
+        
     var row2 = context.From<Student>()
         .Set(a => a.Age, 80)
         .Set(a => a.Version, Guid.NewGuid().ToString())
         .Where(a => a.Id == 16 && a.Version == student.Version)
         .Update();
 
-    //entity
+    //entity update by primary key
     var row3 = context.From<Student>()
         .Filter(a => a.SchoolId)
         .Update(new Student()
         {
             Id = 2,
+            CreateTime = DateTime.Now
+        });
+     //reset update where
+     var row3 = context.From<Student>()
+        .Where(a => a.Id = 2 && a.Version=oldVersion)
+        .Update(new Student()
+        {            
+            Id = 2,
+            Version=Guid.NewGuid().ToString(),
             CreateTime = DateTime.Now
         });
 
