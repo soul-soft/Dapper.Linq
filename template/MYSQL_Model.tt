@@ -23,7 +23,7 @@
 	var columns = connection.Query<Column>(columnsql).ToList();	
 #>
 using System;
-using Dapper.Extension;
+using Dapper.Linq;
 
 namespace Standard.Model
 {

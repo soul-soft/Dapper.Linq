@@ -43,7 +43,7 @@
 	var types = connection.Query<DataType>(typesql).ToList();
 #>
 using System;
-using Dapper.Extension;
+using Dapper.Linq;
 
 namespace Standard.Model
 {<#foreach(var table in tables){#>
