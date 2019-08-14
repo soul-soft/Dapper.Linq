@@ -1,4 +1,4 @@
-# Dapper.Common
+# Dapper.Linq
 
 ## About author
   1. Email:1448376744@qq.com
