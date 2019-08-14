@@ -165,6 +165,50 @@ using (var context = DbContextFactory.GetDbContext())
 
 ```
 
+## Anonymous
+
+``` C#
+// Custom Mapper Handles the Problem that Anonymous Types Can't Match Constructors
+//Copy "DefaultTypeMap" from "dapper" and modify this method
+  public ConstructorInfo FindConstructor(string[] names, Type[] types)
+        {
+            var constructors = _type.GetConstructors(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+            foreach (ConstructorInfo ctor in constructors.OrderBy(c => c.IsPublic ? 0 : (c.IsPrivate ? 2 : 1)).ThenBy(c => c.GetParameters().Length))
+            {
+                ParameterInfo[] ctorParameters = ctor.GetParameters();
+                if (ctorParameters.Length == 0)
+                    return ctor;
+
+                if (ctorParameters.Length != types.Length)
+                    continue;
+
+                int i = 0;
+                for (; i < ctorParameters.Length; i++)
+                {
+                    if (!string.Equals(ctorParameters[i].Name, names[i], StringComparison.OrdinalIgnoreCase))
+                        break;
+                    if (types[i] == typeof(byte[]) && ctorParameters[i].ParameterType.FullName == "System.Data.Linq.Binary")
+                        continue;
+                    var unboxedType = Nullable.GetUnderlyingType(ctorParameters[i].ParameterType) ?? ctorParameters[i].ParameterType;
+                    //if ((unboxedType != types[i] && !SqlMapper.HasTypeHandler(unboxedType))
+                    //    && !(unboxedType.IsEnum && Enum.GetUnderlyingType(unboxedType) == types[i])
+                    //    && !(unboxedType == typeof(char) && types[i] == typeof(string))
+                    //    && !(unboxedType.IsEnum && types[i] == typeof(string)))
+                    //{
+                    //    break;
+                    //}
+                }
+
+                if (i == ctorParameters.Length)
+                    return ctor;
+            }
+
+            return null;
+        }
+  
+ SqlMapper.TypeMapProvider = (type) => new LinqTypeMap();
+```
+
 ## Select 
 ``` C#
  //single
