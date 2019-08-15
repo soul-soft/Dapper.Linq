@@ -17,6 +17,7 @@ namespace Tests
         [SetUp]
         public void Setup()
         {
+            Dapper.SqlMapper.TypeMapProvider = (type) => new LinqTypeMap(type);
             DbContextFactory.AddDataSource(new DataSource()
             {
                 Default = true,

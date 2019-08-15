@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "D:\\Dapper.Common\\src\\Dapper.Common\\NUnitTestProject1\\NUnitTestProject1.csproj": {}
+    "D:\\Dapper.Linq\\src\\Dapper.Linq\\NUnitTestProject1\\NUnitTestProject1.csproj": {}
   },
   "projects": {
-    "D:\\Dapper.Common\\src\\Dapper.Common\\Dapper.Common\\Dapper.Common.csproj": {
-      "version": "2.0.0.2",
+    "D:\\Dapper.Linq\\src\\Dapper.Linq\\Dapper.Linq\\Dapper.Linq.csproj": {
+      "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\Dapper.Common\\src\\Dapper.Common\\Dapper.Common\\Dapper.Common.csproj",
-        "projectName": "Dapper.Common",
-        "projectPath": "D:\\Dapper.Common\\src\\Dapper.Common\\Dapper.Common\\Dapper.Common.csproj",
+        "projectUniqueName": "D:\\Dapper.Linq\\src\\Dapper.Linq\\Dapper.Linq\\Dapper.Linq.csproj",
+        "projectName": "Dapper.Linq",
+        "projectPath": "D:\\Dapper.Linq\\src\\Dapper.Linq\\Dapper.Linq\\Dapper.Linq.csproj",
         "packagesPath": "C:\\Users\\14483\\.nuget\\packages\\",
-        "outputPath": "D:\\Dapper.Common\\src\\Dapper.Common\\Dapper.Common\\obj\\",
+        "outputPath": "D:\\Dapper.Linq\\src\\Dapper.Linq\\Dapper.Linq\\obj\\",
         "projectStyle": "PackageReference",
         "crossTargeting": true,
         "fallbackFolders": [
@@ -66,21 +66,26 @@
             }
           },
           "imports": [
-            "net461"
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48"
           ],
           "assetTargetFallback": true,
           "warn": true
         }
       }
     },
-    "D:\\Dapper.Common\\src\\Dapper.Common\\NUnitTestProject1\\NUnitTestProject1.csproj": {
+    "D:\\Dapper.Linq\\src\\Dapper.Linq\\NUnitTestProject1\\NUnitTestProject1.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\Dapper.Common\\src\\Dapper.Common\\NUnitTestProject1\\NUnitTestProject1.csproj",
+        "projectUniqueName": "D:\\Dapper.Linq\\src\\Dapper.Linq\\NUnitTestProject1\\NUnitTestProject1.csproj",
         "projectName": "NUnitTestProject1",
-        "projectPath": "D:\\Dapper.Common\\src\\Dapper.Common\\NUnitTestProject1\\NUnitTestProject1.csproj",
+        "projectPath": "D:\\Dapper.Linq\\src\\Dapper.Linq\\NUnitTestProject1\\NUnitTestProject1.csproj",
         "packagesPath": "C:\\Users\\14483\\.nuget\\packages\\",
-        "outputPath": "D:\\Dapper.Common\\src\\Dapper.Common\\NUnitTestProject1\\obj\\",
+        "outputPath": "D:\\Dapper.Linq\\src\\Dapper.Linq\\NUnitTestProject1\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
@@ -99,8 +104,8 @@
         "frameworks": {
           "netcoreapp2.2": {
             "projectReferences": {
-              "D:\\Dapper.Common\\src\\Dapper.Common\\Dapper.Common\\Dapper.Common.csproj": {
-                "projectPath": "D:\\Dapper.Common\\src\\Dapper.Common\\Dapper.Common\\Dapper.Common.csproj"
+              "D:\\Dapper.Linq\\src\\Dapper.Linq\\Dapper.Linq\\Dapper.Linq.csproj": {
+                "projectPath": "D:\\Dapper.Linq\\src\\Dapper.Linq\\Dapper.Linq\\Dapper.Linq.csproj"
               }
             }
           }
@@ -138,7 +143,12 @@
             }
           },
           "imports": [
-            "net461"
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48"
           ],
           "assetTargetFallback": true,
           "warn": true
