@@ -7,6 +7,8 @@
 
 ## Config
 ``` C#
+ //"LinqTypeMap" file in unit test project 
+ Dapper.SqlMapper.TypeMapProvider = (type) => new LinqTypeMap(type);
  DbContextFactory.AddDataSource(new DataSource()
  {
      Default = true,
