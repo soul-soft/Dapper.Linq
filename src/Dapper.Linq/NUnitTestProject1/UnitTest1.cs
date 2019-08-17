@@ -198,11 +198,8 @@ namespace Tests
                     //single
                     var c = Grade.A;
                     var student = context.From<Student>()
-                        .Where(a => a.IsDelete)
-                        .Single(s => new
-                        {
-                            s.IsDelete
-                        });
+                        .Where(a =>!( a.IsDelete==false) &&a.Age>2)
+                        .Select();
 
                     //subquery
                     var id = 0;

@@ -34,7 +34,7 @@ namespace NUnitTestProject1
         [Column(isColumn:false)]
         public int? Type { get; set; }
         [Column("`is_delete`")]
-        public bool IsDelete { get; set; }
+        public bool? IsDelete { get; set; }
     }
 
 

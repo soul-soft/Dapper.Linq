@@ -122,12 +122,7 @@ namespace Dapper.Linq.Util
         }
         protected override Expression VisitUnary(UnaryExpression node)
         {
-            if ((node.Operand is MemberExpression mex) && (mex.Member is System.Reflection.PropertyInfo pif) && pif.PropertyType == typeof(bool))
-            {
-                var columnName = EntityUtil.GetColumn(mex.Expression.Type, f => f.CSharpName == mex.Member.Name)?.ColumnName ?? mex.Member.Name;
-                _build.AppendFormat("({0} = {1})", columnName, node.NodeType != ExpressionType.Not ? 1 : 0);
-            }
-            else if (node.NodeType == ExpressionType.Not)
+            if (node.NodeType == ExpressionType.Not)
             {
                 _build.AppendFormat("{0} ", Operator.GetOperator(ExpressionType.Not));
                 Visit(node.Operand);

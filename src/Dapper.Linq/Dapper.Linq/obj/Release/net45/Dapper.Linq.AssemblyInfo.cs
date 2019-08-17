@@ -12,7 +12,7 @@ using System;
 using System.Reflection;
 
 [assembly: System.Reflection.AssemblyCompanyAttribute("mammothcode")]
-[assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
+[assembly: System.Reflection.AssemblyConfigurationAttribute("Release")]
 [assembly: System.Reflection.AssemblyCopyrightAttribute("花间岛")]
 [assembly: System.Reflection.AssemblyDescriptionAttribute("dapper,mysql,sqlserver,sqlite,linq to sql,subquery,windows function")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.1")]
