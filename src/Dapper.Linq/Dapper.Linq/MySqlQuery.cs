@@ -237,6 +237,44 @@ namespace Dapper.Linq
             }
             return 0;
         }
+        public int Insert(Expression<Func<T, T>> expression, bool condition = true, int? timeout = null)
+        {
+            if (condition && _dbcontext != null)
+            {
+                var sql = BuildInsert(expression);
+                return _dbcontext.Execute(sql, _param, timeout);
+            }
+            return 0;
+        }
+        public long InsertReturnId(Expression<Func<T, T>> expression, bool condition = true, int? timeout = null)
+        {
+            if (condition && _dbcontext != null)
+            {
+                var sql = BuildInsert(expression);
+                sql = string.Format("{0};SELECT @@IDENTITY;", sql);
+                return _dbcontext.ExecuteScalar<long>(sql, _param, timeout);
+            }
+            return 0;
+        }
+        public async Task<int> InsertAsync(Expression<Func<T, T>> expression, bool condition = true, int? timeout = null)
+        {
+            if (condition && _dbcontext != null)
+            {
+                var sql = BuildInsert(expression);
+                return await _dbcontext.ExecuteAsync(sql, _param, timeout);
+            }
+            return 0;
+        }
+        public async Task<long> InsertReturnIdAsync(Expression<Func<T, T>> expression, bool condition = true, int? timeout = null)
+        {
+            if (condition && _dbcontext != null)
+            {
+                var sql = BuildInsert(expression);
+                sql = string.Format("{0};SELECT @@IDENTITY;", sql);
+                return await _dbcontext.ExecuteScalarAsync<long>(sql, _param, timeout);
+            }
+            return 0;
+        }
         public int Insert(T entity, bool condition = true, int? timeout = null)
         {
             if (condition && _dbcontext != null)
@@ -317,6 +355,24 @@ namespace Dapper.Linq
             {
                 var sql = BuildUpdate();
                 return _dbcontext.Execute(sql, entity, timeout);
+            }
+            return 0;
+        }
+        public int Update(Expression<Func<T, T>> expression, bool condition = true, int? timeout = null)
+        {
+            if (condition && _dbcontext != null)
+            {
+                var sql = BuildUpdate(expression);
+                return _dbcontext.Execute(sql, _param, timeout);
+            }
+            return 0;
+        }
+        public async Task<int> UpdateAsync(Expression<Func<T, T>> expression, bool condition = true, int? timeout = null)
+        {
+            if (condition && _dbcontext != null)
+            {
+                var sql = BuildUpdate(expression);
+                return await _dbcontext.ExecuteAsync(sql, _param, timeout);
             }
             return 0;
         }
@@ -550,36 +606,59 @@ namespace Dapper.Linq
         #endregion
 
         #region build
-        public string BuildInsert()
+        public string BuildInsert(Expression expression = null)
         {
-            var sql = string.Format("INSERT INTO {0} ({1}) VALUES ({2})",
-                _table.TableName,
-                string.Join(",", _table.Columns.FindAll(f => f.Identity == false && !_filters.Exists(e => e == f.ColumnName)).Select(s => s.ColumnName))
-                , string.Join(",", _table.Columns.FindAll(f => f.Identity == false && !_filters.Exists(e => e == f.ColumnName)).Select(s => string.Format("@{0}", s.CSharpName))));
-            return sql;
+            if (expression == null)
+            {
+                var sql = string.Format("INSERT INTO {0} ({1}) VALUES ({2})"
+                    , _table.TableName
+                    , string.Join(",", _table.Columns.FindAll(f => f.Identity == false && !_filters.Exists(e => e == f.ColumnName)).Select(s => s.ColumnName))
+                    , string.Join(",", _table.Columns.FindAll(f => f.Identity == false && !_filters.Exists(e => e == f.ColumnName)).Select(s => string.Format("@{0}", s.CSharpName))));
+                return sql;
+            }
+            else
+            {
+                var columns = ExpressionUtil.BuildColumnAndValues(expression, _param, _prefix);
+                var sql = string.Format("INSERT INTO {0} ({1}) VALUES ({2})"
+                    , _table.TableName
+                    , string.Join(",", columns.Keys)
+                    , string.Join(",", columns.Values));
+                return sql;
+            }
         }
         public string BuildUpdate(bool allColumn = true)
         {
             if (allColumn)
             {
                 var keyColumn = _table.Columns.Find(f => f.ColumnKey == ColumnKey.Primary);
-                var colums = _table.Columns.FindAll(f => f.ColumnKey != ColumnKey.Primary && !_filters.Exists(e => e == f.ColumnName));
-                var sql = string.Format("UPDATE {0} SET {1} WHERE {2}",
-                    _table.TableName,
-                    string.Join(",", colums.Select(s => string.Format("{0} = @{1}", s.ColumnName, s.CSharpName))),
-                    _whereBuffer.Length > 0 ? _whereBuffer.ToString() : string.Format("{0} = @{1}", keyColumn.ColumnName, keyColumn.CSharpName)
+                var columns = _table.Columns.FindAll(f => f.ColumnKey != ColumnKey.Primary && !_filters.Exists(e => e == f.ColumnName));
+                var sql = string.Format("UPDATE {0} SET {1} WHERE {2}"
+                    , _table.TableName
+                    , string.Join(",", columns.Select(s => string.Format("{0} = @{1}", s.ColumnName, s.CSharpName)))
+                    , _whereBuffer.Length > 0 ? _whereBuffer.ToString() : string.Format("{0} = @{1}", keyColumn.ColumnName, keyColumn.CSharpName)
                     );
                 return sql;
             }
             else
             {
-                var sql = string.Format("UPDATE {0} SET {1}{2}",
-                    _table.TableName,
-                    _setBuffer,
-                    _whereBuffer.Length > 0 ? string.Format(" WHERE {0}", _whereBuffer) : "");
+                var sql = string.Format("UPDATE {0} SET {1}{2}"
+                    , _table.TableName
+                    , _setBuffer
+                    , _whereBuffer.Length > 0 ? string.Format(" WHERE {0}", _whereBuffer) : "");
                 return sql;
             }
 
+        }
+        public string BuildUpdate(Expression expression)
+        {
+            var keyColumn = _table.Columns.Find(f => f.ColumnKey == ColumnKey.Primary);
+            var columns = ExpressionUtil.BuildColumnAndValues(expression, _param, _prefix).Where(a => a.Key != keyColumn.ColumnName);
+            var sql = string.Format("UPDATE {0} SET {1} WHERE {2}",
+                    _table.TableName,
+                    string.Join(",", columns.Select(s => string.Format("{0} = {1}", s.Key, s.Value))),
+                    _whereBuffer.Length > 0 ? _whereBuffer.ToString() : string.Format("{0} = @{1}", keyColumn.ColumnName, keyColumn.CSharpName)
+                    );
+            return sql;
         }
         public string BuildDelete()
         {

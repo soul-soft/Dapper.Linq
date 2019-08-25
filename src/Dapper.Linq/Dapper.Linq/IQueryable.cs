@@ -41,6 +41,10 @@ namespace Dapper.Linq
         IEnumerable<TResult> Select<TResult>(Expression<Func<T, TResult>> columns, bool buffered = true, int? timeout = null);
         Task<IEnumerable<TResult>> SelectAsync<TResult>(Expression<Func<T, TResult>> columns, int? timeout = null);
         int Insert(T entity, bool condition = true, int? timeout = null);
+        int Insert(Expression<Func<T, T>> expression, bool condition = true, int? timeout = null);
+        Task<int> InsertAsync(Expression<Func<T, T>> expression, bool condition = true, int? timeout = null);
+        long InsertReturnId(Expression<Func<T, T>> expression, bool condition = true, int? timeout = null);
+        Task<long> InsertReturnIdAsync(Expression<Func<T, T>> expression, bool condition = true, int? timeout = null);
         Task<int> InsertAsync(T entity, bool condition = true, int? timeout = null);
         long InsertReturnId(T entity, bool condition = true, int? timeout = null);
         Task<long> InsertReturnIdAsync(T entity, bool condition = true, int? timeout = null);
@@ -49,6 +53,8 @@ namespace Dapper.Linq
         int Update(bool condition = true, int? timeout = null);
         Task<int> UpdateAsync(bool condition = true, int? timeout = null);
         int Update(T entity, bool condition = true, int? timeout = null);
+        int Update(Expression<Func<T,T>> expression, bool condition = true, int? timeout = null);
+        Task<int> UpdateAsync(Expression<Func<T, T>> expression, bool condition = true, int? timeout = null);
         Task<int> UpdateAsync(T entity, bool condition = true, int? timeout = null);
         int Update(IEnumerable<T> entitys, bool condition = true, int? timeout = null);
         Task<int> UpdateAsync(IEnumerable<T> entitys, bool condition = true, int? timeout = null);

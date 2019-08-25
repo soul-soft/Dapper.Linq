@@ -23,7 +23,7 @@ namespace Tests
                 Default = true,
                 DatasourceName = "mysql",
                 ConnectionFacotry = () => new MySql.Data.MySqlClient.MySqlConnection("server=localhost;user id=root;password=1024;database=test;"),
-                DatasourceType = DatasourceType.SQLSERVER,
+                DatasourceType = DatasourceType.MYSQL,
                 UseProxy = true//use static proxy,for logger
             });
         }
@@ -36,7 +36,14 @@ namespace Tests
             IDbContext context = null;
             try
             {
+               
                 context = DbContextFactory.GetDbContext();
+                var row = context.From<Student>().InsertReturnId(s=>new Student()
+                {
+                    Age=90,
+                    Name="zshh",
+                    IsDelete=false
+                });
                 //because set "id[isIdentity=true]"£¬so not set "id" value
                 var row1 = context.From<Student>().Insert(new Student()
                 {
@@ -79,6 +86,12 @@ namespace Tests
         {
             using (var context = DbContextFactory.GetDbContext())
             {
+                var row = context.From<Student>().Update(s=>new Student()
+                {
+                    Age=99,
+                    Name="favv",
+                    Id=10
+                });
                 //reset where
                 context.From<Student>()
                     .Where(a => a.Version == "12" && a.Id == 12)

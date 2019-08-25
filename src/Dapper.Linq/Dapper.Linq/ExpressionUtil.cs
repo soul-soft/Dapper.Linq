@@ -355,8 +355,38 @@ namespace Dapper.Linq.Util
                 return column;
             }
         }
+        public static Dictionary<string,string> BuildColumnAndValues(Expression expression,Dictionary<string,object> param,string prefix)
+        {
+            var columns = new Dictionary<string,string>();
+            expression = (expression as LambdaExpression).Body;
+            var initExpression = (expression as MemberInitExpression);
+            var type = initExpression.Type;
+            for (int i = 0; i < initExpression.Bindings.Count; i++)
+            {
+                Expression argument = (initExpression.Bindings[i] as MemberAssignment).Expression;
+                var name = initExpression.Bindings[i].Member.Name;
+                var columnName = EntityUtil.GetColumn(type, f => f.CSharpName == name).ColumnName;
+                var value = GetValue(argument);
+                if (value is Enum)
+                {
+                    value = Convert.ToInt32(value);
+                }
+                else if (value is bool)
+                {
+                    value = Convert.ToBoolean(value) ? 1 : 0;
+                }
+                var key = string.Format("@{0}", name);
+                columns.Add(columnName,key);
+                param.Add(key, value);
+            }
+            return columns;
+        }
         public static object GetValue(Expression expression)
         {
+            if ((expression is UnaryExpression unaryExpression) && unaryExpression.NodeType == ExpressionType.Convert)
+            {
+                expression = unaryExpression.Operand;
+            }
             var names = new Stack<string>();
             var exps = new Stack<Expression>();
             var mifs = new Stack<System.Reflection.MemberInfo>();
@@ -393,7 +423,7 @@ namespace Dapper.Linq.Util
             else if (expression is ConstantExpression constant)
             {
                 return constant.Value;
-            }
+            }            
             else
             {
                 return Expression.Lambda(expression).Compile().DynamicInvoke();

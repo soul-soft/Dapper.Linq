@@ -7,3 +7,4 @@ C:\Dapper.Linq\src\Dapper.Linq\Dapper.Linq\obj\Release\net45\Dapper.Linq.Assembl
 C:\Dapper.Linq\src\Dapper.Linq\Dapper.Linq\obj\Release\net45\Dapper.Linq.csproj.CopyComplete
 C:\Dapper.Linq\src\Dapper.Linq\Dapper.Linq\obj\Release\net45\Dapper.Linq.dll
 C:\Dapper.Linq\src\Dapper.Linq\Dapper.Linq\obj\Release\net45\Dapper.Linq.pdb
+C:\Dapper.Linq\src\Dapper.Linq\Dapper.Linq\obj\Release\net45\Dapper.Linq.csprojAssemblyReference.cache
