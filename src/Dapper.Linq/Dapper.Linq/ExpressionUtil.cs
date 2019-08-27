@@ -189,15 +189,20 @@ namespace Dapper.Linq.Util
         #endregion
 
         #region private
+        private static string GetColumnName(Type type, string name, bool singleTable)
+        {
+            var columnName = EntityUtil.GetColumn(type, f => f.CSharpName == name)?.ColumnName ?? name;
+            if (!singleTable)
+            {
+                var tableName = EntityUtil.GetTable(type).TableName;
+                columnName = string.Format("{0}.{1}", tableName, columnName);
+            }
+            return columnName;
+        }
         public void SetName(MemberExpression expression)
         {
             var name = expression.Member.Name;
-            var columnName = EntityUtil.GetColumn(expression.Expression.Type, f => f.CSharpName == name)?.ColumnName ?? name;
-            if (!_singleTable)
-            {
-                var tableName = EntityUtil.GetTable(expression.Expression.Type).TableName;
-                columnName = string.Format("{0}.{1}", tableName, columnName);
-            }
+            var columnName = GetColumnName(expression.Expression.Type, name, _singleTable);
             _build.Append(columnName);
             _paramName = name;
         }
@@ -258,27 +263,82 @@ namespace Dapper.Linq.Util
             if (expression is LambdaExpression)
             {
                 expression = (expression as LambdaExpression).Body;
-            }          
-            else if (expression is NewExpression)
+            }
+            if (expression is MemberExpression memberExpression0 && memberExpression0.Expression != null && memberExpression0.Expression.NodeType == ExpressionType.Parameter)
             {
-                var newExpression = (expression as NewExpression);
+                var memberName = memberExpression0.Member.Name;
+                var columnName = GetColumnName(memberExpression0.Expression.Type, memberExpression0.Member.Name, singleTable);
+                columns.Add(memberName, columnName);
+            }
+            else if (expression is MemberInitExpression initExpression)
+            {
+                for (int i = 0; i < initExpression.Bindings.Count; i++)
+                {
+                    var columnName = string.Empty;
+                    var memberName = initExpression.Bindings[i].Member.Name;
+                    var argument = (initExpression.Bindings[i] as MemberAssignment).Expression;
+                    if (argument is UnaryExpression)
+                    {
+                        argument = (argument as UnaryExpression).Operand;
+                    }
+                    if (argument is MemberExpression memberExpression1 && memberExpression1.Expression != null && memberExpression1.Expression.NodeType == ExpressionType.Parameter)
+                    {
+                        columnName = GetColumnName(memberExpression1.Expression.Type, memberExpression1.Member.Name, singleTable);
+                    }
+                    else if (argument is MemberExpression memberExpression2 && memberExpression2.Expression.NodeType == ExpressionType.Constant)
+                    {
+                        var value = GetValue(argument);
+                        if (value is ISqlBuilder sqlBuilder)
+                        {
+                            columnName = sqlBuilder.Build(param, prefix);
+                        }
+                        else
+                        {
+                            columnName = value.ToString();
+                        }
+                    }
+                    else if (argument is MethodCallExpression && (argument as MethodCallExpression).Method.DeclaringType == typeof(Convert))
+                    {
+                        var value = GetValue((argument as MethodCallExpression).Arguments[0]);
+                        if (value is ISqlBuilder sqlBuilder)
+                        {
+                            columnName = sqlBuilder.Build(param, prefix);
+                        }
+                        else
+                        {
+                            columnName = value.ToString();
+                        }
+                    }
+                    else if (argument is ConstantExpression)
+                    {
+                        columnName = GetValue(argument).ToString();
+                    }
+                    else
+                    {
+                        columnName = BuildExpression(argument, param, prefix, singleTable);
+                    }
+
+                    columns.Add(memberName, columnName);
+                }
+            }
+            else if (expression is NewExpression newExpression)
+            {
                 for (int i = 0; i < newExpression.Arguments.Count; i++)
                 {
                     var columnName = string.Empty;
                     var memberName = newExpression.Members[i].Name;
                     var argument = newExpression.Arguments[i];
-                    if (argument is MemberExpression memberExpression)
+                    if (argument is UnaryExpression)
                     {
-                        columnName = EntityUtil.GetColumn(memberExpression.Expression.Type, f => f.CSharpName == memberName)?.ColumnName ?? memberName;
-                        if (!singleTable)
-                        {
-                            var tableName = EntityUtil.GetTable(memberExpression.Expression.Type).TableName;
-                            columnName = string.Format("{0}.{1}", tableName, columnName);
-                        }
+                        argument = (argument as UnaryExpression).Operand;
                     }
-                    else if (argument is UnaryExpression unaryExpression && unaryExpression.NodeType == ExpressionType.Convert)
+                    if (argument is MemberExpression memberExpression1 && memberExpression1.Expression != null && memberExpression1.Expression.NodeType == ExpressionType.Parameter)
                     {
-                        var value = GetValue(unaryExpression.Operand);
+                        columnName = GetColumnName(memberExpression1.Expression.Type, memberExpression1.Member.Name, singleTable);
+                    }
+                    else if (argument is MemberExpression memberExpression2 && memberExpression2.Expression != null && memberExpression2.Expression.NodeType == ExpressionType.Constant)
+                    {
+                        var value = GetValue(memberExpression2);
                         if (value is ISqlBuilder sqlBuilder)
                         {
                             columnName = sqlBuilder.Build(param, prefix);
@@ -314,15 +374,12 @@ namespace Dapper.Linq.Util
             else
             {
                 var name = string.Format("COLUMN0");
-                if (expression is MemberExpression memberExpression)
-                {
-                    name = memberExpression.Member.Name;
-                }
                 var columnName = BuildExpression(expression, param, prefix, singleTable);
                 columns.Add(name, columnName);
             }
             return columns;
         }
+
         public static Dictionary<string, string> BuildColumn(Expression expression, Dictionary<string, object> param, string prefix, bool singleTable = true)
         {
             if (expression is LambdaExpression)
@@ -330,26 +387,16 @@ namespace Dapper.Linq.Util
                 expression = (expression as LambdaExpression).Body;
             }
             var column = new Dictionary<string, string>();
-            if (expression is MemberExpression)
+            if (expression is MemberExpression memberExpression && memberExpression.Expression != null && memberExpression.Expression.NodeType == ExpressionType.Parameter)
             {
-                var memberExpression = (expression as MemberExpression);
-                var name = memberExpression.Member.Name;
-                var columnName = EntityUtil.GetColumn(memberExpression.Expression.Type, f => f.CSharpName == name)?.ColumnName ?? name;
-                if (!singleTable)
-                {
-                    var tableName = EntityUtil.GetTable(memberExpression.Expression.Type).TableName;
-                    columnName = string.Format("{0}.{1}", tableName, columnName);
-                }
-                column.Add(name, columnName);
+                var memberName = memberExpression.Member.Name;
+                var columnName = GetColumnName(memberExpression.Expression.Type, memberName, singleTable);
+                column.Add(memberName, columnName);
                 return column;
             }
             else
             {
                 var name = string.Format("COLUMN0");
-                if (expression is MemberExpression memberExpression)
-                {
-                    name = memberExpression.Member.Name;
-                }
                 var build = BuildExpression(expression, param, prefix, singleTable);
                 column.Add(name, build);
                 return column;

@@ -257,14 +257,15 @@ namespace Tests
             using (var context = DbContextFactory.GetDbContext())
             {
                 try
-                {                 
+                {
+                    context.From<Student>().Single(s => MysqlFun.Count(1));
                     var students = context.From<Student>()
                       .GroupBy(a => a.Age)
                       .Having(a => MysqlFun.Count(1L) > 2)
-                      .Select(s => new
+                      .Select(s => new 
                       {
-                          Count = MysqlFun.Count(1L),
-                          s.Age,
+                          Count = MysqlFun.Count(1),
+                          Agec = s.Age,
                       });
 
                     var sutdent2 = context.From<Student>()
@@ -275,7 +276,7 @@ namespace Tests
                             GroupList = MysqlFun.GROUP_CONCAT(MysqlFun.CONCAT(s.Name, "*", s.Age))
                         });
                 }
-                catch (Exception)
+                catch (Exception e)
                 {
 
                     throw;
@@ -363,6 +364,10 @@ namespace Tests
                     .Take(10)
                     .Select();
 
+                var students11 = context.From<Student>()
+                   .Take(10)
+                   .Single(s=>MysqlFun.Count(1L));
+
                 //limit 10,20 
                 var students2 = context.From<Student>()
                    .Skip(10, 20)
@@ -415,7 +420,7 @@ namespace Tests
         {
             using (var context = DbContextFactory.GetDbContext())
             {
-
+                context.From<Student>().Single(s=>s.Age);
                 //case
                 var caseWhen = new Case<Student>()
                     .When(a => a.Age <= 18)
@@ -428,10 +433,10 @@ namespace Tests
                 //The engine passes in parameters and calls the "caseWhen.Build" method of the instance
                 var students1 = context.From<Student>()
                     .Where(a => caseWhen == "Old" || caseWhen == "Youth")
-                    .Select(s => new
+                    .Select(s => new 
                     {
-                        s.Id,
-                        GroupAge = Convert.ToString(caseWhen)
+                        Age = s.Id,
+                        Count = (string)caseWhen
                     });
             }
         }
@@ -527,5 +532,5 @@ namespace Tests
         }
         #endregion
     }
-
+   
 }
