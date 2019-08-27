@@ -36,13 +36,13 @@ namespace Tests
             IDbContext context = null;
             try
             {
-               
+
                 context = DbContextFactory.GetDbContext();
-                var row = context.From<Student>().InsertReturnId(s=>new Student()
+                var row = context.From<Student>().InsertReturnId(s => new Student()
                 {
-                    Age=90,
-                    Name="zshh",
-                    IsDelete=false
+                    Age = 90,
+                    Name = "zshh",
+                    IsDelete = false
                 });
                 //because set "id[isIdentity=true]"£¬so not set "id" value
                 var row1 = context.From<Student>().Insert(new Student()
@@ -86,11 +86,11 @@ namespace Tests
         {
             using (var context = DbContextFactory.GetDbContext())
             {
-                var row = context.From<Student>().Update(s=>new Student()
+                var row = context.From<Student>().Update(s => new Student()
                 {
-                    Age=99,
-                    Name="favv",
-                    Id=10
+                    Age = 99,
+                    Name = "favv",
+                    Id = 10
                 });
                 //reset where
                 context.From<Student>()
@@ -211,9 +211,13 @@ namespace Tests
                     //single
                     var c = Grade.A;
                     var student = context.From<Student>()
-                        .Where(a =>!( a.IsDelete==false) &&a.Age>2)
+                        .Where(a => !(a.IsDelete == false) && a.Age > 2)
                         .Select();
-
+                    //in
+                    var students1 = context.From<Student>()
+                     .Where(a => Operator.In(a.Id, new[] { 1, 2 }))
+                     .Select();
+                    
                     //subquery
                     var id = 0;
                     var age = 50;
@@ -252,14 +256,31 @@ namespace Tests
         {
             using (var context = DbContextFactory.GetDbContext())
             {
-                var students = context.From<Student>()
-                    .GroupBy(a => a.Age)
-                    .Having(a => MysqlFun.Count(1L) > 2)
-                    .Select(s => new
-                    {
-                        Count = MysqlFun.Count(1L),
-                        s.Age,
-                    });
+                try
+                {                 
+                    var students = context.From<Student>()
+                      .GroupBy(a => a.Age)
+                      .Having(a => MysqlFun.Count(1L) > 2)
+                      .Select(s => new
+                      {
+                          Count = MysqlFun.Count(1L),
+                          s.Age,
+                      });
+
+                    var sutdent2 = context.From<Student>()
+                        .GroupBy(s => s.Name)
+                        .Select(s => new
+                        {
+                            s.Name,
+                            GroupList = MysqlFun.GROUP_CONCAT(MysqlFun.CONCAT(s.Name, "*", s.Age))
+                        });
+                }
+                catch (Exception)
+                {
+
+                    throw;
+                }
+
             }
         }
         #endregion
@@ -410,7 +431,7 @@ namespace Tests
                     .Select(s => new
                     {
                         s.Id,
-                        GroupAge = (string)caseWhen
+                        GroupAge = Convert.ToString(caseWhen)
                     });
             }
         }

@@ -78,7 +78,21 @@ namespace Dapper.Linq.Util
                 var parameters = node.Method.GetParameters();
                 for (int i = 0; i < node.Arguments.Count; i++)
                 {
-                    Visit(node.Arguments[i]);
+                    if (node.Arguments[i] is NewArrayExpression newArrayExpression)
+                    {
+                        for (int j = 0; j < newArrayExpression.Expressions.Count; j++)
+                        {
+                            Visit(newArrayExpression.Expressions[j]);
+                            if (j + 1 != newArrayExpression.Expressions.Count)
+                            {
+                                _build.Append(",");
+                            }
+                        }
+                    }
+                    else
+                    {
+                        Visit(node.Arguments[i]);
+                    }
                     if (i + 1 != node.Arguments.Count)
                     {
                         _build.Append(",");
@@ -244,52 +258,39 @@ namespace Dapper.Linq.Util
             if (expression is LambdaExpression)
             {
                 expression = (expression as LambdaExpression).Body;
-            }
-            if (expression is MemberInitExpression)
-            {
-                var initExpression = (expression as MemberInitExpression);
-                for (int i = 0; i < initExpression.Bindings.Count; i++)
-                {
-                    var columnName = string.Empty;
-                    Expression argument = (initExpression.Bindings[i] as MemberAssignment).Expression;
-                    if (argument is UnaryExpression)
-                    {
-                        argument = (argument as UnaryExpression).Operand;
-                    }
-                    if (argument is MethodCallExpression && (argument as MethodCallExpression).Method.DeclaringType == typeof(Convert))
-                    {
-                        var value = GetValue((argument as MethodCallExpression).Arguments[0]);
-                        if (value is ISqlBuilder sqlBuilder)
-                        {
-                            columnName = sqlBuilder.Build(param, prefix);
-                        }
-                        else
-                        {
-                            columnName = value.ToString();
-                        }
-                    }
-                    else if (argument is ConstantExpression)
-                    {
-                        columnName = GetValue(argument).ToString();
-                    }
-                    else
-                    {
-                        columnName = BuildExpression(argument, param, prefix, singleTable);
-                    }
-                    var name = initExpression.Bindings[i].Member.Name;
-                    columns.Add(name, columnName);
-                }
-            }
+            }          
             else if (expression is NewExpression)
             {
                 var newExpression = (expression as NewExpression);
                 for (int i = 0; i < newExpression.Arguments.Count; i++)
                 {
                     var columnName = string.Empty;
+                    var memberName = newExpression.Members[i].Name;
                     var argument = newExpression.Arguments[i];
-                    if (argument is MethodCallExpression && (argument as MethodCallExpression).Method.DeclaringType == typeof(Convert))
+                    if (argument is MemberExpression memberExpression)
                     {
-                        var value = GetValue((argument as MethodCallExpression).Arguments[0]);
+                        columnName = EntityUtil.GetColumn(memberExpression.Expression.Type, f => f.CSharpName == memberName)?.ColumnName ?? memberName;
+                        if (!singleTable)
+                        {
+                            var tableName = EntityUtil.GetTable(memberExpression.Expression.Type).TableName;
+                            columnName = string.Format("{0}.{1}", tableName, columnName);
+                        }
+                    }
+                    else if (argument is UnaryExpression unaryExpression && unaryExpression.NodeType == ExpressionType.Convert)
+                    {
+                        var value = GetValue(unaryExpression.Operand);
+                        if (value is ISqlBuilder sqlBuilder)
+                        {
+                            columnName = sqlBuilder.Build(param, prefix);
+                        }
+                        else
+                        {
+                            columnName = value.ToString();
+                        }
+                    }
+                    else if (argument is MethodCallExpression methodCallExpression && methodCallExpression.Method.DeclaringType == typeof(Convert))
+                    {
+                        var value = GetValue(methodCallExpression.Arguments[0]);
                         if (value is ISqlBuilder sqlBuilder)
                         {
                             columnName = sqlBuilder.Build(param, prefix);
@@ -307,8 +308,7 @@ namespace Dapper.Linq.Util
                     {
                         columnName = BuildExpression(argument, param, prefix, singleTable);
                     }
-                    var name = newExpression.Members[i].Name;
-                    columns.Add(name, columnName);
+                    columns.Add(memberName, columnName);
                 }
             }
             else
@@ -355,9 +355,9 @@ namespace Dapper.Linq.Util
                 return column;
             }
         }
-        public static Dictionary<string,string> BuildColumnAndValues(Expression expression,Dictionary<string,object> param,string prefix)
+        public static Dictionary<string, string> BuildColumnAndValues(Expression expression, Dictionary<string, object> param, string prefix)
         {
-            var columns = new Dictionary<string,string>();
+            var columns = new Dictionary<string, string>();
             expression = (expression as LambdaExpression).Body;
             var initExpression = (expression as MemberInitExpression);
             var type = initExpression.Type;
@@ -375,8 +375,8 @@ namespace Dapper.Linq.Util
                 {
                     value = Convert.ToBoolean(value) ? 1 : 0;
                 }
-                var key = string.Format("@{0}", name);
-                columns.Add(columnName,key);
+                var key = string.Format("{0}{1}", prefix, name);
+                columns.Add(columnName, key);
                 param.Add(key, value);
             }
             return columns;
@@ -423,7 +423,7 @@ namespace Dapper.Linq.Util
             else if (expression is ConstantExpression constant)
             {
                 return constant.Value;
-            }            
+            }
             else
             {
                 return Expression.Lambda(expression).Compile().DynamicInvoke();

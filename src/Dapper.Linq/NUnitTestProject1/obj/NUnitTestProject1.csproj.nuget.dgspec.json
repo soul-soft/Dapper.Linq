@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "D:\\Dapper.Linq\\src\\Dapper.Linq\\NUnitTestProject1\\NUnitTestProject1.csproj": {}
+    "C:\\Dapper.Linq\\src\\Dapper.Linq\\NUnitTestProject1\\NUnitTestProject1.csproj": {}
   },
   "projects": {
-    "D:\\Dapper.Linq\\src\\Dapper.Linq\\Dapper.Linq\\Dapper.Linq.csproj": {
-      "version": "1.0.0",
+    "C:\\Dapper.Linq\\src\\Dapper.Linq\\Dapper.Linq\\Dapper.Linq.csproj": {
+      "version": "1.0.0.3",
       "restore": {
-        "projectUniqueName": "D:\\Dapper.Linq\\src\\Dapper.Linq\\Dapper.Linq\\Dapper.Linq.csproj",
+        "projectUniqueName": "C:\\Dapper.Linq\\src\\Dapper.Linq\\Dapper.Linq\\Dapper.Linq.csproj",
         "projectName": "Dapper.Linq",
-        "projectPath": "D:\\Dapper.Linq\\src\\Dapper.Linq\\Dapper.Linq\\Dapper.Linq.csproj",
+        "projectPath": "C:\\Dapper.Linq\\src\\Dapper.Linq\\Dapper.Linq\\Dapper.Linq.csproj",
         "packagesPath": "C:\\Users\\14483\\.nuget\\packages\\",
-        "outputPath": "D:\\Dapper.Linq\\src\\Dapper.Linq\\Dapper.Linq\\obj\\",
+        "outputPath": "C:\\Dapper.Linq\\src\\Dapper.Linq\\Dapper.Linq\\obj\\",
         "projectStyle": "PackageReference",
         "crossTargeting": true,
         "fallbackFolders": [
@@ -78,14 +78,14 @@
         }
       }
     },
-    "D:\\Dapper.Linq\\src\\Dapper.Linq\\NUnitTestProject1\\NUnitTestProject1.csproj": {
+    "C:\\Dapper.Linq\\src\\Dapper.Linq\\NUnitTestProject1\\NUnitTestProject1.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\Dapper.Linq\\src\\Dapper.Linq\\NUnitTestProject1\\NUnitTestProject1.csproj",
+        "projectUniqueName": "C:\\Dapper.Linq\\src\\Dapper.Linq\\NUnitTestProject1\\NUnitTestProject1.csproj",
         "projectName": "NUnitTestProject1",
-        "projectPath": "D:\\Dapper.Linq\\src\\Dapper.Linq\\NUnitTestProject1\\NUnitTestProject1.csproj",
+        "projectPath": "C:\\Dapper.Linq\\src\\Dapper.Linq\\NUnitTestProject1\\NUnitTestProject1.csproj",
         "packagesPath": "C:\\Users\\14483\\.nuget\\packages\\",
-        "outputPath": "D:\\Dapper.Linq\\src\\Dapper.Linq\\NUnitTestProject1\\obj\\",
+        "outputPath": "C:\\Dapper.Linq\\src\\Dapper.Linq\\NUnitTestProject1\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
@@ -104,8 +104,8 @@
         "frameworks": {
           "netcoreapp2.2": {
             "projectReferences": {
-              "D:\\Dapper.Linq\\src\\Dapper.Linq\\Dapper.Linq\\Dapper.Linq.csproj": {
-                "projectPath": "D:\\Dapper.Linq\\src\\Dapper.Linq\\Dapper.Linq\\Dapper.Linq.csproj"
+              "C:\\Dapper.Linq\\src\\Dapper.Linq\\Dapper.Linq\\Dapper.Linq.csproj": {
+                "projectPath": "C:\\Dapper.Linq\\src\\Dapper.Linq\\Dapper.Linq\\Dapper.Linq.csproj"
               }
             }
           }

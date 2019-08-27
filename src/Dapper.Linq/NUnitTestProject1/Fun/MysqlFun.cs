@@ -55,6 +55,16 @@ namespace NUnitTestProject1
         {
             return default;
         }
-      
+        [Function]
+        public static string GROUP_CONCAT(string column)
+        {
+            return default;
+        }
+        [Function]
+        public static string CONCAT(params object[] column)
+        {
+            return default;
+        }
+
     }
 }
