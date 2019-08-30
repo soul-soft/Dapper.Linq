@@ -17,6 +17,7 @@ namespace Dapper.Linq
         IQueryable<T> From<T>() where T : class;
         IQueryable<T1, T2> From<T1, T2>() where T1 : class where T2 : class;
         IQueryable<T1, T2, T3> From<T1, T2, T3>() where T1 : class where T2 : class where T3 : class;
+        IQueryable<T1, T2, T3, T4> From<T1, T2, T3, T4>() where T1 : class where T2 : class where T3 : class where T4 : class;
         GridReader QueryMultiple(string sql, object param = null, int? commandTimeout = null, CommandType text = CommandType.Text);
         Task<GridReader> QueryMultipleAsync(string sql, object param = null, int? commandTimeout = null, CommandType text = CommandType.Text);
         int Execute(string sql, object param = null, int? commandTimeout = null, CommandType text = CommandType.Text);
@@ -31,8 +32,8 @@ namespace Dapper.Linq
         IDbTransaction Transaction { get; }
         DatasourceType SourceType { get; }
         DbContextState State { get; }
-        void Open(bool beginTransaction, IsolationLevel? level = null);
-        Task OpenAsync(bool beginTransaction, IsolationLevel? level = null);
+        void Open(bool beginTransaction, IsolationLevel? isolationLevel = null);
+        Task OpenAsync(bool beginTransaction, IsolationLevel? isolationLevel = null);
         void Commit();
         void Rollback();
         void Close();
@@ -84,7 +85,7 @@ namespace Dapper.Linq
         }
         public void Close()
         {
-            Connection.Close();
+            Connection?.Close();
             State = DbContextState.Closed;
         }
         public void Commit()
@@ -213,7 +214,6 @@ namespace Dapper.Linq
         {
             return Connection.QueryAsync(sql, param, Transaction, Timeout != null ? Timeout.Value : commandTimeout, commandType);
         }
-
     }
     public class DbContextProxy : IDbContext
     {
@@ -224,15 +224,10 @@ namespace Dapper.Linq
             Loggers = new List<Logger>();
         }
         public List<Logger> Loggers { get; set; }
-
         public IDbConnection Connection => _target.Connection;
-
         public IDbTransaction Transaction => _target.Transaction;
-
         public DbContextState State => _target.State;
-
         public DatasourceType SourceType => _target.SourceType;
-
         public bool? Buffered { get => _target.Buffered; set => _target.Buffered = value; }
         public int? Timeout { get => _target.Timeout; set => _target.Timeout = value; }
         public void Close()

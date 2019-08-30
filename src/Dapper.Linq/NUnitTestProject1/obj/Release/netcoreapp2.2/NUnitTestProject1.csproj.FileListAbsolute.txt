@@ -1,0 +1,17 @@
+C:\Dapper.Linq\src\Dapper.Linq\NUnitTestProject1\bin\Release\netcoreapp2.2\NUnit3.TestAdapter.dll
+C:\Dapper.Linq\src\Dapper.Linq\NUnitTestProject1\bin\Release\netcoreapp2.2\NUnit3.TestAdapter.pdb
+C:\Dapper.Linq\src\Dapper.Linq\NUnitTestProject1\bin\Release\netcoreapp2.2\nunit.engine.netstandard.dll
+C:\Dapper.Linq\src\Dapper.Linq\NUnitTestProject1\bin\Release\netcoreapp2.2\NUnitTestProject1.deps.json
+C:\Dapper.Linq\src\Dapper.Linq\NUnitTestProject1\bin\Release\netcoreapp2.2\NUnitTestProject1.runtimeconfig.json
+C:\Dapper.Linq\src\Dapper.Linq\NUnitTestProject1\bin\Release\netcoreapp2.2\NUnitTestProject1.runtimeconfig.dev.json
+C:\Dapper.Linq\src\Dapper.Linq\NUnitTestProject1\bin\Release\netcoreapp2.2\NUnitTestProject1.dll
+C:\Dapper.Linq\src\Dapper.Linq\NUnitTestProject1\bin\Release\netcoreapp2.2\NUnitTestProject1.pdb
+C:\Dapper.Linq\src\Dapper.Linq\NUnitTestProject1\bin\Release\netcoreapp2.2\Dapper.Linq.dll
+C:\Dapper.Linq\src\Dapper.Linq\NUnitTestProject1\bin\Release\netcoreapp2.2\Dapper.Linq.pdb
+C:\Dapper.Linq\src\Dapper.Linq\NUnitTestProject1\obj\Release\netcoreapp2.2\NUnitTestProject1.csprojAssemblyReference.cache
+C:\Dapper.Linq\src\Dapper.Linq\NUnitTestProject1\obj\Release\netcoreapp2.2\NUnitTestProject1.csproj.CoreCompileInputs.cache
+C:\Dapper.Linq\src\Dapper.Linq\NUnitTestProject1\obj\Release\netcoreapp2.2\NUnitTestProject1.AssemblyInfoInputs.cache
+C:\Dapper.Linq\src\Dapper.Linq\NUnitTestProject1\obj\Release\netcoreapp2.2\NUnitTestProject1.AssemblyInfo.cs
+C:\Dapper.Linq\src\Dapper.Linq\NUnitTestProject1\obj\Release\netcoreapp2.2\NUnitTestProject1.csproj.CopyComplete
+C:\Dapper.Linq\src\Dapper.Linq\NUnitTestProject1\obj\Release\netcoreapp2.2\NUnitTestProject1.dll
+C:\Dapper.Linq\src\Dapper.Linq\NUnitTestProject1\obj\Release\netcoreapp2.2\NUnitTestProject1.pdb

@@ -258,7 +258,10 @@ namespace Tests
             {
                 try
                 {
-                    context.From<Student>().Single(s => MysqlFun.Count(1));
+                    context.From<Student>().Single(s => new
+                    {
+                        s.IsDelete
+                    });
                     var students = context.From<Student>()
                       .GroupBy(a => a.Age)
                       .Having(a => MysqlFun.Count(1L) > 2)

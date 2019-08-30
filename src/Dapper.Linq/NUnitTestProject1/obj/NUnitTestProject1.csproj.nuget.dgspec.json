@@ -1,0 +1,159 @@
+{
+  "format": 1,
+  "restore": {
+    "C:\\Dapper.Linq\\src\\Dapper.Linq\\NUnitTestProject1\\NUnitTestProject1.csproj": {}
+  },
+  "projects": {
+    "C:\\Dapper.Linq\\src\\Dapper.Linq\\Dapper.Linq\\Dapper.Linq.csproj": {
+      "version": "1.0.0.5",
+      "restore": {
+        "projectUniqueName": "C:\\Dapper.Linq\\src\\Dapper.Linq\\Dapper.Linq\\Dapper.Linq.csproj",
+        "projectName": "Dapper.Linq",
+        "projectPath": "C:\\Dapper.Linq\\src\\Dapper.Linq\\Dapper.Linq\\Dapper.Linq.csproj",
+        "packagesPath": "C:\\Users\\14483\\.nuget\\packages\\",
+        "outputPath": "C:\\Dapper.Linq\\src\\Dapper.Linq\\Dapper.Linq\\obj\\",
+        "projectStyle": "PackageReference",
+        "crossTargeting": true,
+        "fallbackFolders": [
+          "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
+        ],
+        "configFilePaths": [
+          "C:\\Users\\14483\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+        ],
+        "originalTargetFrameworks": [
+          "net45",
+          "netstandard2.0"
+        ],
+        "sources": {
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net45": {
+            "projectReferences": {}
+          },
+          "netstandard2.0": {
+            "projectReferences": {}
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        }
+      },
+      "frameworks": {
+        "net45": {
+          "dependencies": {
+            "Dapper": {
+              "target": "Package",
+              "version": "[1.42.0, )"
+            }
+          }
+        },
+        "netstandard2.0": {
+          "dependencies": {
+            "Dapper": {
+              "target": "Package",
+              "version": "[2.0.4, )"
+            },
+            "NETStandard.Library": {
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[2.0.3, )",
+              "autoReferenced": true
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48"
+          ],
+          "assetTargetFallback": true,
+          "warn": true
+        }
+      }
+    },
+    "C:\\Dapper.Linq\\src\\Dapper.Linq\\NUnitTestProject1\\NUnitTestProject1.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "C:\\Dapper.Linq\\src\\Dapper.Linq\\NUnitTestProject1\\NUnitTestProject1.csproj",
+        "projectName": "NUnitTestProject1",
+        "projectPath": "C:\\Dapper.Linq\\src\\Dapper.Linq\\NUnitTestProject1\\NUnitTestProject1.csproj",
+        "packagesPath": "C:\\Users\\14483\\.nuget\\packages\\",
+        "outputPath": "C:\\Dapper.Linq\\src\\Dapper.Linq\\NUnitTestProject1\\obj\\",
+        "projectStyle": "PackageReference",
+        "fallbackFolders": [
+          "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
+        ],
+        "configFilePaths": [
+          "C:\\Users\\14483\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+        ],
+        "originalTargetFrameworks": [
+          "netcoreapp2.2"
+        ],
+        "sources": {
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "netcoreapp2.2": {
+            "projectReferences": {
+              "C:\\Dapper.Linq\\src\\Dapper.Linq\\Dapper.Linq\\Dapper.Linq.csproj": {
+                "projectPath": "C:\\Dapper.Linq\\src\\Dapper.Linq\\Dapper.Linq\\Dapper.Linq.csproj"
+              }
+            }
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        }
+      },
+      "frameworks": {
+        "netcoreapp2.2": {
+          "dependencies": {
+            "Microsoft.NET.Test.Sdk": {
+              "target": "Package",
+              "version": "[15.9.0, )"
+            },
+            "Microsoft.NETCore.App": {
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[2.2.0, )",
+              "autoReferenced": true
+            },
+            "MySql.Data": {
+              "target": "Package",
+              "version": "[8.0.17, )"
+            },
+            "NUnit3TestAdapter": {
+              "target": "Package",
+              "version": "[3.11.0, )"
+            },
+            "nunit": {
+              "target": "Package",
+              "version": "[3.11.0, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48"
+          ],
+          "assetTargetFallback": true,
+          "warn": true
+        }
+      }
+    }
+  }
+}

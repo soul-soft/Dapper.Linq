@@ -285,7 +285,7 @@ namespace Dapper.Linq.Util
                     {
                         columnName = GetColumnName(memberExpression1.Expression.Type, memberExpression1.Member.Name, singleTable);
                     }
-                    else if (argument is MemberExpression memberExpression2 && memberExpression2.Expression.NodeType == ExpressionType.Constant)
+                    else if (argument is MemberExpression memberExpression2 && memberExpression2.Expression != null && memberExpression2.Expression.NodeType == ExpressionType.Constant)
                     {
                         var value = GetValue(argument);
                         if (value is ISqlBuilder sqlBuilder)
@@ -379,7 +379,6 @@ namespace Dapper.Linq.Util
             }
             return columns;
         }
-
         public static Dictionary<string, string> BuildColumn(Expression expression, Dictionary<string, object> param, string prefix, bool singleTable = true)
         {
             if (expression is LambdaExpression)
