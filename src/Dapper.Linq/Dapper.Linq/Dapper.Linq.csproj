@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFrameworks>net45;netstandard2.0</TargetFrameworks>
-    <Version>1.0.0.5</Version>
+    <Version>1.0.1.0</Version>
     <Description>dapper,mysql,sqlserver,sqlite,linq to sql,subquery,windows function</Description>
     <Authors>花间岛</Authors>
     <PackageProjectUrl>https://github.com/1448376744/Dapper.Linq</PackageProjectUrl>
@@ -14,7 +14,7 @@
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
     <LangVersion>7.1</LangVersion>
-    <AssemblyVersion>1.0.0.5</AssemblyVersion>
+    <AssemblyVersion>1.0.1.0</AssemblyVersion>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net45|AnyCPU'">
