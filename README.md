@@ -4,7 +4,7 @@
   1. Email:1448376744@qq.com
   2. QQ:1448376744
   3. QQGroup:642555086
-
+  4. [文档](https://github.com/1448376744/Dapper.Linq/wiki)
 ## Config
 ``` C#
  //"LinqTypeMap" file in unit test project 
