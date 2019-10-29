@@ -8,7 +8,8 @@
   
 ## Sqlcommon
 
- 现在推荐使用[SqlCommon](https://github.com/1448376744/SqlCommon)，内置映射器（内置dapper）,对匿名类型支持更好,可以将linq扩展到任意orm之上
+ 现在推荐使用[SqlCommon](https://github.com/1448376744/SqlCommon),API基本没有改变
+ 支持dapper的方式[支持dapper](https://github.com/1448376744/SqlCommon/wiki/%E4%BD%BF%E7%94%A8Dapper)
 
 ## Config
 ``` C#
