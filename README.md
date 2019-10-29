@@ -5,7 +5,11 @@
   2. QQ:1448376744
   3. QQGroup:642555086
   4. [Document](https://github.com/1448376744/Dapper.Linq/wiki)
-  5. 一个由我编写的比dapper更加轻量（1000行）的映射器，对匿名类型支持更好[SqlCommon](https://github.com/1448376744/SqlCommon)
+  
+## Sqlcommon
+
+ 现在推荐使用[SqlCommon](https://github.com/1448376744/SqlCommon)，内置映射器（内置dapper）,对匿名类型支持更好,可以将linq扩展到任意orm之上
+
 ## Config
 ``` C#
  //"LinqTypeMap" file in unit test project 
