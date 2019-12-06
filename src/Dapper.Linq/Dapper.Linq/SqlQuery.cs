@@ -701,8 +701,7 @@ namespace Dapper.Linq
             {
                 sqlBuffer.AppendFormat(",ROW_NUMBER() OVER (ORDER BY {0}) AS RowNum",
                     _orderBuffer.Length > 0 ? _orderBuffer.ToString() :
-                    _groupBuffer.Length > 0 ? _groupBuffer.ToString() :
-                    _table.Columns.Find(f => f.ColumnKey == ColumnKey.Primary).ColumnName);
+                    "(SELECT 1)");
             }
             sqlBuffer.AppendFormat(" FROM {0}", _table.TableName);
             if (_lock.Length > 0)
@@ -1107,8 +1106,7 @@ namespace Dapper.Linq
             {
                 sqlBuffer.AppendFormat(",ROW_NUMBER() OVER (ORDER BY {0}) AS RowNum",
                     _orderBuffer.Length > 0 ? _orderBuffer.ToString() :
-                    _groupBuffer.Length > 0 ? _groupBuffer.ToString() :
-                    _columns.First().Value);
+                   "(SELECT 1)");
             }
             sqlBuffer.AppendFormat(" FROM {0}", _join);
             if (_whereBuffer.Length > 0)
@@ -1497,8 +1495,7 @@ namespace Dapper.Linq
             {
                 sqlBuffer.AppendFormat(",ROW_NUMBER() OVER (ORDER BY {0}) AS RowNum",
                     _orderBuffer.Length > 0 ? _orderBuffer.ToString() :
-                    _groupBuffer.Length > 0 ? _groupBuffer.ToString() :
-                    _columns.First().Value);
+                   "(SELECT 1)");
             }
             sqlBuffer.AppendFormat(" FROM {0}", _join);
             if (_whereBuffer.Length > 0)
@@ -1887,8 +1884,7 @@ namespace Dapper.Linq
             {
                 sqlBuffer.AppendFormat(",ROW_NUMBER() OVER (ORDER BY {0}) AS RowNum",
                     _orderBuffer.Length > 0 ? _orderBuffer.ToString() :
-                    _groupBuffer.Length > 0 ? _groupBuffer.ToString() :
-                    _columns.First().Value);
+                    "(SELECT 1)");
             }
             sqlBuffer.AppendFormat(" FROM {0}", _join);
             if (_whereBuffer.Length > 0)

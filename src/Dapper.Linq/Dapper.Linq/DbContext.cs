@@ -623,51 +623,6 @@ namespace Dapper.Linq
         Commit = 2,
         Rollback = 3,
     }
-    public class DbContextFactory
-    {
-        static DbContextFactory()
-        {
-            DefaultTypeMap.MatchNamesWithUnderscores = true;
-        }
-        private static List<DataSource> DataSource = new List<DataSource>();
-        public static DataSource GetDataSource(string name = null)
-        {
-            if (name == null)
-            {
-                return DataSource.Find(f => f.Default) ?? DataSource.FirstOrDefault();
-            }
-            else
-            {
-                return DataSource.Find(f => f.DatasourceName == name);
-            }
-        }
-        public static void AddDataSource(DataSource dataSource)
-        {
-            DataSource.Add(dataSource);
-            if (dataSource.Default)
-            {
-                foreach (var item in DataSource)
-                {
-                    item.Default = false;
-                }
-            }
-        }
-        public static IDbContext GetDbContext(string name = null)
-        {
-            var datasource = GetDataSource(name);
-            IDbContext session = null;
-
-            if (datasource.UseProxy)
-            {
-                session = new DbContextProxy(new DbContext(datasource.ConnectionFacotry(), datasource.DatasourceType));
-            }
-            else
-            {
-                session = new DbContext(datasource.ConnectionFacotry(), datasource.DatasourceType);
-            }
-            return session;
-        }
-    }
     public class DataSource
     {
         public Func<IDbConnection> ConnectionFacotry { get; set; }

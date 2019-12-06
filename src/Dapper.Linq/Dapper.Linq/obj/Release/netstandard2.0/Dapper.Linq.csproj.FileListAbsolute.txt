@@ -7,3 +7,11 @@ C:\Dapper.Linq\src\Dapper.Linq\Dapper.Linq\obj\Release\netstandard2.0\Dapper.Lin
 C:\Dapper.Linq\src\Dapper.Linq\Dapper.Linq\obj\Release\netstandard2.0\Dapper.Linq.AssemblyInfo.cs
 C:\Dapper.Linq\src\Dapper.Linq\Dapper.Linq\obj\Release\netstandard2.0\Dapper.Linq.dll
 C:\Dapper.Linq\src\Dapper.Linq\Dapper.Linq\obj\Release\netstandard2.0\Dapper.Linq.pdb
+D:\Dapper.Linq\src\Dapper.Linq\Dapper.Linq\bin\Release\netstandard2.0\Dapper.Linq.deps.json
+D:\Dapper.Linq\src\Dapper.Linq\Dapper.Linq\bin\Release\netstandard2.0\Dapper.Linq.dll
+D:\Dapper.Linq\src\Dapper.Linq\Dapper.Linq\bin\Release\netstandard2.0\Dapper.Linq.pdb
+D:\Dapper.Linq\src\Dapper.Linq\Dapper.Linq\obj\Release\netstandard2.0\Dapper.Linq.csprojAssemblyReference.cache
+D:\Dapper.Linq\src\Dapper.Linq\Dapper.Linq\obj\Release\netstandard2.0\Dapper.Linq.AssemblyInfoInputs.cache
+D:\Dapper.Linq\src\Dapper.Linq\Dapper.Linq\obj\Release\netstandard2.0\Dapper.Linq.AssemblyInfo.cs
+D:\Dapper.Linq\src\Dapper.Linq\Dapper.Linq\obj\Release\netstandard2.0\Dapper.Linq.dll
+D:\Dapper.Linq\src\Dapper.Linq\Dapper.Linq\obj\Release\netstandard2.0\Dapper.Linq.pdb

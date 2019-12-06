@@ -7,3 +7,12 @@ C:\Dapper.Linq\src\Dapper.Linq\Dapper.Linq\obj\Release\net45\Dapper.Linq.Assembl
 C:\Dapper.Linq\src\Dapper.Linq\Dapper.Linq\obj\Release\net45\Dapper.Linq.csproj.CopyComplete
 C:\Dapper.Linq\src\Dapper.Linq\Dapper.Linq\obj\Release\net45\Dapper.Linq.dll
 C:\Dapper.Linq\src\Dapper.Linq\Dapper.Linq\obj\Release\net45\Dapper.Linq.pdb
+D:\Dapper.Linq\src\Dapper.Linq\Dapper.Linq\bin\Release\net45\Dapper.Linq.dll
+D:\Dapper.Linq\src\Dapper.Linq\Dapper.Linq\bin\Release\net45\Dapper.Linq.pdb
+D:\Dapper.Linq\src\Dapper.Linq\Dapper.Linq\bin\Release\net45\Dapper.dll
+D:\Dapper.Linq\src\Dapper.Linq\Dapper.Linq\obj\Release\net45\Dapper.Linq.csprojAssemblyReference.cache
+D:\Dapper.Linq\src\Dapper.Linq\Dapper.Linq\obj\Release\net45\Dapper.Linq.AssemblyInfoInputs.cache
+D:\Dapper.Linq\src\Dapper.Linq\Dapper.Linq\obj\Release\net45\Dapper.Linq.AssemblyInfo.cs
+D:\Dapper.Linq\src\Dapper.Linq\Dapper.Linq\obj\Release\net45\Dapper.Linq.csproj.CopyComplete
+D:\Dapper.Linq\src\Dapper.Linq\Dapper.Linq\obj\Release\net45\Dapper.Linq.dll
+D:\Dapper.Linq\src\Dapper.Linq\Dapper.Linq\obj\Release\net45\Dapper.Linq.pdb

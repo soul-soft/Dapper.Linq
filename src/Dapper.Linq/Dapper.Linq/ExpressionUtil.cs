@@ -75,7 +75,6 @@ namespace Dapper.Linq.Util
             else if (node.Method.GetCustomAttributes(typeof(FunctionAttribute), true).Length > 0)
             {
                 _build.AppendFormat("{0}(", node.Method.Name.ToUpper());
-                var parameters = node.Method.GetParameters();
                 for (int i = 0; i < node.Arguments.Count; i++)
                 {
                     if (node.Arguments[i] is NewArrayExpression newArrayExpression)
