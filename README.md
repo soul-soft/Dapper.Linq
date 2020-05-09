@@ -5,12 +5,6 @@
   2. QQ:1448376744
   3. QQGroup:642555086
   4. [Document](https://github.com/1448376744/Dapper.Linq/wiki)
-  
-## Sqlcommon
-
- 现在推荐使用 [SqlCommon](https://github.com/1448376744/SqlCommon)
- 它不再依赖dapper而是独立发布的,它内置orm，它将持续进行维护更新
- 它支持继续使用dapper+linq（API基本没有改变）[dapper扩展](https://github.com/1448376744/SqlCommon/wiki/%E4%BD%BF%E7%94%A8Dapper)
 
 ## Config
 ``` C#
