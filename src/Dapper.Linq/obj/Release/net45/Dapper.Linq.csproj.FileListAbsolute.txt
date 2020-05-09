@@ -1,0 +1,10 @@
+D:\Dapper.Linq\src\Dapper.Linq\bin\Release\net45\Dapper.Linq.dll
+D:\Dapper.Linq\src\Dapper.Linq\bin\Release\net45\Dapper.Linq.pdb
+D:\Dapper.Linq\src\Dapper.Linq\bin\Release\net45\System.ValueTuple.dll
+D:\Dapper.Linq\src\Dapper.Linq\obj\Release\net45\Dapper.Linq.csproj.CoreCompileInputs.cache
+D:\Dapper.Linq\src\Dapper.Linq\obj\Release\net45\Dapper.Linq.AssemblyInfoInputs.cache
+D:\Dapper.Linq\src\Dapper.Linq\obj\Release\net45\Dapper.Linq.AssemblyInfo.cs
+D:\Dapper.Linq\src\Dapper.Linq\obj\Release\net45\Dapper.Linq.csproj.CopyComplete
+D:\Dapper.Linq\src\Dapper.Linq\obj\Release\net45\Dapper.Linq.dll
+D:\Dapper.Linq\src\Dapper.Linq\obj\Release\net45\Dapper.Linq.pdb
+D:\Dapper.Linq\src\Dapper.Linq\obj\Release\net45\Dapper.Linq.csprojAssemblyReference.cache

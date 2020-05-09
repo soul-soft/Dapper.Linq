@@ -1,0 +1,9 @@
+D:\Dapper.Linq\src\Dapper.Linq\bin\Debug\netstandard2.0\Dapper.Linq.deps.json
+D:\Dapper.Linq\src\Dapper.Linq\bin\Debug\netstandard2.0\Dapper.Linq.dll
+D:\Dapper.Linq\src\Dapper.Linq\obj\Debug\netstandard2.0\Dapper.Linq.AssemblyInfoInputs.cache
+D:\Dapper.Linq\src\Dapper.Linq\obj\Debug\netstandard2.0\Dapper.Linq.AssemblyInfo.cs
+D:\Dapper.Linq\src\Dapper.Linq\bin\Debug\netstandard2.0\Dapper.Linq.pdb
+D:\Dapper.Linq\src\Dapper.Linq\obj\Debug\netstandard2.0\Dapper.Linq.dll
+D:\Dapper.Linq\src\Dapper.Linq\obj\Debug\netstandard2.0\Dapper.Linq.pdb
+D:\Dapper.Linq\src\Dapper.Linq\obj\Debug\netstandard2.0\Dapper.Linq.csproj.CoreCompileInputs.cache
+D:\Dapper.Linq\src\Dapper.Linq\obj\Debug\netstandard2.0\Dapper.Linq.csprojAssemblyReference.cache
