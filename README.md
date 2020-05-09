@@ -1,5 +1,10 @@
 # Dapper.Linq
 
+## 3.0版本说明
+  1.移除dapper
+  2.不再支持多表linq
+  3.新增简单的java.ibatis的xml功能
+  4.新版文档参考：[新版参考文档](https://github.com/1448376744/SqlBatis)，建议通过单测和源码学习
 ## About author
   1. Email:1448376744@qq.com
   2. QQ:1448376744
