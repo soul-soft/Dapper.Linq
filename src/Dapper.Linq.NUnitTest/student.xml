@@ -2,9 +2,6 @@
 <commands namespace="student">
 
   <!--
-  映射文件要求所以标签必须写在commands标签内，commands为根标签
-  -->
-  <!--
   框架只定义了一下标签
   <commands>根标签
       属性：
@@ -20,16 +17,20 @@
      test:表达式
      下面的select，insert没有实际意义可以随意写，框架并未定义
   -->
+
   <select id="list">
     <var id="where">
-      <if test="Id!=null">
-        Id=@Id
-      </if>
-      <if test="Age!=null">
-        Age=@Age
-      </if>
+      <where>
+        <if test="Id!=null">
+          AND Id=@Id
+        </if>
+        <if test="Name!=null">
+          AND stu_name=@Name
+        </if>
+      </where>
     </var>
     select * from student ${where};
-    select count(1) from student
+    select count(1) from student ${where}
   </select>
+
 </commands>
