@@ -1,0 +1,35 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<commands namespace="student">
+
+  <!--
+  映射文件要求所以标签必须写在commands标签内，commands为根标签
+  -->
+  <!--
+  框架只定义了一下标签
+  <commands>根标签
+      属性：
+      namespace：命名空间，可以为空
+  <var>定义变量
+    属性：
+    id:标识,通过语法${id}可以引用变量，变量分局部和全局变量
+   <where>：动态查询where标签，如果是动态查询必须使用where  
+    属性：
+    暂无    
+   <if>条件判断
+    属性：
+     test:表达式
+     下面的select，insert没有实际意义可以随意写，框架并未定义
+  -->
+  <select id="list">
+    <var id="where">
+      <if test="Id!=null">
+        Id=@Id
+      </if>
+      <if test="Age!=null">
+        Age=@Age
+      </if>
+    </var>
+    select * from student ${where};
+    select count(1) from student
+  </select>
+</commands>

@@ -1,0 +1,116 @@
+﻿<#@ template debug="false" hostspecific="false" language="C#" #>
+<#@ assembly name="System.Core" #>
+<#@ assembly name="System.Data" #>
+<#@ assembly name="$(SolutionDir)\YC51.References\Dapper.dll" #>
+<#@ assembly name="$(SolutionDir)\YC51.References\MySql.Data.dll" #>
+<#@ import namespace="System.Linq" #>
+<#@ import namespace="System.Text" #>
+<#@ import namespace="System.Collections.Generic" #>
+<#@ import namespace="System.Data" #>
+<#@ import namespace="MySql.Data.MySqlClient" #>
+<#@ import namespace="Dapper" #>
+<#@ output extension=".cs" #>
+<#
+	//数据库连接字符串
+	var connectionString = "server=127.0.0.1;user id=root;password=1024;database=test;";
+#>
+<#
+	var connection = new MySqlConnection(connectionString);
+	var tablesql = string.Format("SELECT TABLE_NAME as TableName,TABLE_TYPE as TableType,TABLE_COMMENT as TableComment from INFORmation_schema.TABLES WHERE TABLE_SCHEMA='{0}'", connection.Database);
+	var columnsql = string.Format("SELECT TABLE_NAME as TableName,COLUMN_NAME as ColumnName,COLUMN_COMMENT as ColumnComment,COLUMN_DEFAULT as ColumnDefault,IS_NULLABLE as IsNullable,DATA_TYPE as DataType,COLUMN_TYPE as ColumnType,COLUMN_KEY as ColumnKey,EXTRA as Extra FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA='{0}' ORDER BY ORDINAL_POSITION", connection.Database);
+	var tables = connection.Query<Table>(tablesql).ToList();
+	var columns = connection.Query<Column>(columnsql).ToList();	
+    connection.Close();
+#>
+using System;
+using YC51.SqlBatis.Attributes;
+
+namespace YC51.MiniProgram.Service
+{
+<#foreach(var table in tables){#>
+	
+	/// <summary>
+    /// <#=table.TableComment#>
+	/// 更新时间：<#=DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")#>
+    /// </summary>
+	[Table("<#=table.TableName#>")]
+	public partial class <#=Utils.Pascal(table.TableName)#>
+	{
+		<#foreach(var column in columns.FindAll(f => f.TableName == table.TableName)){#>		
+		/// <summary>
+        /// <#=column.ColumnComment#>
+		/// </summary>
+		[Column("<#= column.ColumnName #>")]
+        <#=column.ColumnKey == "PRI"?"[PrimaryKey]\r\n":""#><#=column.Extra == "auto_increment"?"[Identity]\r\n":"" #><#=column.ColumnDefault != null?"[Default]\r\n":"" #>
+        public <#= Utils.GetCSharpType(column.DataType) #> <#= Utils.Pascal(column.ColumnName) #> { get; set; }
+	<#}#>}
+<#}#>
+}
+
+
+
+<#+
+    public class Table
+    {
+        public string TableName { get; set; }
+        public string TableType { get; set; }
+        public string TableComment { get; set; }
+    }
+    public class Column
+    {
+        public string TableName { get; set; }
+        public string ColumnName { get; set; }
+        public string ColumnComment { get; set; }
+        public string ColumnDefault { get; set; }
+        public string IsNullable { get; set; }
+        public string ColumnType { get; set; }
+        public string DataType { get; set; }
+        public string ColumnKey { get; set; }
+		public string Extra { get; set; }
+    }
+    public static class Utils
+    {
+		//字段类型映射
+        public static string GetCSharpType(string columnType)
+        {
+            var type = "object";
+            switch (columnType)
+            {
+                case "varchar": type = "string"; break;
+                case "text": type = "string"; break;
+				case "char": type = "string"; break;
+                case "bit": type = "bool?"; break;
+				case "tinyint": type = "int?"; break;
+				case "smallint": type = "int?"; break;
+                case "int": type = "int?"; break;
+				case "integer": type = "int?"; break;
+				case "bigint": type = "int?"; break;
+				case "mediumint": type = "int?"; break;
+				case "real": type = "float?"; break;
+				case "float": type = "float?"; break;
+				case "double": type = "double?"; break;
+				case "decimal": type = "decimal?"; break;
+				case "date": type = "DateTime?"; break;
+				case "datetime": type = "DateTime?"; break;
+                case "json": type = "System.Text.Json.JsonElement?"; break;
+            }
+            return type;
+        }
+		//Pacsl命名转换
+        public static string Pascal(string name)
+        {
+            var list = new List<string>();
+            foreach (var item in name.Split('_'))
+            {
+                list.Add(System.Globalization.CultureInfo.CurrentCulture.TextInfo.ToTitleCase(item.ToLower()));
+            }
+            return string.Join("",list);
+        }
+		//Camel命名转换
+		public static string Camel(string name)
+		{
+			name = Pascal(name);			
+            return char.ToLower(name[0]) + name.Substring(1);
+		}
+    }
+#>
