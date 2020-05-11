@@ -7,7 +7,10 @@ using Dapper.XmlResovles;
 
 namespace Dapper
 {
-    public interface IXmlResovle
+    /// <summary>
+    /// xml配置提供程序
+    /// </summary>
+    public interface IXmlCommandsProvider
     {
         /// <summary>
         /// 解析动态sql
@@ -41,9 +44,22 @@ namespace Dapper
         /// <param name="pattern">文件通配符</param>
         /// <param name="options">查找选项</param>
         void Load(string path, string pattern, SearchOption options);
+        /// <summary>
+        /// 从程序集加载配置所有xml
+        /// </summary>
+        /// <param name="assembly">程序集</param>
+        void Load(System.Reflection.Assembly assembly);
+        /// <summary>
+        /// 从程序集加载配置
+        /// </summary>
+        /// <param name="assembly">程序集</param>
+        /// <param name="pattern">正则匹配</param>
+        void Load(System.Reflection.Assembly assembly, string pattern);
     }
-
-    public class XmlResovle : IXmlResovle
+    /// <summary>
+    /// xml配置提供程序
+    /// </summary>
+    public class XmlCommandsProvider : IXmlCommandsProvider
     {
         private readonly Dictionary<string, CommandNode> _commands
             = new Dictionary<string, CommandNode>();
@@ -152,17 +168,14 @@ namespace Dapper
         {
             return Resolve(id, (object)null);
         }
-
-        /// <summary>
-        /// 加载配置文件
-        /// </summary>
-        /// <param name="filename"></param>
-        public void Load(string filename)
+        private void Resolve(XmlDocument document)
         {
+            if (document.DocumentElement.Name != "commands")
+            {
+                return;
+            }
             lock (this)
             {
-                XmlDocument document = new XmlDocument();
-                document.Load(filename);
                 var @namespace = document.DocumentElement
                     .GetAttribute("namespace") ?? string.Empty;
                 //解析全局变量
@@ -209,6 +222,28 @@ namespace Dapper
         }
 
         /// <summary>
+        /// 加载配置文件
+        /// </summary>
+        /// <param name="filename"></param>
+        public void Load(string filename)
+        {
+            var document = new XmlDocument();
+            document.Load(filename);
+            Resolve(document);
+        }
+
+        /// <summary>
+        /// 从流中加载xml
+        /// </summary>
+        /// <param name="stream"></param>
+        public void Load(Stream stream)
+        {
+            XmlDocument document = new XmlDocument();
+            document.Load(stream);
+            Resolve(document);
+        }
+
+        /// <summary>
         /// 从指定路径加载所有匹配的文件
         /// </summary>
         /// <param name="path">路径</param>
@@ -234,6 +269,42 @@ namespace Dapper
             foreach (var item in files)
             {
                 Load(item);
+            }
+        }
+
+        /// <summary>
+        /// 从嵌入式资源加载.xml结尾的文件
+        /// </summary>
+        /// <param name="assembly">程序集</param>
+        public void Load(System.Reflection.Assembly assembly)
+        {
+            var filenames = assembly.GetManifestResourceNames();
+            foreach (var item in filenames)
+            {
+                if (!item.EndsWith(".xml", System.StringComparison.OrdinalIgnoreCase))
+                {
+                    continue;
+                }
+                Load(assembly.GetManifestResourceStream(item));
+            }
+
+        }
+
+        /// <summary>
+        /// 从嵌入式资源加载配置
+        /// </summary>
+        /// <param name="assembly">程序集</param>
+        /// <param name="pattern">匹配模式</param>
+        public void Load(System.Reflection.Assembly assembly, string pattern)
+        {
+            var filenames = assembly.GetManifestResourceNames();
+            foreach (var item in filenames)
+            {
+                if (!Regex.IsMatch(item, pattern))
+                {
+                    continue;
+                }
+                Load(assembly.GetManifestResourceStream(item));
             }
         }
     }

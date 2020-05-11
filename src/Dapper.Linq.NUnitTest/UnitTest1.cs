@@ -28,14 +28,11 @@ namespace Dapper.Linq.NUnitTest
         public void Test2()
         {
             //一个应用只需要创建一个实例
-            var resovle = new XmlResovle();
             //可以指定xml路径批量加载
-            resovle.Load(@"D:\Dapper.Linq\src\Dapper.Linq.NUnitTest\student.xml");
+            GlobalSettings.XmlCommandsProvider.Load(@"D:\Dapper.Linq\src\Dapper.Linq.NUnitTest\student.xml");
             var db = new DbContext(new DbContextBuilder
             {
                 Connection = new MySql.Data.MySqlClient.MySqlConnection("server=127.0.0.1;user id=root;password=1024;database=test;"),
-                XmlResovle=resovle
-                
             });
             db.Open();
             var student = db.From<Student>().Get(1);

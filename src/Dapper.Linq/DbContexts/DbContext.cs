@@ -15,6 +15,10 @@ namespace Dapper
     public interface IDbContext : IDisposable
     {
         /// <summary>
+        /// 日志处理
+        /// </summary>
+        event Logging Logging;
+        /// <summary>
         /// 数据库连接
         /// </summary>
         IDbConnection Connection { get; }
@@ -47,10 +51,21 @@ namespace Dapper
         /// </summary>
         void BeginTransaction();
         /// <summary>
+        /// 异步开启事务会话
+        /// </summary>
+        /// <returns></returns>
+        Task BeginTransactionAsync();
+        /// <summary>
         /// 开启事务会话
         /// </summary>
         /// <param name="level">事务隔离级别</param>
         void BeginTransaction(IsolationLevel level);
+        /// <summary>
+        /// 异步开启事务会话
+        /// </summary>
+        /// <param name="level"></param>
+        /// <returns></returns>
+        Task BeginTransactionAsync(IsolationLevel level);
         /// <summary>
         /// 关闭连接和事务
         /// </summary>
@@ -159,64 +174,46 @@ namespace Dapper
         void RollbackTransaction();
     }
 
+    /// <summary>
+    /// sql执行日志
+    /// </summary>
+    /// <param name="message"></param>
+    /// <param name="parameters"></param>
+    /// <param name="commandTimeout"></param>
+    /// <param name="commandType"></param>
+    public delegate void Logging(string message, Dictionary<string, object> parameters = null, int? commandTimeout = null, CommandType? commandType = null);
+
+    /// <summary>
+    /// 数据库上下文
+    /// </summary>
     public class DbContext : IDbContext
     {
         public DbContextState DbContextState = DbContextState.Closed;
-
-        private readonly IXmlResovle _xmlResovle = null;
-
         private IDbTransaction _transaction = null;
-
-        private readonly IEntityMapper _typeMapper = null;
-
         public IDbConnection Connection { get; } = null;
-
         public DbContextType DbContextType { get; } = DbContextType.Mysql;
-
-        protected virtual void OnLogging(string message, IDataParameterCollection parameter = null, int? commandTimeout = null, CommandType? commandType = null)
-        {
-
-        }
-
-        protected virtual DbContextBuilder OnConfiguring(DbContextBuilder builder)
-        {
-            return builder;
-        }
-
-        protected DbContext()
-        {
-            var builder = OnConfiguring(new DbContextBuilder());
-            Connection = builder.Connection;
-            _xmlResovle = builder.XmlResovle;
-            _typeMapper = builder.TypeMapper ?? new EntityMapper();
-            DbContextType = builder.DbContextType;
-        }
-
+        public event Logging Logging;
         public DbContext(DbContextBuilder builder)
         {
             Connection = builder.Connection;
-            _xmlResovle = builder.XmlResovle;
-            _typeMapper = builder.TypeMapper ?? new EntityMapper();
             DbContextType = builder.DbContextType;
         }
         public IXmlQuery From<T>(string id, T parameter) where T : class
         {
-            var sql = _xmlResovle.Resolve(id, parameter);
+            var sql = GlobalSettings.XmlCommandsProvider.Resolve(id, parameter);
             var deserializer = EmitConvert.GetDeserializer(typeof(T));
             var values = deserializer(parameter);
             return new XmlQuery(this, sql, values);
         }
         public IXmlQuery From(string id)
         {
-            var sql = _xmlResovle.Resolve(id);
+            var sql = GlobalSettings.XmlCommandsProvider.Resolve(id);
             return new XmlQuery(this, sql);
         }
-
         public IDbQuery<T> From<T>()
         {
             return new DbQuery<T>(this);
         }
-
         public IEnumerable<dynamic> ExecuteQuery(string sql, object parameter = null, int? commandTimeout = null, CommandType? commandType = null)
         {
             using (var cmd = Connection.CreateCommand())
@@ -234,7 +231,6 @@ namespace Dapper
                 }
             }
         }
-
         public async Task<IEnumerable<dynamic>> ExecuteQueryAsync(string sql, object parameter = null, int? commandTimeout = null, CommandType? commandType = null)
         {
             using (var cmd = (Connection as DbConnection).CreateCommand())
@@ -252,14 +248,12 @@ namespace Dapper
                 }
             }
         }
-
         public IMultiResult ExecuteMultiQuery(string sql, object parameter = null, int? commandTimeout = null, CommandType? commandType = null)
         {
             var cmd = Connection.CreateCommand();
             Initialize(cmd, sql, parameter, commandTimeout, commandType);
-            return new MultiResult(cmd, _typeMapper);
+            return new MultiResult(cmd);
         }
-
         public IEnumerable<T> ExecuteQuery<T>(string sql, object parameter = null, int? commandTimeout = null, CommandType? commandType = null)
         {
             using (var cmd = Connection.CreateCommand())
@@ -268,7 +262,7 @@ namespace Dapper
                 Initialize(cmd, sql, parameter, commandTimeout, commandType);
                 using (var reader = cmd.ExecuteReader())
                 {
-                    var handler = EmitConvert.GetSerializer<T>(_typeMapper, reader);
+                    var handler = EmitConvert.GetSerializer<T>(GlobalSettings.EntityMapperProvider, reader);
                     while (reader.Read())
                     {
                         list.Add(handler(reader));
@@ -277,7 +271,6 @@ namespace Dapper
                 }
             }
         }
-
         public async Task<IEnumerable<T>> ExecuteQueryAsync<T>(string sql, object parameter = null, int? commandTimeout = null, CommandType? commandType = null)
         {
             using (var cmd = (Connection as DbConnection).CreateCommand())
@@ -286,7 +279,7 @@ namespace Dapper
                 using (var reader = await cmd.ExecuteReaderAsync())
                 {
                     var list = new List<T>();
-                    var handler = EmitConvert.GetSerializer<T>(_typeMapper, reader);
+                    var handler = EmitConvert.GetSerializer<T>(GlobalSettings.EntityMapperProvider, reader);
                     while (await reader.ReadAsync())
                     {
                         list.Add(handler(reader));
@@ -295,7 +288,6 @@ namespace Dapper
                 }
             }
         }
-
         public int ExecuteNonQuery(string sql, object parameter = null, int? commandTimeout = null, CommandType? commandType = null)
         {
             using (var cmd = Connection.CreateCommand())
@@ -304,7 +296,6 @@ namespace Dapper
                 return cmd.ExecuteNonQuery();
             }
         }
-
         public async Task<int> ExecuteNonQueryAsync(string sql, object parameter = null, int? commandTimeout = null, CommandType? commandType = null)
         {
             using (var cmd = (Connection as DbConnection).CreateCommand())
@@ -313,7 +304,6 @@ namespace Dapper
                 return await cmd.ExecuteNonQueryAsync();
             }
         }
-
         public T ExecuteScalar<T>(string sql, object parameter = null, int? commandTimeout = null, CommandType? commandType = null)
         {
             using (var cmd = Connection.CreateCommand())
@@ -327,7 +317,6 @@ namespace Dapper
                 return (T)Convert.ChangeType(result, typeof(T));
             }
         }
-
         public async Task<T> ExecuteScalarAsync<T>(string sql, object parameter = null, int? commandTimeout = null, CommandType? commandType = null)
         {
             using (var cmd = (Connection as DbConnection).CreateCommand())
@@ -341,56 +330,63 @@ namespace Dapper
                 return (T)Convert.ChangeType(result, typeof(T));
             }
         }
-
+        public async Task BeginTransactionAsync()
+        {
+            await Task.Run(() =>
+            {
+                _transaction = Connection.BeginTransaction();
+                Logging?.Invoke("Begin Transaction");
+            });
+        }
+        public async Task BeginTransactionAsync(IsolationLevel level)
+        {
+            await Task.Run(() =>
+            {
+                _transaction = Connection.BeginTransaction(level);
+                Logging?.Invoke("Begin Transaction IsolationLevel = " + level);
+            });
+        }
         public void BeginTransaction()
         {
             _transaction = Connection.BeginTransaction();
-            OnLogging("Begin transaction");
+            Logging?.Invoke("Begin Transaction");
         }
-
         public void BeginTransaction(IsolationLevel level)
         {
             _transaction = Connection.BeginTransaction(level);
-            OnLogging("Begin transaction isolationLevel = " + level);
+            Logging?.Invoke("Begin Transaction IsolationLevel = " + level);
         }
-
         public void Close()
         {
             _transaction?.Dispose();
-            Connection?.Dispose();
+            Connection?.Close();
             DbContextState = DbContextState.Closed;
-            OnLogging("Colsed connection");
+            Logging?.Invoke("Colsed Connection");
         }
-
         public void CommitTransaction()
         {
             _transaction?.Commit();
             DbContextState = DbContextState.Commit;
-            OnLogging("Commit transaction");
+            Logging?.Invoke("Commit Transaction");
         }
-
         public void Open()
         {
             Connection?.Open();
             DbContextState = DbContextState.Open;
-            OnLogging("Open connection");
+            Logging?.Invoke("Open Connection");
         }
-
         public async Task OpenAsync()
         {
             await (Connection as DbConnection).OpenAsync();
             DbContextState = DbContextState.Open;
-            OnLogging("Open connection");
+            Logging?.Invoke("Open Connection");
         }
-
         public void RollbackTransaction()
         {
             _transaction?.Rollback();
             DbContextState = DbContextState.Rollback;
-            OnLogging("rollback");
-
+            Logging?.Invoke("Rollback");
         }
-
         private void Initialize(IDbCommand cmd, string sql, object parameter, int? commandTimeout = null, CommandType? commandType = null)
         {
             var dbParameters = new List<IDbDataParameter>();
@@ -473,9 +469,16 @@ namespace Dapper
                     }
                 }
             }
-            OnLogging(cmd.CommandText, cmd.Parameters, commandTimeout, commandType);
+            if (Logging != null)
+            {
+                var parameters = new Dictionary<string, object>();
+                foreach (IDbDataParameter item in cmd.Parameters)
+                {
+                    parameters.Add(item.ParameterName, item.Value);
+                }
+                Logging.Invoke(cmd.CommandText, parameters, commandTimeout, commandType);
+            }
         }
-
         private IDbDataParameter CreateParameter(IDbCommand command, string name, object value)
         {
             var parameter = command.CreateParameter();
@@ -483,11 +486,11 @@ namespace Dapper
             parameter.Value = value;
             return parameter;
         }
-
         public void Dispose()
         {
             _transaction?.Dispose();
             Connection?.Dispose();
         }
     }
+
 }

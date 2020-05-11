@@ -63,7 +63,7 @@ namespace Dapper
 
         private string ResovleCount()
         {
-            var table = DbMetaInfoCache.GetTable(typeof(T)).TableName;
+            var table = GetTableMetaInfo().TableName;
             var column = "COUNT(1)";
             var where = ResolveWhere();
             var group = ResolveGroup();
@@ -83,10 +83,10 @@ namespace Dapper
             }
             return sql;
         }
-       
+
         private string ResovleSum()
         {
-            var table = DbMetaInfoCache.GetTable(typeof(T)).TableName;
+            var table = GetTableMetaInfo().TableName;
             var column = $"SUM({ResovleColumns()})";
             var where = ResolveWhere();
             var sql = $"SELECT {column} FROM {table}{where}";
@@ -95,8 +95,8 @@ namespace Dapper
 
         private string ResolveGet()
         {
-            var table = DbMetaInfoCache.GetTable(typeof(T)).TableName;
-            var columns = DbMetaInfoCache.GetColumns(typeof(T));
+            var table = GetTableMetaInfo().TableName;
+            var columns = GetColumnMetaInfos();
             var column = ResovleColumns();
             var where = $" WHERE {columns.Where(a => a.IsPrimaryKey == true).First().ColumnName}=@id";
             string sql;
@@ -113,7 +113,7 @@ namespace Dapper
 
         private string ResolveSelect()
         {
-            var table = DbMetaInfoCache.GetTable(typeof(T)).TableName;
+            var table = GetTableMetaInfo().TableName;
             var column = ResovleColumns();
             var where = ResolveWhere();
             var group = ResolveGroup();
@@ -154,12 +154,12 @@ namespace Dapper
 
         private string ResovleInsert(bool identity)
         {
-            var table = DbMetaInfoCache.GetTable(typeof(T)).TableName;
+            var table = GetTableMetaInfo().TableName;
             var filters = new GroupExpressionResovle(_filterExpression).Resovle().Split(',');
-            var columns = DbMetaInfoCache.GetColumns(typeof(T));
+            var columns = GetColumnMetaInfos();
             var intcolumns = columns
                 .Where(a => !filters.Contains(a.ColumnName) && !a.IsNotMapped && !a.IsIdentity)
-                .Where(a=> !a.IsComplexType)
+                .Where(a => !a.IsComplexType)
                 .Where(a => !a.IsDefault || (_parameters.ContainsKey(a.CsharpName) && _parameters[a.CsharpName] != null));//如果是默认字段
             var columnNames = string.Join(",", intcolumns.Select(s => s.ColumnName));
             var parameterNames = string.Join(",", intcolumns.Select(s => $"@{s.CsharpName}"));
@@ -171,12 +171,20 @@ namespace Dapper
             return sql;
         }
 
+        private TableMetaInfo GetTableMetaInfo()
+        {
+            return GlobalSettings.DatabaseMetaInfoProvider.GetTable(typeof(T));
+        }
+        private List<ColumnMetaInfo> GetColumnMetaInfos()
+        {
+            return GlobalSettings.DatabaseMetaInfoProvider.GetColumns(typeof(T));
+        }
         private string ResovleBatchInsert(IEnumerable<T> entitys)
         {
-            var table = DbMetaInfoCache.GetTable(typeof(T)).TableName;
+            var table = GetTableMetaInfo().TableName;
             var filters = new GroupExpressionResovle(_filterExpression).Resovle().Split(',');
-            var columns = DbMetaInfoCache.GetColumns(typeof(T))
-                .Where(a=>!a.IsComplexType).ToList();
+            var columns = GetColumnMetaInfos()
+                .Where(a => !a.IsComplexType).ToList();
             var intcolumns = columns
                 .Where(a => !filters.Contains(a.ColumnName) && !a.IsNotMapped && !a.IsIdentity)
                 .ToList();
@@ -212,7 +220,7 @@ namespace Dapper
                         {
                             buffer.Append(value);
                         }
-                        else 
+                        else
                         {
                             var str = SqlEncoding(value.ToString());
                             buffer.Append($"'{str}'");
@@ -235,7 +243,7 @@ namespace Dapper
 
         private string ResolveUpdate()
         {
-            var table = DbMetaInfoCache.GetTable(typeof(T)).TableName;
+            var table = GetTableMetaInfo().TableName;
             var builder = new StringBuilder();
             if (_setExpressions.Count > 0)
             {
@@ -253,7 +261,7 @@ namespace Dapper
             {
                 var filters = new GroupExpressionResovle(_filterExpression).Resovle().Split(',');
                 var where = ResolveWhere();
-                var columns = DbMetaInfoCache.GetColumns(typeof(T));
+                var columns = GetColumnMetaInfos();
                 var updcolumns = columns
                     .Where(a => !filters.Contains(a.ColumnName))
                     .Where(a => !a.IsComplexType)
@@ -294,19 +302,19 @@ namespace Dapper
 
         private string ResovleDelete()
         {
-            var table = DbMetaInfoCache.GetTable(typeof(T)).TableName;
+            var table = GetTableMetaInfo().TableName;
             var where = ResolveWhere();
             var sql = $"DELETE FROM {table}{where}";
             return sql;
         }
-        
+
         private string SqlEncoding(string sql)
         {
             var buffer = new StringBuilder();
             for (int i = 0; i < sql.Length; i++)
             {
                 var ch = sql[i];
-                if (ch=='\''||ch=='-'||ch=='\\'||ch=='*'||ch=='@')
+                if (ch == '\'' || ch == '-' || ch == '\\' || ch == '*' || ch == '@')
                 {
                     buffer.Append('\\');
                 }
@@ -317,7 +325,7 @@ namespace Dapper
 
         private string ResovleExists()
         {
-            var table = DbMetaInfoCache.GetTable(typeof(T)).TableName;
+            var table = GetTableMetaInfo().TableName;
             var where = ResolveWhere();
             var group = ResolveGroup();
             var having = ResolveHaving();
@@ -331,7 +339,7 @@ namespace Dapper
             {
                 var filters = new GroupExpressionResovle(_filterExpression)
                     .Resovle().Split(',');
-                var columns = DbMetaInfoCache.GetColumns(typeof(T))
+                var columns = GetColumnMetaInfos()
                     .Where(a => !filters.Contains(a.ColumnName) && !a.IsNotMapped)
                     .Select(s => s.ColumnName != s.CsharpName ? $"{s.ColumnName} AS {s.CsharpName}" : s.CsharpName);
                 return string.Join(",", columns);
@@ -372,7 +380,7 @@ namespace Dapper
             if (buffer.Length > 0)
             {
                 buffer.Remove(buffer.Length - 1, 1);
-                sql = $" GROUP BY {buffer.ToString()}";
+                sql = $" GROUP BY {buffer}";
             }
             return sql;
         }

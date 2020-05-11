@@ -14,9 +14,13 @@
     <Copyright>chaeyeon</Copyright>
     <Company>chaeyeon</Company>
     <PackageId>Dapper.Common</PackageId>
-    <Version>3.0.0</Version>
+    <Version>3.0.1</Version>
     <AssemblyVersion>3.0.0</AssemblyVersion>
     <FileVersion>3.0.0</FileVersion>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net45|AnyCPU'">
+    <DocumentationFile>D:\Dapper.Linq\src\Dapper.Common\Dapper.Common.xml</DocumentationFile>
   </PropertyGroup>
 
   <ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">

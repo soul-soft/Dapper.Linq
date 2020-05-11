@@ -61,13 +61,10 @@ namespace Dapper
         
         private readonly IDbCommand _command = null;
 
-        private readonly IEntityMapper _mapper = null;
-
-        internal MultiResult(IDbCommand command, IEntityMapper mapper)
+        internal MultiResult(IDbCommand command)
         {
             _command = command;
             _reader = command.ExecuteReader();
-            _mapper = mapper;
         }
 
         public void Dispose()
@@ -122,7 +119,7 @@ namespace Dapper
       
         public List<T> GetList<T>()
         {
-            var handler = EmitConvert.GetSerializer<T>(_mapper, _reader);
+            var handler = EmitConvert.GetSerializer<T>(GlobalSettings.EntityMapperProvider, _reader);
             var list = new List<T>();
             while (_reader.Read())
             {
@@ -134,7 +131,7 @@ namespace Dapper
 
         public async Task<List<T>> GetListAsync<T>()
         {
-            var handler = EmitConvert.GetSerializer<T>(_mapper, _reader);
+            var handler = EmitConvert.GetSerializer<T>(GlobalSettings.EntityMapperProvider, _reader);
             var list = new List<T>();
             while (await (_reader as DbDataReader).ReadAsync())
             {

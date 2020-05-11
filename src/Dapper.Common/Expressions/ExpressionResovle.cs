@@ -68,7 +68,7 @@ namespace Dapper.Expressions
         /// <returns></returns>
         protected string GetColumnName(Type type,string csharpName)
         {
-            var columns = DbMetaInfoCache.GetColumns(type);
+            var columns = GlobalSettings.DatabaseMetaInfoProvider.GetColumns(type);
             return columns.Where(a => a.CsharpName == csharpName)
                 .FirstOrDefault().ColumnName;
         }

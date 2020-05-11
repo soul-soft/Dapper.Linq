@@ -1,25 +1,42 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using Dapper.Attributes;
+using System;
 using System.Collections.Concurrent;
-using System.Text;
+using System.Collections.Generic;
 using System.Linq;
-using Dapper.Attributes;
-using System.Linq.Expressions;
 
 namespace Dapper.Expressions
 {
     /// <summary>
+    /// 数据库元信息提供程序
+    /// </summary>
+    public interface IDatabaseMetaInfoProvider
+    {
+        /// <summary>
+        /// 获取表的元信息
+        /// </summary>
+        /// <param name="type"></param>
+        /// <returns></returns>
+        TableMetaInfo GetTable(Type type);
+        /// <summary>
+        /// 获取字段的元信息
+        /// </summary>
+        /// <param name="type"></param>
+        /// <returns></returns>
+        List<ColumnMetaInfo> GetColumns(Type type);
+    }
+   
+    /// <summary>
     /// 数据库元信息
     /// </summary>
-    public static class DbMetaInfoCache
+    public class DatabaseMetaInfoProvider: IDatabaseMetaInfoProvider
     {
-        private static readonly ConcurrentDictionary<Type, TableInfo> _tables
-            = new ConcurrentDictionary<Type, TableInfo>();
+        private static readonly ConcurrentDictionary<Type, TableMetaInfo> _tables
+            = new ConcurrentDictionary<Type, TableMetaInfo>();
 
-        private static readonly ConcurrentDictionary<Type, List<ColumnInfo>> _columns
-            = new ConcurrentDictionary<Type, List<ColumnInfo>>();
+        private static readonly ConcurrentDictionary<Type, List<ColumnMetaInfo>> _columns
+            = new ConcurrentDictionary<Type, List<ColumnMetaInfo>>();
 
-        public static TableInfo GetTable(Type type)
+        public TableMetaInfo GetTable(Type type)
         {
             return _tables.GetOrAdd(type, t =>
             {
@@ -30,7 +47,7 @@ namespace Dapper.Expressions
                         .FirstOrDefault() as TableAttribute;
                     name = attribute.Name;
                 }
-                var table = new TableInfo()
+                var table = new TableMetaInfo()
                 {
                     TableName = name,
                     CsharpName = t.Name
@@ -39,11 +56,11 @@ namespace Dapper.Expressions
             });
         }
 
-        public static List<ColumnInfo> GetColumns(Type type)
+        public List<ColumnMetaInfo> GetColumns(Type type)
         {
             return _columns.GetOrAdd(type, t =>
             {
-                var list = new List<ColumnInfo>();
+                var list = new List<ColumnMetaInfo>();
                 var properties = type.GetProperties();
                 foreach (var item in properties)
                 {
@@ -84,7 +101,7 @@ namespace Dapper.Expressions
                     {
                         isComplexType = true;
                     }
-                    list.Add(new ColumnInfo()
+                    list.Add(new ColumnMetaInfo()
                     {
                         CsharpType = item.PropertyType,
                         IsDefault = isDefault,
@@ -106,25 +123,58 @@ namespace Dapper.Expressions
     /// <summary>
     /// 表信息
     /// </summary>
-    public class TableInfo
+    public class TableMetaInfo
     {
+        /// <summary>
+        /// 数据库表名称
+        /// </summary>
         public string TableName { get; set; }
+        /// <summary>
+        /// Csharp表名称
+        /// </summary>
         public string CsharpName { get; set; }
     }
 
     /// <summary>
     /// 字段信息
     /// </summary>
-    public class ColumnInfo
+    public class ColumnMetaInfo
     {
+        /// <summary>
+        /// 是否并发检查
+        /// </summary>
         public bool IsConcurrencyCheck { get; set; }
+        /// <summary>
+        /// 是否默认值约束
+        /// </summary>
         public bool IsDefault { get; set; }
+        /// <summary>
+        /// 是否是数据库字段
+        /// </summary>
         public bool IsNotMapped { get; set; }
+        /// <summary>
+        /// 数据库字段名
+        /// </summary>
         public string ColumnName { get; set; }
+        /// <summary>
+        /// Csharp字段名
+        /// </summary>
         public string CsharpName { get; set; }
+        /// <summary>
+        /// Csharp类型
+        /// </summary>
         public Type CsharpType { get; set; }
+        /// <summary>
+        /// 是否主键约束
+        /// </summary>
         public bool IsPrimaryKey { get; set; }
+        /// <summary>
+        /// 是否是自增列
+        /// </summary>
         public bool IsIdentity { get; set; }
+        /// <summary>
+        /// 是否为计算列
+        /// </summary>
         public bool IsComplexType { get; set; }
     }
 }

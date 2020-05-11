@@ -61,13 +61,10 @@ namespace Dapper
         
         private readonly IDbCommand _command = null;
 
-        private readonly IEntityMapper _mapper = null;
-
-        internal MultiResult(IDbCommand command, IEntityMapper mapper)
+        internal MultiResult(IDbCommand command)
         {
             _command = command;
             _reader = command.ExecuteReader();
-            _mapper = mapper;
         }
 
         public void Dispose()
@@ -104,7 +101,7 @@ namespace Dapper
             {
                 list.Add(handler(_reader));
             }
-            _reader.NextResult();
+            NextResult();
             return list;
         }
       
@@ -116,32 +113,40 @@ namespace Dapper
             {
                 list.Add(handler(_reader));
             }
-            _reader.NextResult();
+            NextResult();
             return list;
         }
       
         public List<T> GetList<T>()
         {
-            var handler = EmitConvert.GetSerializer<T>(_mapper, _reader);
+            var handler = EmitConvert.GetSerializer<T>(GlobalSettings.EntityMapperProvider, _reader);
             var list = new List<T>();
             while (_reader.Read())
             {
                 list.Add(handler(_reader));
             }
-            _reader.NextResult();
+            NextResult();
             return list;
         }
 
         public async Task<List<T>> GetListAsync<T>()
         {
-            var handler = EmitConvert.GetSerializer<T>(_mapper, _reader);
+            var handler = EmitConvert.GetSerializer<T>(GlobalSettings.EntityMapperProvider, _reader);
             var list = new List<T>();
             while (await (_reader as DbDataReader).ReadAsync())
             {
                 list.Add(handler(_reader));
             }
-            _reader.NextResult();
+            NextResult();
             return list;
+        }
+
+        public void NextResult()
+        {
+            if (!_reader.NextResult())
+            {
+                Dispose();
+            }
         }
     }
 }

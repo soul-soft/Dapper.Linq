@@ -74,7 +74,7 @@ namespace Dapper
             ResovleParameter(entity);
             var sql = ResolveUpdate();
             var row = await _context.ExecuteNonQueryAsync(sql, _parameters);
-            if (DbMetaInfoCache.GetColumns(typeof(T)).Exists(a => a.IsConcurrencyCheck) && row == 0)
+            if (GetColumnMetaInfos().Exists(a => a.IsConcurrencyCheck) && row == 0)
             {
                 throw new DbUpdateConcurrencyException("更新失败：数据版本不一致");
             }

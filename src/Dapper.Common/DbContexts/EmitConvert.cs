@@ -82,7 +82,7 @@ namespace Dapper
         /// <summary>
         /// IDataRecord Converted to T
         /// </summary>
-        public static Func<IDataRecord, T> GetSerializer<T>(IEntityMapper mapper, IDataRecord record)
+        public static Func<IDataRecord, T> GetSerializer<T>(IEntityMapperProvider mapper, IDataRecord record)
         {
             string[] names = new string[record.FieldCount];
             for (int i = 0; i < record.FieldCount; i++)
@@ -118,7 +118,7 @@ namespace Dapper
         /// </summary>
         public static Func<IDataRecord, T> GetSerializer<T>(IDataRecord record)
         {
-            return GetSerializer<T>(new EntityMapper(), record);
+            return GetSerializer<T>(GlobalSettings.EntityMapperProvider, record);
         }
         /// <summary>
         /// Object To Dictionary&lt;tstring, object&gt;
@@ -166,7 +166,7 @@ namespace Dapper
             return dynamicMethod.CreateDelegate(typeof(Func<object, Dictionary<string, object>>)) as Func<object, Dictionary<string, object>>;
         }
 
-        private static Func<IDataRecord, T> CreateTypeSerializerHandler<T>(IEntityMapper mapper, IDataRecord record)
+        private static Func<IDataRecord, T> CreateTypeSerializerHandler<T>(IEntityMapperProvider mapper, IDataRecord record)
         {
             var type = typeof(T);
             var methodName = $"{type.Name}Serializer{Guid.NewGuid():N}";

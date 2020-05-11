@@ -1,0 +1,1228 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Dapper.Common</name>
+    </assembly>
+    <members>
+        <member name="T:Dapper.Attributes.ColumnAttribute">
+            <summary>
+            字段映射
+            </summary>
+        </member>
+        <member name="M:Dapper.Attributes.ColumnAttribute.#ctor(System.String)">
+            <summary>
+            属性字段映射
+            </summary>
+            <param name="name">数据库字段名</param>
+        </member>
+        <member name="T:Dapper.Attributes.ComplexTypeAttribute">
+            <summary>
+            计算列，如果字段一个是计算列则新增和修改的时候不会处理
+            </summary>
+        </member>
+        <member name="T:Dapper.Attributes.ConcurrencyCheckAttribute">
+            <summary>
+            并发检查，如果字段属性是number类型则用时间戳，否则使用GUID
+            </summary>
+        </member>
+        <member name="T:Dapper.Attributes.DefaultAttribute">
+            <summary>
+            默认值约束
+            </summary>
+        </member>
+        <member name="T:Dapper.Attributes.FunctionAttribute">
+            <summary>
+            数据库函数标识
+            </summary>
+        </member>
+        <member name="T:Dapper.Attributes.IdentityAttribute">
+            <summary>
+            自增列标识
+            </summary>
+        </member>
+        <member name="T:Dapper.Attributes.NotMappedAttribute">
+            <summary>
+            忽略映射
+            </summary>
+        </member>
+        <member name="T:Dapper.Attributes.PrimaryKeyAttribute">
+            <summary>
+            主键约束
+            </summary>
+        </member>
+        <member name="T:Dapper.Attributes.TableAttribute">
+            <summary>
+            表名映射
+            </summary>
+        </member>
+        <member name="T:Dapper.IDbContext">
+            <summary>
+            数据库上下文
+            </summary>
+        </member>
+        <member name="E:Dapper.IDbContext.Logging">
+            <summary>
+            日志处理
+            </summary>
+        </member>
+        <member name="P:Dapper.IDbContext.Connection">
+            <summary>
+            数据库连接
+            </summary>
+        </member>
+        <member name="P:Dapper.IDbContext.DbContextType">
+            <summary>
+            数据库上下文类型
+            </summary>
+        </member>
+        <member name="M:Dapper.IDbContext.From``1(System.String,``0)">
+            <summary>
+            获取一个xml执行器
+            </summary>
+            <typeparam name="T">参数类型</typeparam>
+            <param name="id">命令id</param>
+            <param name="parameter">参数</param>
+            <returns></returns>
+        </member>
+        <member name="M:Dapper.IDbContext.From(System.String)">
+            <summary>
+            获取一个xml执行器
+            </summary>
+            <param name="id">命令id</param>
+            <returns></returns>
+        </member>
+        <member name="M:Dapper.IDbContext.From``1">
+            <summary>
+            获取一个linq执行器
+            </summary>
+            <typeparam name="T"></typeparam>
+            <returns></returns>
+        </member>
+        <member name="M:Dapper.IDbContext.BeginTransaction">
+            <summary>
+            开启事务会话
+            </summary>
+        </member>
+        <member name="M:Dapper.IDbContext.BeginTransactionAsync">
+            <summary>
+            异步开启事务会话
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Dapper.IDbContext.BeginTransaction(System.Data.IsolationLevel)">
+            <summary>
+            开启事务会话
+            </summary>
+            <param name="level">事务隔离级别</param>
+        </member>
+        <member name="M:Dapper.IDbContext.BeginTransactionAsync(System.Data.IsolationLevel)">
+            <summary>
+            异步开启事务会话
+            </summary>
+            <param name="level"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Dapper.IDbContext.Close">
+            <summary>
+            关闭连接和事务
+            </summary>
+        </member>
+        <member name="M:Dapper.IDbContext.CommitTransaction">
+            <summary>
+            提交当前事务会话
+            </summary>
+        </member>
+        <member name="M:Dapper.IDbContext.ExecuteMultiQuery(System.String,System.Object,System.Nullable{System.Int32},System.Nullable{System.Data.CommandType})">
+            <summary>
+            执行多结果集查询，返回IMultiResult
+            </summary>
+            <param name="sql">sql命令</param>
+            <param name="parameter">参数</param>
+            <param name="commandTimeout">超时时间</param>
+            <param name="commandType">命令类型</param>
+            <returns></returns>
+        </member>
+        <member name="M:Dapper.IDbContext.ExecuteQuery(System.String,System.Object,System.Nullable{System.Int32},System.Nullable{System.Data.CommandType})">
+            <summary>
+            执行单结果集查询，并返回dynamic类型的结果集
+            </summary>
+            <param name="sql">sql命令</param>
+            <param name="parameter">参数</param>
+            <param name="commandTimeout">超时时间</param>
+            <param name="commandType">命令类型</param>
+            <returns></returns>
+        </member>
+        <member name="M:Dapper.IDbContext.ExecuteQueryAsync(System.String,System.Object,System.Nullable{System.Int32},System.Nullable{System.Data.CommandType})">
+            <summary>
+            异步执行单结果集查询，并返回dynamic类型的结果集
+            </summary>
+            <param name="sql">sql命令</param>
+            <param name="parameter">参数</param>
+            <param name="commandTimeout">超时时间</param>
+            <param name="commandType">命令类型</param>
+            <returns></returns>
+        </member>
+        <member name="M:Dapper.IDbContext.ExecuteQuery``1(System.String,System.Object,System.Nullable{System.Int32},System.Nullable{System.Data.CommandType})">
+            <summary>
+            执行单结果集查询，并返回T类型的结果集
+            </summary>
+            <typeparam name="T">返回类型</typeparam>
+            <param name="sql">sql命令</param>
+            <param name="parameter">参数</param>
+            <param name="commandTimeout">超时时间</param>
+            <param name="commandType">命令类型</param>
+            <returns></returns>
+        </member>
+        <member name="M:Dapper.IDbContext.ExecuteQueryAsync``1(System.String,System.Object,System.Nullable{System.Int32},System.Nullable{System.Data.CommandType})">
+            <summary>
+            异步执行单结果集查询，并返回T类型的结果集
+            </summary>
+            <typeparam name="T">返回类型</typeparam>
+            <param name="sql">sql命令</param>
+            <param name="parameter">参数</param>
+            <param name="commandTimeout">超时时间</param>
+            <param name="commandType">命令类型</param>
+            <returns></returns>
+        </member>
+        <member name="M:Dapper.IDbContext.ExecuteNonQuery(System.String,System.Object,System.Nullable{System.Int32},System.Nullable{System.Data.CommandType})">
+            <summary>
+            执行无结果集查询，并返回受影响的行数
+            </summary>
+            <param name="sql">sql命令</param>
+            <param name="parameter">参数</param>
+            <param name="commandTimeout">超时时间</param>
+            <param name="commandType">命令类型</param>
+            <returns></returns>
+        </member>
+        <member name="M:Dapper.IDbContext.ExecuteNonQueryAsync(System.String,System.Object,System.Nullable{System.Int32},System.Nullable{System.Data.CommandType})">
+            <summary>
+            异步执行无结果集查询，并返回受影响的行数
+            </summary>
+            <param name="sql">sql命令</param>
+            <param name="parameter">参数</param>
+            <param name="commandTimeout">超时时间</param>
+            <param name="commandType">命令类型</param>
+            <returns></returns>
+        </member>
+        <member name="M:Dapper.IDbContext.ExecuteScalar``1(System.String,System.Object,System.Nullable{System.Int32},System.Nullable{System.Data.CommandType})">
+            <summary>
+            执行无结果集查询，并返回指定类型的数据
+            </summary>
+            <typeparam name="T">返回类型</typeparam>
+            <param name="sql">sql命令</param>
+            <param name="parameter">参数</param>
+            <param name="commandTimeout">超时时间</param>
+            <param name="commandType">命令类型</param>
+            <returns></returns>
+        </member>
+        <member name="M:Dapper.IDbContext.ExecuteScalarAsync``1(System.String,System.Object,System.Nullable{System.Int32},System.Nullable{System.Data.CommandType})">
+            <summary>
+            异步执行无结果集查询，并返回指定类型的数据
+            </summary>
+            <typeparam name="T">返回类型</typeparam>
+            <param name="sql">sql命令</param>
+            <param name="parameter">参数</param>
+            <param name="commandTimeout">超时时间</param>
+            <param name="commandType">命令类型</param>
+            <returns></returns>
+        </member>
+        <member name="M:Dapper.IDbContext.Open">
+            <summary>
+            打开数据库连接
+            </summary>
+        </member>
+        <member name="M:Dapper.IDbContext.OpenAsync">
+            <summary>
+            异步打开数据库连接
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Dapper.IDbContext.RollbackTransaction">
+            <summary>
+            回滚当前事务会话
+            </summary>
+        </member>
+        <member name="T:Dapper.Logging">
+            <summary>
+            sql执行日志
+            </summary>
+            <param name="message"></param>
+            <param name="parameters"></param>
+            <param name="commandTimeout"></param>
+            <param name="commandType"></param>
+        </member>
+        <member name="T:Dapper.DbContext">
+            <summary>
+            数据库上下文
+            </summary>
+        </member>
+        <member name="T:Dapper.DbDataInfo">
+            <summary>
+            DbColumn Information
+            </summary>
+        </member>
+        <member name="T:Dapper.EmitConvert">
+            <summary>
+            IL Convert
+            </summary>
+        </member>
+        <member name="M:Dapper.EmitConvert.GetSerializer``1(Dapper.IEntityMapperProvider,System.Data.IDataRecord)">
+            <summary>
+            IDataRecord Converted to T
+            </summary>
+        </member>
+        <member name="M:Dapper.EmitConvert.GetSerializer">
+            <summary>
+            IDataRecord Converted to dynamic
+            </summary>
+        </member>
+        <member name="M:Dapper.EmitConvert.GetSerializer``1(System.Data.IDataRecord)">
+            <summary>
+            IDataRecord Converted to T
+            </summary>
+        </member>
+        <member name="M:Dapper.EmitConvert.GetDeserializer(System.Type)">
+            <summary>
+            Object To Dictionary&lt;tstring, object&gt;
+            </summary>
+        </member>
+        <member name="M:Dapper.IMultiResult.GetList">
+            <summary>
+            返回当前dynamic类型结果集
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Dapper.IMultiResult.GetListAsync">
+            <summary>
+            异步返回当前dynamic类型结果集
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Dapper.IMultiResult.GetList``1">
+            <summary>
+            返回当前T结果集
+            </summary>
+            <typeparam name="T">结果集类型</typeparam>
+            <returns></returns>
+        </member>
+        <member name="M:Dapper.IMultiResult.GetListAsync``1">
+            <summary>
+             异步返回当前T类型结果集
+            </summary>
+            <typeparam name="T"></typeparam>
+            <returns></returns>
+        </member>
+        <member name="M:Dapper.IMultiResult.Get">
+            <summary>
+            返回当前dynamic类型结果
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Dapper.IMultiResult.GetAsync">
+            <summary>
+            异步返回当前dynamic类型结果
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Dapper.IMultiResult.Get``1">
+            <summary>
+            返回当前T类型结果
+            </summary>
+            <typeparam name="T">结果集类型</typeparam>
+            <returns></returns>
+        </member>
+        <member name="M:Dapper.IMultiResult.GetAsync``1">
+            <summary>
+            异步返回当前T类型结果
+            </summary>
+            <typeparam name="T">结果集类型</typeparam>
+            <returns></returns>
+        </member>
+        <member name="T:Dapper.Expressions.DbUpdateConcurrencyException">
+            <summary>
+            修改数据时并发冲突
+            </summary>
+        </member>
+        <member name="T:Dapper.Expressions.ExpressionActivator">
+            <summary>
+            表达式树生成器
+            </summary>
+        </member>
+        <member name="M:Dapper.Expressions.ExpressionResovle.VisitConstantValue(System.Linq.Expressions.Expression)">
+            <summary>
+            解析表达式参数
+            </summary>
+            <param name="expression"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Dapper.Expressions.ExpressionResovle.GetColumnName(System.Type,System.String)">
+            <summary>
+            获取字段名
+            </summary>
+            <param name="type"></param>
+            <param name="csharpName"></param>
+            <returns></returns>
+        </member>
+        <member name="T:Dapper.Expressions.IDatabaseMetaInfoProvider">
+            <summary>
+            数据库元信息提供程序
+            </summary>
+        </member>
+        <member name="M:Dapper.Expressions.IDatabaseMetaInfoProvider.GetTable(System.Type)">
+            <summary>
+            获取表的元信息
+            </summary>
+            <param name="type"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Dapper.Expressions.IDatabaseMetaInfoProvider.GetColumns(System.Type)">
+            <summary>
+            获取字段的元信息
+            </summary>
+            <param name="type"></param>
+            <returns></returns>
+        </member>
+        <member name="T:Dapper.Expressions.DatabaseMetaInfoProvider">
+            <summary>
+            数据库元信息
+            </summary>
+        </member>
+        <member name="T:Dapper.Expressions.TableMetaInfo">
+            <summary>
+            表信息
+            </summary>
+        </member>
+        <member name="P:Dapper.Expressions.TableMetaInfo.TableName">
+            <summary>
+            数据库表名称
+            </summary>
+        </member>
+        <member name="P:Dapper.Expressions.TableMetaInfo.CsharpName">
+            <summary>
+            Csharp表名称
+            </summary>
+        </member>
+        <member name="T:Dapper.Expressions.ColumnMetaInfo">
+            <summary>
+            字段信息
+            </summary>
+        </member>
+        <member name="P:Dapper.Expressions.ColumnMetaInfo.IsConcurrencyCheck">
+            <summary>
+            是否并发检查
+            </summary>
+        </member>
+        <member name="P:Dapper.Expressions.ColumnMetaInfo.IsDefault">
+            <summary>
+            是否默认值约束
+            </summary>
+        </member>
+        <member name="P:Dapper.Expressions.ColumnMetaInfo.IsNotMapped">
+            <summary>
+            是否是数据库字段
+            </summary>
+        </member>
+        <member name="P:Dapper.Expressions.ColumnMetaInfo.ColumnName">
+            <summary>
+            数据库字段名
+            </summary>
+        </member>
+        <member name="P:Dapper.Expressions.ColumnMetaInfo.CsharpName">
+            <summary>
+            Csharp字段名
+            </summary>
+        </member>
+        <member name="P:Dapper.Expressions.ColumnMetaInfo.CsharpType">
+            <summary>
+            Csharp类型
+            </summary>
+        </member>
+        <member name="P:Dapper.Expressions.ColumnMetaInfo.IsPrimaryKey">
+            <summary>
+            是否主键约束
+            </summary>
+        </member>
+        <member name="P:Dapper.Expressions.ColumnMetaInfo.IsIdentity">
+            <summary>
+            是否是自增列
+            </summary>
+        </member>
+        <member name="P:Dapper.Expressions.ColumnMetaInfo.IsComplexType">
+            <summary>
+            是否为计算列
+            </summary>
+        </member>
+        <member name="T:Dapper.GlobalSettings">
+            <summary>
+            全局设置
+            </summary>
+        </member>
+        <member name="P:Dapper.GlobalSettings.DatabaseMetaInfoProvider">
+            <summary>
+            数据库元信息提供程序
+            </summary>
+        </member>
+        <member name="P:Dapper.GlobalSettings.EntityMapperProvider">
+            <summary>
+            实体映射器提供程序
+            </summary>
+        </member>
+        <member name="P:Dapper.GlobalSettings.XmlCommandsProvider">
+            <summary>
+            xml命令配置
+            </summary>
+        </member>
+        <member name="T:Dapper.IEntityMapperProvider">
+            <summary>
+            TypeMapper Interface
+            </summary>
+        </member>
+        <member name="T:Dapper.EntityMapperProvider">
+            <summary>
+            返回数据记录到Csharp类型的策略
+            </summary>
+        </member>
+        <member name="M:Dapper.EntityMapperProvider.FindConstructor(System.Type)">
+            <summary>
+            Find parametric constructors.
+            If there is no default constructor, the constructor with the most parameters is returned.
+            </summary>
+        </member>
+        <member name="M:Dapper.EntityMapperProvider.FindConstructorParameter(Dapper.DbDataInfo[],System.Reflection.ParameterInfo)">
+            <summary>
+            Returns field information based on parameter information
+            </summary>
+        </member>
+        <member name="M:Dapper.EntityMapperProvider.FindMember(System.Reflection.MemberInfo[],Dapper.DbDataInfo)">
+            <summary>
+            Returns attribute information based on field information
+            </summary>
+        </member>
+        <member name="M:Dapper.EntityMapperProvider.FindConvertMethod(System.Type,System.Type)">
+            <summary>
+            Return type conversion function.
+            </summary>
+        </member>
+        <member name="T:Dapper.DataConvertMethod">
+            <summary>
+            数据库类型到Csharp类型转换器
+            </summary>
+        </member>
+        <member name="T:Dapper.IXmlCommandsProvider">
+            <summary>
+            xml配置提供程序
+            </summary>
+        </member>
+        <member name="M:Dapper.IXmlCommandsProvider.Resolve``1(System.String,``0)">
+            <summary>
+            解析动态sql
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="id"></param>
+            <param name="parameter"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Dapper.IXmlCommandsProvider.Resolve(System.String)">
+            <summary>
+            解析sql
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Dapper.IXmlCommandsProvider.Load(System.String)">
+            <summary>
+            加载配置文件
+            </summary>
+            <param name="filename">文件名</param>
+        </member>
+        <member name="M:Dapper.IXmlCommandsProvider.Load(System.String,System.String)">
+            <summary>
+            从指定路径加载所有匹配的文件
+            </summary>
+            <param name="path">路径</param>
+            <param name="pattern">文件通配符</param>
+        </member>
+        <member name="M:Dapper.IXmlCommandsProvider.Load(System.String,System.String,System.IO.SearchOption)">
+            <summary>
+            从指定路径加载所有匹配的文件
+            </summary>
+            <param name="path">路径</param>
+            <param name="pattern">文件通配符</param>
+            <param name="options">查找选项</param>
+        </member>
+        <member name="M:Dapper.IXmlCommandsProvider.Load(System.Reflection.Assembly)">
+            <summary>
+            从程序集加载配置所有xml
+            </summary>
+            <param name="assembly">程序集</param>
+        </member>
+        <member name="M:Dapper.IXmlCommandsProvider.Load(System.Reflection.Assembly,System.String)">
+            <summary>
+            从程序集加载配置
+            </summary>
+            <param name="assembly">程序集</param>
+            <param name="pattern">正则匹配</param>
+        </member>
+        <member name="T:Dapper.XmlCommandsProvider">
+            <summary>
+            xml配置提供程序
+            </summary>
+        </member>
+        <member name="M:Dapper.XmlCommandsProvider.Load(System.String)">
+            <summary>
+            加载配置文件
+            </summary>
+            <param name="filename"></param>
+        </member>
+        <member name="M:Dapper.XmlCommandsProvider.Load(System.IO.Stream)">
+            <summary>
+            从流中加载xml
+            </summary>
+            <param name="stream"></param>
+        </member>
+        <member name="M:Dapper.XmlCommandsProvider.Load(System.String,System.String)">
+            <summary>
+            从指定路径加载所有匹配的文件
+            </summary>
+            <param name="path">路径</param>
+            <param name="pattern">通配符</param>
+        </member>
+        <member name="M:Dapper.XmlCommandsProvider.Load(System.String,System.String,System.IO.SearchOption)">
+            <summary>
+            从指定路径加载所有匹配的文件
+            </summary>
+            <param name="path">路径</param>
+            <param name="pattern">通配符</param>
+            <param name="options">查找选项</param>
+        </member>
+        <member name="M:Dapper.XmlCommandsProvider.Load(System.Reflection.Assembly)">
+            <summary>
+            从嵌入式资源加载.xml结尾的文件
+            </summary>
+            <param name="assembly">程序集</param>
+        </member>
+        <member name="M:Dapper.XmlCommandsProvider.Load(System.Reflection.Assembly,System.String)">
+            <summary>
+            从嵌入式资源加载配置
+            </summary>
+            <param name="assembly">程序集</param>
+            <param name="pattern">匹配模式</param>
+        </member>
+        <member name="T:Dapper.DbQuery`1">
+            <summary>
+            异步linq查询
+            </summary>
+            <summary>
+            同步linq查询
+            </summary>
+            <typeparam name="T"></typeparam>
+        </member>
+        <member name="T:Dapper.IDbQuery`1">
+            <summary>
+            linq 查询
+            </summary>
+            <typeparam name="T"></typeparam>
+        </member>
+        <member name="M:Dapper.IDbQuery`1.Get(System.Object)">
+            <summary>
+            通过主键检索数据
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Dapper.IDbQuery`1.GetAsync(System.Object)">
+            <summary>
+            异步通过主键检索数据
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Dapper.IDbQuery`1.Count(System.Nullable{System.Int32})">
+            <summary>
+            count查询
+            </summary>
+            <param name="commandTimeout">超时时间</param>
+            <returns></returns>
+        </member>
+        <member name="M:Dapper.IDbQuery`1.CountAsync(System.Nullable{System.Int32})">
+            <summary>
+            异步count查询
+            </summary>
+            <param name="commandTimeout">超时时间</param>
+            <returns></returns>
+        </member>
+        <member name="M:Dapper.IDbQuery`1.Count``1(System.Linq.Expressions.Expression{System.Func{`0,``0}})">
+            <summary>
+            count查询
+            </summary>
+            <typeparam name="TResult">类型推断</typeparam>
+            <param name="expression">字段列表</param>
+            <returns></returns>
+        </member>
+        <member name="M:Dapper.IDbQuery`1.CountAsync``1(System.Linq.Expressions.Expression{System.Func{`0,``0}})">
+            <summary>
+            异步count查询
+            </summary>
+            <typeparam name="TResult">类型推断</typeparam>
+            <param name="expression">字段列表</param>
+            <returns></returns>
+        </member>
+        <member name="M:Dapper.IDbQuery`1.Delete(System.Nullable{System.Int32})">
+            <summary>
+            delete查询
+            </summary>
+            <param name="commandTimeout"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Dapper.IDbQuery`1.DeleteAsync(System.Nullable{System.Int32})">
+            <summary>
+            异步delete查询
+            </summary>
+            <param name="commandTimeout"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Dapper.IDbQuery`1.Delete(System.Linq.Expressions.Expression{System.Func{`0,System.Boolean}})">
+            <summary>
+            delete查询
+            </summary>
+            <param name="expression">查询条件</param>
+            <returns></returns>
+        </member>
+        <member name="M:Dapper.IDbQuery`1.DeleteAsync(System.Linq.Expressions.Expression{System.Func{`0,System.Boolean}})">
+            <summary>
+            异步delete查询
+            </summary>
+            <param name="expression">查询条件</param>
+            <returns></returns>
+        </member>
+        <member name="M:Dapper.IDbQuery`1.Exists(System.Nullable{System.Int32})">
+            <summary>
+            exists查询
+            </summary>
+            <param name="commandTimeout">超时时间</param>
+            <returns></returns>
+        </member>
+        <member name="M:Dapper.IDbQuery`1.ExistsAsync(System.Nullable{System.Int32})">
+            <summary>
+            异步exists查询
+            </summary>
+            <param name="commandTimeout">超时时间</param>
+            <returns></returns>
+        </member>
+        <member name="M:Dapper.IDbQuery`1.Exists(System.Linq.Expressions.Expression{System.Func{`0,System.Boolean}})">
+            <summary>
+            exists查询
+            </summary>
+            <param name="expression">查询条件</param>
+            <returns></returns>
+        </member>
+        <member name="M:Dapper.IDbQuery`1.ExistsAsync(System.Linq.Expressions.Expression{System.Func{`0,System.Boolean}})">
+            <summary>
+            异步exists查询
+            </summary>
+            <param name="expression">查询条件</param>
+            <returns></returns>
+        </member>
+        <member name="M:Dapper.IDbQuery`1.Update(System.Nullable{System.Int32})">
+            <summary>
+            update查询，如果没有指定where则应用到所有记录
+            </summary>
+            <param name="commandTimeout">超时时间</param>
+            <returns></returns>
+        </member>
+        <member name="M:Dapper.IDbQuery`1.UpdateAsync(System.Nullable{System.Int32})">
+            <summary>
+            异步update查询，如果没有指定where则应用到所有记录
+            </summary>
+            <param name="commandTimeout">超时时间</param>
+            <returns></returns>
+        </member>
+        <member name="M:Dapper.IDbQuery`1.Update(`0)">
+            <summary>
+            update查询，默认根据Primarkey更新，如果存在where则仅使用指定更新条件，
+            无法通过该接口更新主键字段和主键字段
+            </summary>
+            <param name="entity">参数</param>
+            <returns></returns>
+        </member>
+        <member name="M:Dapper.IDbQuery`1.UpdateAsync(`0)">
+            <summary>
+            异步update查询，默认根据Primarkey更新，如果存在where则仅使用指定更新条件，
+            无法通过该接口更新主键字段和主键字段
+            </summary>
+            <param name="entity">参数</param>
+            <returns></returns>
+        </member>
+        <member name="M:Dapper.IDbQuery`1.Insert(`0)">
+            <summary>
+            insert查询，该接口会忽略identity字段
+            </summary>
+            <param name="entity">参数</param>
+            <returns></returns>
+        </member>
+        <member name="M:Dapper.IDbQuery`1.InsertAsync(`0)">
+            <summary>
+            异步insert查询，该接口会忽略identity字段
+            </summary>
+            <param name="entity">参数</param>
+            <returns></returns>
+        </member>
+        <member name="M:Dapper.IDbQuery`1.InsertReturnId(`0)">
+            <summary>
+            insert查询，并返回id，该接口会忽略identity字段
+            </summary>
+            <param name="entity">参数</param>
+            <returns></returns>
+        </member>
+        <member name="M:Dapper.IDbQuery`1.InsertReturnIdAsync(`0)">
+            <summary>
+            异步insert查询，并返回id，该接口会忽略identity字段
+            </summary>
+            <param name="entity"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Dapper.IDbQuery`1.Insert(System.Collections.Generic.IEnumerable{`0},System.Nullable{System.Int32})">
+            <summary>
+            批量insert查询，该接口会忽略identity字段
+            </summary>
+            <param name="entitys">参数集合</param>
+            <param name="commandTimeout">超时时间</param>
+            <returns></returns>
+        </member>
+        <member name="M:Dapper.IDbQuery`1.InsertAsync(System.Collections.Generic.IEnumerable{`0},System.Nullable{System.Int32})">
+            <summary>
+            异步批量insert查询，该接口会忽略identity字段
+            </summary>
+            <param name="entitys"></param>
+            <param name="commandTimeout">超时时间</param>
+            <returns></returns>
+        </member>
+        <member name="M:Dapper.IDbQuery`1.Select(System.Nullable{System.Int32})">
+            <summary>
+            select查询
+            </summary>
+            <param name="commandTimeout">超时时间</param>
+            <returns></returns>
+        </member>
+        <member name="M:Dapper.IDbQuery`1.SelectAsync(System.Nullable{System.Int32})">
+            <summary>
+            异步select查询
+            </summary>
+            <param name="commandTimeout">超时时间</param>
+            <returns></returns>
+        </member>
+        <member name="M:Dapper.IDbQuery`1.SelectMany(System.Nullable{System.Int32})">
+            <summary>
+            分页select查询
+            </summary>
+            <param name="commandTimeout">超时时间</param>
+            <returns>结果集，总记录数</returns>
+        </member>
+        <member name="M:Dapper.IDbQuery`1.SelectManyAsync(System.Nullable{System.Int32})">
+            <summary>
+            异步分页select查询
+            </summary>
+            <param name="commandTimeout">超时时间</param>
+            <returns></returns>
+        </member>
+        <member name="M:Dapper.IDbQuery`1.Select``1(System.Linq.Expressions.Expression{System.Func{`0,``0}},System.Nullable{System.Int32})">
+            <summary>
+            select查询
+            </summary>
+            <typeparam name="TResult">返回类型</typeparam>
+            <param name="expression">字段列表</param>
+            <param name="commandTimeout">超时时间</param>
+            <returns></returns>
+        </member>
+        <member name="M:Dapper.IDbQuery`1.SelectAsync``1(System.Linq.Expressions.Expression{System.Func{`0,``0}},System.Nullable{System.Int32})">
+            <summary>
+            异步select查询
+            </summary>
+            <typeparam name="TResult">返回类型</typeparam>
+            <param name="expression">字段列表</param>
+            <param name="commandTimeout">超时时间</param>
+            <returns></returns>
+        </member>
+        <member name="M:Dapper.IDbQuery`1.SelectMany``1(System.Linq.Expressions.Expression{System.Func{`0,``0}},System.Nullable{System.Int32})">
+            <summary>
+            分页select查询
+            </summary>
+            <typeparam name="TResult">返回类型</typeparam>
+            <param name="expression">字段列表</param>
+            <param name="commandTimeout">超时时间</param>
+            <returns></returns>
+        </member>
+        <member name="M:Dapper.IDbQuery`1.SelectManyAsync``1(System.Linq.Expressions.Expression{System.Func{`0,``0}},System.Nullable{System.Int32})">
+            <summary>
+            异步分页select查询
+            </summary>
+            <typeparam name="TResult">返回类型</typeparam>
+            <param name="expression">字段列表</param>
+            <param name="commandTimeout">超时时间</param>
+            <returns></returns>
+        </member>
+        <member name="M:Dapper.IDbQuery`1.Single(System.Nullable{System.Int32})">
+            <summary>
+            select查询
+            </summary>
+            <param name="commandTimeout">超时时间</param>
+            <returns></returns>
+        </member>
+        <member name="M:Dapper.IDbQuery`1.SingleAsync(System.Nullable{System.Int32})">
+            <summary>
+            异步select查询
+            </summary>
+            <param name="commandTimeout">超时时间</param>
+            <returns></returns>
+        </member>
+        <member name="M:Dapper.IDbQuery`1.Single``1(System.Linq.Expressions.Expression{System.Func{`0,``0}},System.Nullable{System.Int32})">
+            <summary>
+            select查询
+            </summary>
+            <typeparam name="TResult">返回类型</typeparam>
+            <param name="expression">字段列表</param>
+            <param name="commandTimeout">超时时间</param>
+            <returns></returns>
+        </member>
+        <member name="M:Dapper.IDbQuery`1.SingleAsync``1(System.Linq.Expressions.Expression{System.Func{`0,``0}},System.Nullable{System.Int32})">
+            <summary>
+            异步select查询
+            </summary>
+            <typeparam name="TResult">返回类型</typeparam>
+            <param name="expression">字段列表</param>
+            <param name="commandTimeout">超时时间</param>
+            <returns></returns>
+        </member>
+        <member name="M:Dapper.IDbQuery`1.Filter``1(System.Linq.Expressions.Expression{System.Func{`0,``0}})">
+            <summary>
+            在insert,update,select时过滤字段
+            </summary>
+            <typeparam name="TResult">类型推断</typeparam>
+            <param name="expression">字段列表</param>
+            <returns></returns>
+        </member>
+        <member name="M:Dapper.IDbQuery`1.Set``1(System.Linq.Expressions.Expression{System.Func{`0,``0}},``0,System.Boolean)">
+            <summary>
+            set查询
+            </summary>
+            <typeparam name="TResult">类型推断</typeparam>
+            <param name="column">字段</param>
+            <param name="value">参数</param>
+            <param name="condition">是否有效</param>
+            <returns></returns>
+        </member>
+        <member name="M:Dapper.IDbQuery`1.Set``1(System.Linq.Expressions.Expression{System.Func{`0,``0}},System.Linq.Expressions.Expression{System.Func{`0,``0}},System.Boolean)">
+            <summary>
+            set查询
+            </summary>
+            <typeparam name="TResult">类型推断</typeparam>
+            <param name="column">字段</param>
+            <param name="expression">表达式</param>
+            <param name="condition">是否有效</param>
+            <returns></returns>
+        </member>
+        <member name="M:Dapper.IDbQuery`1.Take(System.Int32,System.Boolean)">
+            <summary>
+            take查询，从下标为0的行获取count条记录
+            </summary>
+            <param name="count">记录个数</param>
+            <param name="condition">条件</param>
+            <returns></returns>
+        </member>
+        <member name="M:Dapper.IDbQuery`1.Skip(System.Int32,System.Int32,System.Boolean)">
+            <summary>
+            skip，从下标为index的行获取count条记录
+            </summary>
+            <param name="index">起始下标</param>
+            <param name="count">记录个数</param>
+            <param name="condition">条件</param>
+            <returns></returns>
+        </member>
+        <member name="M:Dapper.IDbQuery`1.Page(System.Int32,System.Int32,System.Boolean)">
+            <summary>
+            page查询，从下标为(index-1)*count的行获取count条记录
+            </summary>
+            <param name="index">起始页码</param>
+            <param name="count">记录个数</param>
+            <param name="condition">条件</param>
+            <returns></returns>
+        </member>
+        <member name="M:Dapper.IDbQuery`1.With(System.String)">
+            <summary>
+            指定读锁
+            </summary>
+            <param name="lockname"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Dapper.IDbQuery`1.Where(System.Linq.Expressions.Expression{System.Func{`0,System.Boolean}},System.Boolean)">
+            <summary>
+            where查询，多个where有效使用and连接
+            </summary>
+            <param name="expression">表达式</param>
+            <param name="condition">是否有效</param>
+            <returns></returns>
+        </member>
+        <member name="M:Dapper.IDbQuery`1.Having(System.Linq.Expressions.Expression{System.Func{`0,System.Boolean}},System.Boolean)">
+            <summary>
+            having查询，多个having查询有效使用and连接
+            </summary>
+            <param name="expression">表达式</param>
+            <param name="condition">是否有效</param>
+            <returns></returns>
+        </member>
+        <member name="M:Dapper.IDbQuery`1.GroupBy``1(System.Linq.Expressions.Expression{System.Func{`0,``0}})">
+            <summary>
+            group查询
+            </summary>
+            <typeparam name="TResult">类型推断</typeparam>
+            <param name="expression">字段列表</param>
+            <returns></returns>
+        </member>
+        <member name="M:Dapper.IDbQuery`1.OrderBy``1(System.Linq.Expressions.Expression{System.Func{`0,``0}})">
+            <summary>
+            orderby查询，升序
+            </summary>
+            <typeparam name="TResult">类型推断</typeparam>
+            <param name="expression">字段列表</param>
+            <returns></returns>
+        </member>
+        <member name="M:Dapper.IDbQuery`1.OrderByDescending``1(System.Linq.Expressions.Expression{System.Func{`0,``0}})">
+            <summary>
+            orderby查询，降序
+            </summary>
+            <typeparam name="TResult">类型推断</typeparam>
+            <param name="expression">字段列表</param>
+            <returns></returns>
+        </member>
+        <member name="M:Dapper.IDbQuery`1.Sum``1(System.Linq.Expressions.Expression{System.Func{`0,``0}},System.Nullable{System.Int32})">
+            <summary>
+            求和
+            </summary>
+            <typeparam name="TResult">返回类型</typeparam>
+            <param name="expression">字段列表</param>
+            <param name="commandTimeout">超时时间</param>
+            <returns></returns>
+        </member>
+        <member name="M:Dapper.IDbQuery`1.SumAsync``1(System.Linq.Expressions.Expression{System.Func{`0,``0}},System.Nullable{System.Int32})">
+            <summary>
+            异步求和
+            </summary>
+            <typeparam name="TResult">返回类型</typeparam>
+            <param name="expression">字段列表</param>
+            <param name="commandTimeout">超时时间</param>
+            <returns></returns>
+        </member>
+        <member name="T:Dapper.Operator">
+            <summary>
+            数据库操作符
+            </summary>
+        </member>
+        <member name="M:Dapper.Operator.In``1(``0,System.Collections.Generic.IEnumerable{``0})">
+            <summary>
+            in
+            </summary>
+            <typeparam name="T">类型推断</typeparam>
+            <param name="column">字段</param>
+            <param name="values">参数</param>
+            <returns></returns>
+        </member>
+        <member name="M:Dapper.Operator.In``1(``0,``0[])">
+            <summary>
+            in(低性能)
+            </summary>
+            <typeparam name="T">类型推断</typeparam>
+            <param name="column">字段</param>
+            <param name="values">参数</param>
+            <returns></returns>
+        </member>
+        <member name="M:Dapper.Operator.NotIn``1(``0,System.Collections.Generic.IEnumerable{``0})">
+            <summary>
+            not in
+            </summary>
+            <typeparam name="T">类型推断</typeparam>
+            <param name="column">字段</param>
+            <param name="values">参数</param>
+            <returns></returns>
+        </member>
+        <member name="M:Dapper.Operator.NotIn``1(``0,``0[])">
+            <summary>
+            not in(低性能)
+            </summary>
+            <typeparam name="T">类型推断</typeparam>
+            <param name="column">字段</param>
+            <param name="values">参数</param>
+            <returns></returns>
+        </member>
+        <member name="M:Dapper.Operator.Contains(System.String,System.String)">
+            <summary>
+            like %value%
+            </summary>
+            <param name="column">字段</param>
+            <param name="value">参数</param>
+            <returns></returns>
+        </member>
+        <member name="M:Dapper.Operator.NotContains(System.String,System.String)">
+            <summary>
+            not like %value%
+            </summary>
+            <param name="column">字段</param>
+            <param name="value">参数</param>
+            <returns></returns>
+        </member>
+        <member name="M:Dapper.Operator.StartsWith(System.String,System.String)">
+            <summary>
+            like value%
+            </summary>
+            <param name="column">字段</param>
+            <param name="value">参数</param>
+            <returns></returns>
+        </member>
+        <member name="M:Dapper.Operator.NotStartsWith(System.String,System.String)">
+            <summary>
+            not like value%
+            </summary>
+            <param name="column">字段</param>
+            <param name="value">参数</param>
+            <returns></returns>
+        </member>
+        <member name="M:Dapper.Operator.EndsWith(System.String,System.String)">
+            <summary>
+            like %value
+            </summary>
+            <param name="column">字段</param>
+            <param name="value">参数</param>
+            <returns></returns>
+        </member>
+        <member name="M:Dapper.Operator.NotEndsWith(System.String,System.String)">
+            <summary>
+            not like %value
+            </summary>
+            <param name="column">字段</param>
+            <param name="value">参数</param>
+            <returns></returns>
+        </member>
+        <member name="M:Dapper.Operator.Regexp(System.String,System.String)">
+            <summary>
+            regex value
+            </summary>
+            <param name="column">字段</param>
+            <param name="value">参数</param>
+            <returns></returns>
+        </member>
+        <member name="M:Dapper.Operator.NotRegexp(System.String,System.String)">
+            <summary>
+            not regex value
+            </summary>
+            <param name="column">字段</param>
+            <param name="value">参数</param>
+            <returns></returns>
+        </member>
+        <member name="M:Dapper.Operator.ResovleExpressionType(System.Linq.Expressions.ExpressionType)">
+            <summary>
+            解析表达式
+            </summary>
+            <param name="type"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Dapper.Operator.ResovleExpressionType(System.String)">
+            <summary>
+            解析表达式
+            </summary>
+            <param name="type"></param>
+            <returns></returns>
+        </member>
+        <member name="T:Dapper.IXmlQuery">
+            <summary>
+            xml命令映射器
+            </summary>
+        </member>
+        <member name="M:Dapper.IXmlQuery.ExecuteMultiQuery(System.Nullable{System.Int32},System.Nullable{System.Data.CommandType})">
+             <summary>
+            执行多结果集查询，返回IMultiResult
+             </summary>
+             <param name="commandTimeout">超时时间</param>
+             <param name="commandType">命令类型</param>
+             <returns></returns>
+        </member>
+        <member name="M:Dapper.IXmlQuery.ExecuteQuery(System.Nullable{System.Int32},System.Nullable{System.Data.CommandType})">
+            <summary>
+            执行单结果集查询，并返回dynamic类型的结果集
+            </summary>
+            <param name="commandTimeout">超时时间</param>
+            <param name="commandType">命令类型</param>
+            <returns></returns>
+        </member>
+        <member name="M:Dapper.IXmlQuery.ExecuteQueryAsync(System.Nullable{System.Int32},System.Nullable{System.Data.CommandType})">
+            <summary>
+            异步执行单结果集查询，并返回dynamic类型的结果集
+            </summary>
+            <param name="commandTimeout">超时时间</param>
+            <param name="commandType">命令类型</param>
+            <returns></returns>
+        </member>
+        <member name="M:Dapper.IXmlQuery.ExecuteQuery``1(System.Nullable{System.Int32},System.Nullable{System.Data.CommandType})">
+            <summary>
+            执行单结果集查询，并返回T类型的结果集
+            </summary>
+            <typeparam name="T">返回类型</typeparam>
+            <param name="commandTimeout">超时时间</param>
+            <param name="commandType">命令类型</param>
+            <returns></returns>
+        </member>
+        <member name="M:Dapper.IXmlQuery.ExecuteQueryAsync``1(System.Nullable{System.Int32},System.Nullable{System.Data.CommandType})">
+            <summary>
+            异步执行单结果集查询，并返回T类型的结果集
+            </summary>
+            <typeparam name="T">返回类型</typeparam>
+            <param name="commandTimeout">超时时间</param>
+            <param name="commandType">命令类型</param>
+            <returns></returns>
+        </member>
+        <member name="M:Dapper.IXmlQuery.ExecuteNonQuery(System.Nullable{System.Int32},System.Nullable{System.Data.CommandType})">
+            <summary>
+            执行无结果集查询，并返回受影响的行数
+            </summary>
+            <param name="commandTimeout">超时时间</param>
+            <param name="commandType">命令类型</param>
+            <returns></returns>
+        </member>
+        <member name="M:Dapper.IXmlQuery.ExecuteNonQueryAsync(System.Nullable{System.Int32},System.Nullable{System.Data.CommandType})">
+            <summary>
+            异步执行无结果集查询，并返回受影响的行数
+            </summary>
+            <param name="commandTimeout">超时时间</param>
+            <param name="commandType">命令类型</param>
+            <returns></returns>
+        </member>
+        <member name="M:Dapper.IXmlQuery.ExecuteScalar``1(System.Nullable{System.Int32},System.Nullable{System.Data.CommandType})">
+            <summary>
+            执行无结果集查询，并返回指定类型的数据
+            </summary>
+            <typeparam name="T">返回类型</typeparam>
+            <param name="commandTimeout">超时时间</param>
+            <param name="commandType">命令类型</param>
+            <returns></returns>
+        </member>
+        <member name="M:Dapper.IXmlQuery.ExecuteScalarAsync``1(System.Nullable{System.Int32},System.Nullable{System.Data.CommandType})">
+            <summary>
+            异步执行无结果集查询，并返回指定类型的数据
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="commandTimeout">超时时间</param>
+            <param name="commandType">命令类型</param>
+            <returns></returns>
+        </member>
+        <member name="M:Dapper.IXmlQuery.AddDbParameter(System.String,System.Object)">
+            <summary>
+            添加数据库参数
+            </summary>
+            <param name="name"></param>
+            <param name="value"></param>
+        </member>
+        <member name="T:Dapper.XmlQuery">
+            <summary>
+            实现xml命令映射器
+            </summary>
+        </member>
+    </members>
+</doc>

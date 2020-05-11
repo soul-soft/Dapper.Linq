@@ -8,7 +8,7 @@ namespace Dapper
     /// <summary>
     /// TypeMapper Interface
     /// </summary>
-    public interface IEntityMapper
+    public interface IEntityMapperProvider
     {
         MemberInfo FindMember(MemberInfo[] properties, DbDataInfo dataInfo);
         MethodInfo FindConvertMethod(Type csharpType, Type dbType);
@@ -19,7 +19,7 @@ namespace Dapper
     /// <summary>
     /// 返回数据记录到Csharp类型的策略
     /// </summary>
-    public class EntityMapper : IEntityMapper
+    public class EntityMapperProvider : IEntityMapperProvider
     {
         public bool MatchNamesWithUnderscores { get; set; }
 
@@ -151,7 +151,7 @@ namespace Dapper
             return true;
         }
 
-        public EntityMapper(bool matchNamesWithUnderscores = false)
+        public EntityMapperProvider(bool matchNamesWithUnderscores = false)
         {
             MatchNamesWithUnderscores = matchNamesWithUnderscores;
         }
@@ -411,7 +411,7 @@ namespace Dapper
             {
                 throw ThrowException<string>(dr, i);
             }
-        }     
+        }
 
         public static DateTime ConvertToDateTime(IDataRecord dr, int i)
         {
@@ -555,7 +555,7 @@ namespace Dapper
                 return default;
             }
             return ConvertToChar(dr, i);
-        }    
+        }
         public static DateTime? ConvertToDateTimeNullable(IDataRecord dr, int i)
         {
             if (dr.IsDBNull(i))

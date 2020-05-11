@@ -7,7 +7,6 @@ namespace Dapper.XmlResovles
 {
     internal class TextNode : INode
     {
-        public string Value { get; set; }
-       
+        public string Value { get; set; }       
     }
 }
