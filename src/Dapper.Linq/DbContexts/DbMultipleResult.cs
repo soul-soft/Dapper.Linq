@@ -7,7 +7,10 @@ using System.Threading.Tasks;
 
 namespace Dapper
 {
-    public interface IMultiResult : IDisposable
+    /// <summary>
+    /// DataReader多个结果集
+    /// </summary>
+    public interface IDbMultipleResult : IDisposable
     {
         /// <summary>
         /// 返回当前dynamic类型结果集
@@ -55,13 +58,13 @@ namespace Dapper
         Task<T> GetAsync<T>();
     }
 
-    public class MultiResult : IMultiResult
+    internal class DbMultipleResult : IDbMultipleResult
     {
         private readonly IDataReader _reader = null;
-        
+
         private readonly IDbCommand _command = null;
 
-        internal MultiResult(IDbCommand command)
+        internal DbMultipleResult(IDbCommand command)
         {
             _command = command;
             _reader = command.ExecuteReader();
@@ -87,15 +90,15 @@ namespace Dapper
         {
             return GetList<object>().FirstOrDefault();
         }
-       
+
         public async Task<object> GetAsync()
         {
             return (await GetListAsync<object>()).FirstOrDefault();
         }
-      
+
         public async Task<List<dynamic>> GetListAsync()
         {
-            var handler = EmitConvert.GetSerializer();
+            var handler = GlobalSettings.EntityMapperProvider.GetSerializer();
             var list = new List<dynamic>();
             while (await (_reader as DbDataReader).ReadAsync())
             {
@@ -104,10 +107,10 @@ namespace Dapper
             NextResult();
             return list;
         }
-      
+
         public List<dynamic> GetList()
         {
-            var handler = EmitConvert.GetSerializer();
+            var handler = GlobalSettings.EntityMapperProvider.GetSerializer();
             var list = new List<dynamic>();
             while (_reader.Read())
             {
@@ -116,10 +119,10 @@ namespace Dapper
             NextResult();
             return list;
         }
-      
+
         public List<T> GetList<T>()
         {
-            var handler = EmitConvert.GetSerializer<T>(GlobalSettings.EntityMapperProvider, _reader);
+            var handler = GlobalSettings.EntityMapperProvider.GetSerializer<T>(_reader);
             var list = new List<T>();
             while (_reader.Read())
             {
@@ -131,7 +134,7 @@ namespace Dapper
 
         public async Task<List<T>> GetListAsync<T>()
         {
-            var handler = EmitConvert.GetSerializer<T>(GlobalSettings.EntityMapperProvider, _reader);
+            var handler = GlobalSettings.EntityMapperProvider.GetSerializer<T>(_reader);
             var list = new List<T>();
             while (await (_reader as DbDataReader).ReadAsync())
             {

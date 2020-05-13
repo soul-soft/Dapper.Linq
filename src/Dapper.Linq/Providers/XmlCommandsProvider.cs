@@ -19,13 +19,13 @@ namespace Dapper
         /// <param name="id"></param>
         /// <param name="parameter"></param>
         /// <returns></returns>
-        string Resolve<T>(string id, T parameter) where T : class;
+        string Build<T>(string id, T parameter) where T : class;
         /// <summary>
         /// 解析sql
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        string Resolve(string id);
+        string Build(string id);
         /// <summary>
         /// 加载配置文件
         /// </summary>
@@ -154,7 +154,7 @@ namespace Dapper
             return cmd;
         }
 
-        public string Resolve<T>(string id, T parameter) where T : class
+        public string Build<T>(string id, T parameter) where T : class
         {
             if (!_commands.ContainsKey(id))
             {
@@ -164,9 +164,9 @@ namespace Dapper
             return cmd.Resolve(cmd, parameter);
         }
 
-        public string Resolve(string id)
+        public string Build(string id)
         {
-            return Resolve(id, (object)null);
+            return Build(id, (object)null);
         }
         private void Resolve(XmlDocument document)
         {

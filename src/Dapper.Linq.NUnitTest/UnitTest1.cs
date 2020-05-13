@@ -50,7 +50,7 @@ namespace Dapper.Linq.NUnitTest
                     var list2 = multi.GetList<Student>();
                     //执行第二个sql
                     var count = multi.Get<int>();
-                    var mylist = db.ExecuteQuery("select * from student");
+                    var mylist = db.Query("select * from student");
                 }
             }
             catch (System.Exception E)

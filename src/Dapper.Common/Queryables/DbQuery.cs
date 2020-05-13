@@ -46,7 +46,7 @@ namespace Dapper
         #region resovles
         private void ResovleParameter(T entity)
         {
-            var serializer = EmitConvert.GetDeserializer(typeof(T));
+            var serializer = GlobalSettings.EntityMapperProvider.GetDeserializer(typeof(T));
             var values = serializer(entity);
             foreach (var item in values)
             {
@@ -171,13 +171,13 @@ namespace Dapper
             return sql;
         }
 
-        private TableMetaInfo GetTableMetaInfo()
+        private DbTableMetaInfo GetTableMetaInfo()
         {
-            return GlobalSettings.DatabaseMetaInfoProvider.GetTable(typeof(T));
+            return GlobalSettings.DbMetaInfoProvider.GetTable(typeof(T));
         }
-        private List<ColumnMetaInfo> GetColumnMetaInfos()
+        private List<DbColumnMetaInfo> GetColumnMetaInfos()
         {
-            return GlobalSettings.DatabaseMetaInfoProvider.GetColumns(typeof(T));
+            return GlobalSettings.DbMetaInfoProvider.GetColumns(typeof(T));
         }
         private string ResovleBatchInsert(IEnumerable<T> entitys)
         {
@@ -193,7 +193,7 @@ namespace Dapper
             {
                 var buffer = new StringBuilder();
                 buffer.Append($"INSERT INTO {table}({columnNames}) VALUES ");
-                var serializer = EmitConvert.GetDeserializer(typeof(T));
+                var serializer = GlobalSettings.EntityMapperProvider.GetDeserializer(typeof(T));
                 var list = entitys.ToList();
                 for (var i = 0; i < list.Count; i++)
                 {

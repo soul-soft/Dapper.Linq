@@ -20,7 +20,7 @@ namespace Dapper
             {
                 { "id", id }
             };
-            return _context.ExecuteQuery<T>(sql, values).FirstOrDefault();
+            return _context.Query<T>(sql, values).FirstOrDefault();
         }
 
         public int Count(int? commandTimeout = null)
@@ -39,7 +39,7 @@ namespace Dapper
         {
             ResovleParameter(entity);
             var sql = ResovleInsert(false);
-            return _context.ExecuteNonQuery(sql, _parameters);
+            return _context.Execute(sql, _parameters);
         }
      
         public int InsertReturnId(T entity)
@@ -56,7 +56,7 @@ namespace Dapper
                 return 0;
             }
             var sql = ResovleBatchInsert(entitys);
-            return _context.ExecuteNonQuery(sql, _parameters, commandTimeout); 
+            return _context.Execute(sql, _parameters, commandTimeout); 
         }
 
         public int Update(int? commandTimeout = null)
@@ -64,7 +64,7 @@ namespace Dapper
             if (_setExpressions.Count > 0)
             {
                 var sql = ResolveUpdate();
-                return _context.ExecuteNonQuery(sql, _parameters, commandTimeout);
+                return _context.Execute(sql, _parameters, commandTimeout);
             }
             return default;
         }
@@ -73,7 +73,7 @@ namespace Dapper
         {
             ResovleParameter(entity);
             var sql = ResolveUpdate();
-            var row = _context.ExecuteNonQuery(sql, _parameters);
+            var row = _context.Execute(sql, _parameters);
             if (GetColumnMetaInfos().Exists(a => a.IsConcurrencyCheck) && row == 0)
             {
                 throw new DbUpdateConcurrencyException("更新失败：数据版本不一致");
@@ -84,7 +84,7 @@ namespace Dapper
         public int Delete(int? commandTimeout = null)
         {
             var sql = ResovleDelete();
-            return _context.ExecuteNonQuery(sql, _parameters, commandTimeout);
+            return _context.Execute(sql, _parameters, commandTimeout);
         }
 
         public int Delete(Expression<Func<T, bool>> expression)
@@ -190,14 +190,14 @@ namespace Dapper
         public IEnumerable<T> Select(int? commandTimeout = null)
         {
             var sql = ResolveSelect();
-            return _context.ExecuteQuery<T>(sql, _parameters, commandTimeout);
+            return _context.Query<T>(sql, _parameters, commandTimeout);
         }
 
         public (IEnumerable<T>, int) SelectMany(int? commandTimeout = null)
         {
             var sql1 = ResolveSelect();
             var sql2 = ResovleCount();
-            using (var multi = _context.ExecuteMultiQuery($"{sql1};{sql2}", _parameters, commandTimeout))
+            using (var multi = _context.QueryMultiple($"{sql1};{sql2}", _parameters, commandTimeout))
             {
                 var list = multi.GetList<T>();
                 var count = multi.Get<int>();
@@ -214,7 +214,7 @@ namespace Dapper
         {
             _selectExpression = expression;
             var sql = ResolveSelect();
-            return _context.ExecuteQuery<TResult>(sql, _parameters, commandTimeout);
+            return _context.Query<TResult>(sql, _parameters, commandTimeout);
         }
 
         public (IEnumerable<TResult>, int) SelectMany<TResult>(Expression<Func<T, TResult>> expression, int? commandTimeout = null)
@@ -222,7 +222,7 @@ namespace Dapper
             _selectExpression = expression;
             var sql1 = ResolveSelect();
             var sql2 = ResovleCount();
-            using (var multi = _context.ExecuteMultiQuery($"{sql1};{sql2}", _parameters, commandTimeout))
+            using (var multi = _context.QueryMultiple($"{sql1};{sql2}", _parameters, commandTimeout))
             {
                 var list = multi.GetList<TResult>();
                 var count = multi.Get<int>();

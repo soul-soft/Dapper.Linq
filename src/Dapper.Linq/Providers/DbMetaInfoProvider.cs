@@ -4,39 +4,39 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Dapper.Expressions
+namespace Dapper
 {
     /// <summary>
     /// 数据库元信息提供程序
     /// </summary>
-    public interface IDatabaseMetaInfoProvider
+    public interface IDbMetaInfoProvider
     {
         /// <summary>
         /// 获取表的元信息
         /// </summary>
         /// <param name="type"></param>
         /// <returns></returns>
-        TableMetaInfo GetTable(Type type);
+        DbTableMetaInfo GetTable(Type type);
         /// <summary>
         /// 获取字段的元信息
         /// </summary>
         /// <param name="type"></param>
         /// <returns></returns>
-        List<ColumnMetaInfo> GetColumns(Type type);
+        List<DbColumnMetaInfo> GetColumns(Type type);
     }
    
     /// <summary>
-    /// 数据库元信息
+    /// 注解方案数据库元信息
     /// </summary>
-    public class DatabaseMetaInfoProvider: IDatabaseMetaInfoProvider
+    public class AnnotationDbMetaInfoProvider: IDbMetaInfoProvider
     {
-        private static readonly ConcurrentDictionary<Type, TableMetaInfo> _tables
-            = new ConcurrentDictionary<Type, TableMetaInfo>();
+        private static readonly ConcurrentDictionary<Type, DbTableMetaInfo> _tables
+            = new ConcurrentDictionary<Type, DbTableMetaInfo>();
 
-        private static readonly ConcurrentDictionary<Type, List<ColumnMetaInfo>> _columns
-            = new ConcurrentDictionary<Type, List<ColumnMetaInfo>>();
+        private static readonly ConcurrentDictionary<Type, List<DbColumnMetaInfo>> _columns
+            = new ConcurrentDictionary<Type, List<DbColumnMetaInfo>>();
 
-        public TableMetaInfo GetTable(Type type)
+        public DbTableMetaInfo GetTable(Type type)
         {
             return _tables.GetOrAdd(type, t =>
             {
@@ -47,7 +47,7 @@ namespace Dapper.Expressions
                         .FirstOrDefault() as TableAttribute;
                     name = attribute.Name;
                 }
-                var table = new TableMetaInfo()
+                var table = new DbTableMetaInfo()
                 {
                     TableName = name,
                     CsharpName = t.Name
@@ -56,11 +56,11 @@ namespace Dapper.Expressions
             });
         }
 
-        public List<ColumnMetaInfo> GetColumns(Type type)
+        public List<DbColumnMetaInfo> GetColumns(Type type)
         {
             return _columns.GetOrAdd(type, t =>
             {
-                var list = new List<ColumnMetaInfo>();
+                var list = new List<DbColumnMetaInfo>();
                 var properties = type.GetProperties();
                 foreach (var item in properties)
                 {
@@ -101,7 +101,7 @@ namespace Dapper.Expressions
                     {
                         isComplexType = true;
                     }
-                    list.Add(new ColumnMetaInfo()
+                    list.Add(new DbColumnMetaInfo()
                     {
                         CsharpType = item.PropertyType,
                         IsDefault = isDefault,
@@ -123,7 +123,7 @@ namespace Dapper.Expressions
     /// <summary>
     /// 表信息
     /// </summary>
-    public class TableMetaInfo
+    public class DbTableMetaInfo
     {
         /// <summary>
         /// 数据库表名称
@@ -138,7 +138,7 @@ namespace Dapper.Expressions
     /// <summary>
     /// 字段信息
     /// </summary>
-    public class ColumnMetaInfo
+    public class DbColumnMetaInfo
     {
         /// <summary>
         /// 是否并发检查

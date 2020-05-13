@@ -21,7 +21,7 @@ namespace Dapper
             {
                 { "id", id }
             };
-            return (await _context.ExecuteQueryAsync<T>(sql, values)).FirstOrDefault();
+            return (await _context.QueryAsync<T>(sql, values)).FirstOrDefault();
         }
         public Task<int> CountAsync(int? commandTimeout = null)
         {
@@ -38,7 +38,7 @@ namespace Dapper
         public Task<int> DeleteAsync(int? commandTimeout = null)
         {
             var sql = ResovleDelete();
-            return _context.ExecuteNonQueryAsync(sql, _parameters, commandTimeout);
+            return _context.ExecuteAsync(sql, _parameters, commandTimeout);
         }
 
         public Task<int> DeleteAsync(Expression<Func<T, bool>> expression)
@@ -64,7 +64,7 @@ namespace Dapper
             if (_setExpressions.Count > 0)
             {
                 var sql = ResolveUpdate();
-                return _context.ExecuteNonQueryAsync(sql, _parameters, commandTimeout);
+                return _context.ExecuteAsync(sql, _parameters, commandTimeout);
             }
             return default;
         }
@@ -73,7 +73,7 @@ namespace Dapper
         {
             ResovleParameter(entity);
             var sql = ResolveUpdate();
-            var row = await _context.ExecuteNonQueryAsync(sql, _parameters);
+            var row = await _context.ExecuteAsync(sql, _parameters);
             if (GetColumnMetaInfos().Exists(a => a.IsConcurrencyCheck) && row == 0)
             {
                 throw new DbUpdateConcurrencyException("更新失败：数据版本不一致");
@@ -85,7 +85,7 @@ namespace Dapper
         {
             ResovleParameter(entity);
             var sql = ResovleInsert(false);
-            return _context.ExecuteNonQueryAsync(sql, _parameters);
+            return _context.ExecuteAsync(sql, _parameters);
         }
 
         public async Task<int> InsertAsync(IEnumerable<T> entitys, int? commandTimeout = null)
@@ -95,7 +95,7 @@ namespace Dapper
                 return 0;
             }
             var sql = ResovleBatchInsert(entitys);
-            return await _context.ExecuteNonQueryAsync(sql, _parameters, commandTimeout);
+            return await _context.ExecuteAsync(sql, _parameters, commandTimeout);
         }
 
         public Task<int> InsertReturnIdAsync(T entity)
@@ -115,14 +115,14 @@ namespace Dapper
         public Task<IEnumerable<T>> SelectAsync(int? commandTimeout = null)
         {
             var sql = ResolveSelect();
-            return _context.ExecuteQueryAsync<T>(sql, _parameters, commandTimeout);
+            return _context.QueryAsync<T>(sql, _parameters, commandTimeout);
         }
 
         public async Task<(IEnumerable<T>, int)> SelectManyAsync(int? commandTimeout = null)
         {
             var sql1 = ResolveSelect();
             var sql2 = ResovleCount();
-            using (var multi = _context.ExecuteMultiQuery($"{sql1};{sql2}", _parameters, commandTimeout))
+            using (var multi = _context.QueryMultiple($"{sql1};{sql2}", _parameters, commandTimeout))
             {
                 var list = await multi.GetListAsync<T>();
                 var count = await multi.GetAsync<int>();
@@ -134,7 +134,7 @@ namespace Dapper
         {
             _selectExpression = expression;
             var sql = ResolveSelect();
-            return _context.ExecuteQueryAsync<TResult>(sql, _parameters, commandTimeout);
+            return _context.QueryAsync<TResult>(sql, _parameters, commandTimeout);
         }
 
         public async Task<(IEnumerable<TResult>, int)> SelectManyAsync<TResult>(Expression<Func<T, TResult>> expression, int? commandTimeout = null)
@@ -142,7 +142,7 @@ namespace Dapper
             _selectExpression = expression;
             var sql1 = ResolveSelect();
             var sql2 = ResovleCount();
-            using (var multi = _context.ExecuteMultiQuery($"{sql1};{sql2}", _parameters, commandTimeout))
+            using (var multi = _context.QueryMultiple($"{sql1};{sql2}", _parameters, commandTimeout))
             {
                 var list = await multi.GetListAsync<TResult>();
                 var count = await multi.GetAsync<int>();

@@ -82,7 +82,7 @@ namespace Dapper
         /// <param name="commandTimeout">超时时间</param>
         /// <param name="commandType">命令类型</param>
         /// <returns></returns>
-        IMultiResult ExecuteMultiQuery(string sql, object parameter = null, int? commandTimeout = null, CommandType? commandType = null);
+        IDbMultipleResult QueryMultiple(string sql, object parameter = null, int? commandTimeout = null, CommandType? commandType = null);
         /// <summary>
         /// 执行单结果集查询，并返回dynamic类型的结果集
         /// </summary>
@@ -91,7 +91,7 @@ namespace Dapper
         /// <param name="commandTimeout">超时时间</param>
         /// <param name="commandType">命令类型</param>
         /// <returns></returns>
-        IEnumerable<dynamic> ExecuteQuery(string sql, object parameter = null, int? commandTimeout = null, CommandType? commandType = null);
+        IEnumerable<dynamic> Query(string sql, object parameter = null, int? commandTimeout = null, CommandType? commandType = null);
         /// <summary>
         /// 异步执行单结果集查询，并返回dynamic类型的结果集
         /// </summary>
@@ -100,7 +100,7 @@ namespace Dapper
         /// <param name="commandTimeout">超时时间</param>
         /// <param name="commandType">命令类型</param>
         /// <returns></returns>
-        Task<IEnumerable<dynamic>> ExecuteQueryAsync(string sql, object parameter = null, int? commandTimeout = null, CommandType? commandType = null);
+        Task<IEnumerable<dynamic>> QueryAsync(string sql, object parameter = null, int? commandTimeout = null, CommandType? commandType = null);
         /// <summary>
         /// 执行单结果集查询，并返回T类型的结果集
         /// </summary>
@@ -110,7 +110,7 @@ namespace Dapper
         /// <param name="commandTimeout">超时时间</param>
         /// <param name="commandType">命令类型</param>
         /// <returns></returns>
-        IEnumerable<T> ExecuteQuery<T>(string sql, object parameter = null, int? commandTimeout = null, CommandType? commandType = null);
+        IEnumerable<T> Query<T>(string sql, object parameter = null, int? commandTimeout = null, CommandType? commandType = null);
         /// <summary>
         /// 异步执行单结果集查询，并返回T类型的结果集
         /// </summary>
@@ -120,7 +120,7 @@ namespace Dapper
         /// <param name="commandTimeout">超时时间</param>
         /// <param name="commandType">命令类型</param>
         /// <returns></returns>
-        Task<IEnumerable<T>> ExecuteQueryAsync<T>(string sql, object parameter = null, int? commandTimeout = null, CommandType? commandType = null);
+        Task<IEnumerable<T>> QueryAsync<T>(string sql, object parameter = null, int? commandTimeout = null, CommandType? commandType = null);
         /// <summary>
         /// 执行无结果集查询，并返回受影响的行数
         /// </summary>
@@ -129,7 +129,7 @@ namespace Dapper
         /// <param name="commandTimeout">超时时间</param>
         /// <param name="commandType">命令类型</param>
         /// <returns></returns>
-        int ExecuteNonQuery(string sql, object parameter = null, int? commandTimeout = null, CommandType? commandType = null);
+        int Execute(string sql, object parameter = null, int? commandTimeout = null, CommandType? commandType = null);
         /// <summary>
         /// 异步执行无结果集查询，并返回受影响的行数
         /// </summary>
@@ -138,7 +138,7 @@ namespace Dapper
         /// <param name="commandTimeout">超时时间</param>
         /// <param name="commandType">命令类型</param>
         /// <returns></returns>
-        Task<int> ExecuteNonQueryAsync(string sql, object parameter = null, int? commandTimeout = null, CommandType? commandType = null);
+        Task<int> ExecuteAsync(string sql, object parameter = null, int? commandTimeout = null, CommandType? commandType = null);
         /// <summary>
         /// 执行无结果集查询，并返回指定类型的数据
         /// </summary>
@@ -175,15 +175,6 @@ namespace Dapper
     }
 
     /// <summary>
-    /// sql执行日志
-    /// </summary>
-    /// <param name="message"></param>
-    /// <param name="parameters"></param>
-    /// <param name="commandTimeout"></param>
-    /// <param name="commandType"></param>
-    public delegate void Logging(string message, Dictionary<string, object> parameters = null, int? commandTimeout = null, CommandType? commandType = null);
-
-    /// <summary>
     /// 数据库上下文
     /// </summary>
     public class DbContext : IDbContext
@@ -200,21 +191,21 @@ namespace Dapper
         }
         public IXmlQuery From<T>(string id, T parameter) where T : class
         {
-            var sql = GlobalSettings.XmlCommandsProvider.Resolve(id, parameter);
-            var deserializer = EmitConvert.GetDeserializer(typeof(T));
+            var sql = GlobalSettings.XmlCommandsProvider.Build(id, parameter);
+            var deserializer = GlobalSettings.EntityMapperProvider.GetDeserializer(typeof(T));
             var values = deserializer(parameter);
             return new XmlQuery(this, sql, values);
         }
         public IXmlQuery From(string id)
         {
-            var sql = GlobalSettings.XmlCommandsProvider.Resolve(id);
+            var sql = GlobalSettings.XmlCommandsProvider.Build(id);
             return new XmlQuery(this, sql);
         }
         public IDbQuery<T> From<T>()
         {
             return new DbQuery<T>(this);
         }
-        public IEnumerable<dynamic> ExecuteQuery(string sql, object parameter = null, int? commandTimeout = null, CommandType? commandType = null)
+        public IEnumerable<dynamic> Query(string sql, object parameter = null, int? commandTimeout = null, CommandType? commandType = null)
         {
             using (var cmd = Connection.CreateCommand())
             {
@@ -222,7 +213,7 @@ namespace Dapper
                 var list = new List<dynamic>();
                 using (var reader = cmd.ExecuteReader())
                 {
-                    var handler = EmitConvert.GetSerializer();
+                    var handler = GlobalSettings.EntityMapperProvider.GetSerializer();
                     while (reader.Read())
                     {
                         list.Add(handler(reader));
@@ -231,7 +222,7 @@ namespace Dapper
                 }
             }
         }
-        public async Task<IEnumerable<dynamic>> ExecuteQueryAsync(string sql, object parameter = null, int? commandTimeout = null, CommandType? commandType = null)
+        public async Task<IEnumerable<dynamic>> QueryAsync(string sql, object parameter = null, int? commandTimeout = null, CommandType? commandType = null)
         {
             using (var cmd = (Connection as DbConnection).CreateCommand())
             {
@@ -239,7 +230,7 @@ namespace Dapper
                 using (var reader = await cmd.ExecuteReaderAsync())
                 {
                     var list = new List<dynamic>();
-                    var handler = EmitConvert.GetSerializer();
+                    var handler = GlobalSettings.EntityMapperProvider.GetSerializer();
                     while (reader.Read())
                     {
                         list.Add(handler(reader));
@@ -248,13 +239,13 @@ namespace Dapper
                 }
             }
         }
-        public IMultiResult ExecuteMultiQuery(string sql, object parameter = null, int? commandTimeout = null, CommandType? commandType = null)
+        public IDbMultipleResult QueryMultiple(string sql, object parameter = null, int? commandTimeout = null, CommandType? commandType = null)
         {
             var cmd = Connection.CreateCommand();
             Initialize(cmd, sql, parameter, commandTimeout, commandType);
-            return new MultiResult(cmd);
+            return new DbMultipleResult(cmd);
         }
-        public IEnumerable<T> ExecuteQuery<T>(string sql, object parameter = null, int? commandTimeout = null, CommandType? commandType = null)
+        public IEnumerable<T> Query<T>(string sql, object parameter = null, int? commandTimeout = null, CommandType? commandType = null)
         {
             using (var cmd = Connection.CreateCommand())
             {
@@ -262,7 +253,7 @@ namespace Dapper
                 Initialize(cmd, sql, parameter, commandTimeout, commandType);
                 using (var reader = cmd.ExecuteReader())
                 {
-                    var handler = EmitConvert.GetSerializer<T>(GlobalSettings.EntityMapperProvider, reader);
+                    var handler = GlobalSettings.EntityMapperProvider.GetSerializer<T>(reader);
                     while (reader.Read())
                     {
                         list.Add(handler(reader));
@@ -271,7 +262,7 @@ namespace Dapper
                 }
             }
         }
-        public async Task<IEnumerable<T>> ExecuteQueryAsync<T>(string sql, object parameter = null, int? commandTimeout = null, CommandType? commandType = null)
+        public async Task<IEnumerable<T>> QueryAsync<T>(string sql, object parameter = null, int? commandTimeout = null, CommandType? commandType = null)
         {
             using (var cmd = (Connection as DbConnection).CreateCommand())
             {
@@ -279,7 +270,7 @@ namespace Dapper
                 using (var reader = await cmd.ExecuteReaderAsync())
                 {
                     var list = new List<T>();
-                    var handler = EmitConvert.GetSerializer<T>(GlobalSettings.EntityMapperProvider, reader);
+                    var handler = GlobalSettings.EntityMapperProvider.GetSerializer<T>(reader);
                     while (await reader.ReadAsync())
                     {
                         list.Add(handler(reader));
@@ -288,7 +279,7 @@ namespace Dapper
                 }
             }
         }
-        public int ExecuteNonQuery(string sql, object parameter = null, int? commandTimeout = null, CommandType? commandType = null)
+        public int Execute(string sql, object parameter = null, int? commandTimeout = null, CommandType? commandType = null)
         {
             using (var cmd = Connection.CreateCommand())
             {
@@ -296,7 +287,7 @@ namespace Dapper
                 return cmd.ExecuteNonQuery();
             }
         }
-        public async Task<int> ExecuteNonQueryAsync(string sql, object parameter = null, int? commandTimeout = null, CommandType? commandType = null)
+        public async Task<int> ExecuteAsync(string sql, object parameter = null, int? commandTimeout = null, CommandType? commandType = null)
         {
             using (var cmd = (Connection as DbConnection).CreateCommand())
             {
@@ -418,7 +409,7 @@ namespace Dapper
             }
             else if (parameter != null)
             {
-                var handler = EmitConvert.GetDeserializer(parameter.GetType());
+                var handler = GlobalSettings.EntityMapperProvider.GetDeserializer(parameter.GetType());
                 var values = handler(parameter);
                 foreach (var item in values)
                 {
@@ -493,4 +484,12 @@ namespace Dapper
         }
     }
 
+    /// <summary>
+    /// sql执行日志
+    /// </summary>
+    /// <param name="message"></param>
+    /// <param name="parameters"></param>
+    /// <param name="commandTimeout"></param>
+    /// <param name="commandType"></param>
+    public delegate void Logging(string message, Dictionary<string, object> parameters = null, int? commandTimeout = null, CommandType? commandType = null);
 }

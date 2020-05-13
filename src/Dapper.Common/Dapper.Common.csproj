@@ -14,12 +14,16 @@
     <Copyright>chaeyeon</Copyright>
     <Company>chaeyeon</Company>
     <PackageId>Dapper.Common</PackageId>
-    <Version>3.0.1</Version>
-    <AssemblyVersion>3.0.0</AssemblyVersion>
-    <FileVersion>3.0.0</FileVersion>
+    <Version>3.0.2</Version>
+    <AssemblyVersion>3.0.2</AssemblyVersion>
+    <FileVersion>3.0.2</FileVersion>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net45|AnyCPU'">
+    <DocumentationFile>D:\Dapper.Linq\src\Dapper.Common\Dapper.Common.xml</DocumentationFile>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net45|AnyCPU'">
     <DocumentationFile>D:\Dapper.Linq\src\Dapper.Common\Dapper.Common.xml</DocumentationFile>
   </PropertyGroup>
 

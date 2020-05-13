@@ -132,7 +132,7 @@
             提交当前事务会话
             </summary>
         </member>
-        <member name="M:Dapper.IDbContext.ExecuteMultiQuery(System.String,System.Object,System.Nullable{System.Int32},System.Nullable{System.Data.CommandType})">
+        <member name="M:Dapper.IDbContext.QueryMultiple(System.String,System.Object,System.Nullable{System.Int32},System.Nullable{System.Data.CommandType})">
             <summary>
             执行多结果集查询，返回IMultiResult
             </summary>
@@ -142,7 +142,7 @@
             <param name="commandType">命令类型</param>
             <returns></returns>
         </member>
-        <member name="M:Dapper.IDbContext.ExecuteQuery(System.String,System.Object,System.Nullable{System.Int32},System.Nullable{System.Data.CommandType})">
+        <member name="M:Dapper.IDbContext.Query(System.String,System.Object,System.Nullable{System.Int32},System.Nullable{System.Data.CommandType})">
             <summary>
             执行单结果集查询，并返回dynamic类型的结果集
             </summary>
@@ -152,7 +152,7 @@
             <param name="commandType">命令类型</param>
             <returns></returns>
         </member>
-        <member name="M:Dapper.IDbContext.ExecuteQueryAsync(System.String,System.Object,System.Nullable{System.Int32},System.Nullable{System.Data.CommandType})">
+        <member name="M:Dapper.IDbContext.QueryAsync(System.String,System.Object,System.Nullable{System.Int32},System.Nullable{System.Data.CommandType})">
             <summary>
             异步执行单结果集查询，并返回dynamic类型的结果集
             </summary>
@@ -162,7 +162,7 @@
             <param name="commandType">命令类型</param>
             <returns></returns>
         </member>
-        <member name="M:Dapper.IDbContext.ExecuteQuery``1(System.String,System.Object,System.Nullable{System.Int32},System.Nullable{System.Data.CommandType})">
+        <member name="M:Dapper.IDbContext.Query``1(System.String,System.Object,System.Nullable{System.Int32},System.Nullable{System.Data.CommandType})">
             <summary>
             执行单结果集查询，并返回T类型的结果集
             </summary>
@@ -173,7 +173,7 @@
             <param name="commandType">命令类型</param>
             <returns></returns>
         </member>
-        <member name="M:Dapper.IDbContext.ExecuteQueryAsync``1(System.String,System.Object,System.Nullable{System.Int32},System.Nullable{System.Data.CommandType})">
+        <member name="M:Dapper.IDbContext.QueryAsync``1(System.String,System.Object,System.Nullable{System.Int32},System.Nullable{System.Data.CommandType})">
             <summary>
             异步执行单结果集查询，并返回T类型的结果集
             </summary>
@@ -184,7 +184,7 @@
             <param name="commandType">命令类型</param>
             <returns></returns>
         </member>
-        <member name="M:Dapper.IDbContext.ExecuteNonQuery(System.String,System.Object,System.Nullable{System.Int32},System.Nullable{System.Data.CommandType})">
+        <member name="M:Dapper.IDbContext.Execute(System.String,System.Object,System.Nullable{System.Int32},System.Nullable{System.Data.CommandType})">
             <summary>
             执行无结果集查询，并返回受影响的行数
             </summary>
@@ -194,7 +194,7 @@
             <param name="commandType">命令类型</param>
             <returns></returns>
         </member>
-        <member name="M:Dapper.IDbContext.ExecuteNonQueryAsync(System.String,System.Object,System.Nullable{System.Int32},System.Nullable{System.Data.CommandType})">
+        <member name="M:Dapper.IDbContext.ExecuteAsync(System.String,System.Object,System.Nullable{System.Int32},System.Nullable{System.Data.CommandType})">
             <summary>
             异步执行无结果集查询，并返回受影响的行数
             </summary>
@@ -242,6 +242,11 @@
             回滚当前事务会话
             </summary>
         </member>
+        <member name="T:Dapper.DbContext">
+            <summary>
+            数据库上下文
+            </summary>
+        </member>
         <member name="T:Dapper.Logging">
             <summary>
             sql执行日志
@@ -251,87 +256,67 @@
             <param name="commandTimeout"></param>
             <param name="commandType"></param>
         </member>
-        <member name="T:Dapper.DbContext">
+        <member name="P:Dapper.DbContextBuilder.Connection">
             <summary>
-            数据库上下文
+            设置要托管的数据库连接
             </summary>
         </member>
-        <member name="T:Dapper.DbDataInfo">
+        <member name="P:Dapper.DbContextBuilder.DbContextType">
             <summary>
-            DbColumn Information
+            设置数据库类型
             </summary>
         </member>
-        <member name="T:Dapper.EmitConvert">
+        <member name="T:Dapper.IDbMultipleResult">
             <summary>
-            IL Convert
+            DataReader多个结果集
             </summary>
         </member>
-        <member name="M:Dapper.EmitConvert.GetSerializer``1(Dapper.IEntityMapperProvider,System.Data.IDataRecord)">
-            <summary>
-            IDataRecord Converted to T
-            </summary>
-        </member>
-        <member name="M:Dapper.EmitConvert.GetSerializer">
-            <summary>
-            IDataRecord Converted to dynamic
-            </summary>
-        </member>
-        <member name="M:Dapper.EmitConvert.GetSerializer``1(System.Data.IDataRecord)">
-            <summary>
-            IDataRecord Converted to T
-            </summary>
-        </member>
-        <member name="M:Dapper.EmitConvert.GetDeserializer(System.Type)">
-            <summary>
-            Object To Dictionary&lt;tstring, object&gt;
-            </summary>
-        </member>
-        <member name="M:Dapper.IMultiResult.GetList">
+        <member name="M:Dapper.IDbMultipleResult.GetList">
             <summary>
             返回当前dynamic类型结果集
             </summary>
             <returns></returns>
         </member>
-        <member name="M:Dapper.IMultiResult.GetListAsync">
+        <member name="M:Dapper.IDbMultipleResult.GetListAsync">
             <summary>
             异步返回当前dynamic类型结果集
             </summary>
             <returns></returns>
         </member>
-        <member name="M:Dapper.IMultiResult.GetList``1">
+        <member name="M:Dapper.IDbMultipleResult.GetList``1">
             <summary>
             返回当前T结果集
             </summary>
             <typeparam name="T">结果集类型</typeparam>
             <returns></returns>
         </member>
-        <member name="M:Dapper.IMultiResult.GetListAsync``1">
+        <member name="M:Dapper.IDbMultipleResult.GetListAsync``1">
             <summary>
              异步返回当前T类型结果集
             </summary>
             <typeparam name="T"></typeparam>
             <returns></returns>
         </member>
-        <member name="M:Dapper.IMultiResult.Get">
+        <member name="M:Dapper.IDbMultipleResult.Get">
             <summary>
             返回当前dynamic类型结果
             </summary>
             <returns></returns>
         </member>
-        <member name="M:Dapper.IMultiResult.GetAsync">
+        <member name="M:Dapper.IDbMultipleResult.GetAsync">
             <summary>
             异步返回当前dynamic类型结果
             </summary>
             <returns></returns>
         </member>
-        <member name="M:Dapper.IMultiResult.Get``1">
+        <member name="M:Dapper.IDbMultipleResult.Get``1">
             <summary>
             返回当前T类型结果
             </summary>
             <typeparam name="T">结果集类型</typeparam>
             <returns></returns>
         </member>
-        <member name="M:Dapper.IMultiResult.GetAsync``1">
+        <member name="M:Dapper.IDbMultipleResult.GetAsync``1">
             <summary>
             异步返回当前T类型结果
             </summary>
@@ -363,101 +348,12 @@
             <param name="csharpName"></param>
             <returns></returns>
         </member>
-        <member name="T:Dapper.Expressions.IDatabaseMetaInfoProvider">
-            <summary>
-            数据库元信息提供程序
-            </summary>
-        </member>
-        <member name="M:Dapper.Expressions.IDatabaseMetaInfoProvider.GetTable(System.Type)">
-            <summary>
-            获取表的元信息
-            </summary>
-            <param name="type"></param>
-            <returns></returns>
-        </member>
-        <member name="M:Dapper.Expressions.IDatabaseMetaInfoProvider.GetColumns(System.Type)">
-            <summary>
-            获取字段的元信息
-            </summary>
-            <param name="type"></param>
-            <returns></returns>
-        </member>
-        <member name="T:Dapper.Expressions.DatabaseMetaInfoProvider">
-            <summary>
-            数据库元信息
-            </summary>
-        </member>
-        <member name="T:Dapper.Expressions.TableMetaInfo">
-            <summary>
-            表信息
-            </summary>
-        </member>
-        <member name="P:Dapper.Expressions.TableMetaInfo.TableName">
-            <summary>
-            数据库表名称
-            </summary>
-        </member>
-        <member name="P:Dapper.Expressions.TableMetaInfo.CsharpName">
-            <summary>
-            Csharp表名称
-            </summary>
-        </member>
-        <member name="T:Dapper.Expressions.ColumnMetaInfo">
-            <summary>
-            字段信息
-            </summary>
-        </member>
-        <member name="P:Dapper.Expressions.ColumnMetaInfo.IsConcurrencyCheck">
-            <summary>
-            是否并发检查
-            </summary>
-        </member>
-        <member name="P:Dapper.Expressions.ColumnMetaInfo.IsDefault">
-            <summary>
-            是否默认值约束
-            </summary>
-        </member>
-        <member name="P:Dapper.Expressions.ColumnMetaInfo.IsNotMapped">
-            <summary>
-            是否是数据库字段
-            </summary>
-        </member>
-        <member name="P:Dapper.Expressions.ColumnMetaInfo.ColumnName">
-            <summary>
-            数据库字段名
-            </summary>
-        </member>
-        <member name="P:Dapper.Expressions.ColumnMetaInfo.CsharpName">
-            <summary>
-            Csharp字段名
-            </summary>
-        </member>
-        <member name="P:Dapper.Expressions.ColumnMetaInfo.CsharpType">
-            <summary>
-            Csharp类型
-            </summary>
-        </member>
-        <member name="P:Dapper.Expressions.ColumnMetaInfo.IsPrimaryKey">
-            <summary>
-            是否主键约束
-            </summary>
-        </member>
-        <member name="P:Dapper.Expressions.ColumnMetaInfo.IsIdentity">
-            <summary>
-            是否是自增列
-            </summary>
-        </member>
-        <member name="P:Dapper.Expressions.ColumnMetaInfo.IsComplexType">
-            <summary>
-            是否为计算列
-            </summary>
-        </member>
         <member name="T:Dapper.GlobalSettings">
             <summary>
             全局设置
             </summary>
         </member>
-        <member name="P:Dapper.GlobalSettings.DatabaseMetaInfoProvider">
+        <member name="P:Dapper.GlobalSettings.DbMetaInfoProvider">
             <summary>
             数据库元信息提供程序
             </summary>
@@ -472,38 +368,189 @@
             xml命令配置
             </summary>
         </member>
-        <member name="T:Dapper.IEntityMapperProvider">
+        <member name="T:Dapper.IDbMetaInfoProvider">
             <summary>
-            TypeMapper Interface
+            数据库元信息提供程序
             </summary>
         </member>
+        <member name="M:Dapper.IDbMetaInfoProvider.GetTable(System.Type)">
+            <summary>
+            获取表的元信息
+            </summary>
+            <param name="type"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Dapper.IDbMetaInfoProvider.GetColumns(System.Type)">
+            <summary>
+            获取字段的元信息
+            </summary>
+            <param name="type"></param>
+            <returns></returns>
+        </member>
+        <member name="T:Dapper.AnnotationDbMetaInfoProvider">
+            <summary>
+            注解方案数据库元信息
+            </summary>
+        </member>
+        <member name="T:Dapper.DbTableMetaInfo">
+            <summary>
+            表信息
+            </summary>
+        </member>
+        <member name="P:Dapper.DbTableMetaInfo.TableName">
+            <summary>
+            数据库表名称
+            </summary>
+        </member>
+        <member name="P:Dapper.DbTableMetaInfo.CsharpName">
+            <summary>
+            Csharp表名称
+            </summary>
+        </member>
+        <member name="T:Dapper.DbColumnMetaInfo">
+            <summary>
+            字段信息
+            </summary>
+        </member>
+        <member name="P:Dapper.DbColumnMetaInfo.IsConcurrencyCheck">
+            <summary>
+            是否并发检查
+            </summary>
+        </member>
+        <member name="P:Dapper.DbColumnMetaInfo.IsDefault">
+            <summary>
+            是否默认值约束
+            </summary>
+        </member>
+        <member name="P:Dapper.DbColumnMetaInfo.IsNotMapped">
+            <summary>
+            是否是数据库字段
+            </summary>
+        </member>
+        <member name="P:Dapper.DbColumnMetaInfo.ColumnName">
+            <summary>
+            数据库字段名
+            </summary>
+        </member>
+        <member name="P:Dapper.DbColumnMetaInfo.CsharpName">
+            <summary>
+            Csharp字段名
+            </summary>
+        </member>
+        <member name="P:Dapper.DbColumnMetaInfo.CsharpType">
+            <summary>
+            Csharp类型
+            </summary>
+        </member>
+        <member name="P:Dapper.DbColumnMetaInfo.IsPrimaryKey">
+            <summary>
+            是否主键约束
+            </summary>
+        </member>
+        <member name="P:Dapper.DbColumnMetaInfo.IsIdentity">
+            <summary>
+            是否是自增列
+            </summary>
+        </member>
+        <member name="P:Dapper.DbColumnMetaInfo.IsComplexType">
+            <summary>
+            是否为计算列
+            </summary>
+        </member>
+        <member name="T:Dapper.IEntityMapperProvider">
+            <summary>
+            实体转换映射器
+            </summary>
+        </member>
+        <member name="M:Dapper.IEntityMapperProvider.GetSerializer``1(System.Data.IDataRecord)">
+            <summary>
+            获取实体序列化转换器
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="record"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Dapper.IEntityMapperProvider.GetSerializer">
+            <summary>
+            获取动态实体列化转换器
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Dapper.IEntityMapperProvider.GetDeserializer(System.Type)">
+            <summary>
+            获取参数解码器
+            </summary>
+            <param name="type"></param>
+            <returns></returns>
+        </member>
         <member name="T:Dapper.EntityMapperProvider">
+            <summary>
+            默认实体映射器
+            </summary>
+        </member>
+        <member name="M:Dapper.EntityMapperProvider.GetSerializer``1(System.Data.IDataRecord)">
+            <summary>
+            获取实体映射器
+            </summary>
+        </member>
+        <member name="M:Dapper.EntityMapperProvider.GetSerializer">
+            <summary>
+            获取动态映射器
+            </summary>
+        </member>
+        <member name="M:Dapper.EntityMapperProvider.GetDeserializer(System.Type)">
+            <summary>
+            获取实体解构器
+            </summary>
+        </member>
+        <member name="M:Dapper.EntityMapperProvider.CreateTypeDeserializerHandler(System.Type)">
+            <summary>
+            创建动态方法
+            </summary>
+            <param name="type"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Dapper.EntityMapperProvider.CreateTypeSerializerHandler``1(Dapper.MemberMapper,System.Data.IDataRecord)">
+            <summary>
+            创建动态方法
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="mapper"></param>
+            <param name="record"></param>
+            <returns></returns>
+        </member>
+        <member name="T:Dapper.DataReaderCellInfo">
+            <summary>
+            DataReader中的行信息
+            </summary>
+        </member>
+        <member name="T:Dapper.MemberMapper">
             <summary>
             返回数据记录到Csharp类型的策略
             </summary>
         </member>
-        <member name="M:Dapper.EntityMapperProvider.FindConstructor(System.Type)">
+        <member name="M:Dapper.MemberMapper.FindConstructor(System.Type)">
             <summary>
             Find parametric constructors.
             If there is no default constructor, the constructor with the most parameters is returned.
             </summary>
         </member>
-        <member name="M:Dapper.EntityMapperProvider.FindConstructorParameter(Dapper.DbDataInfo[],System.Reflection.ParameterInfo)">
+        <member name="M:Dapper.MemberMapper.FindConstructorParameter(Dapper.DataReaderCellInfo[],System.Reflection.ParameterInfo)">
             <summary>
             Returns field information based on parameter information
             </summary>
         </member>
-        <member name="M:Dapper.EntityMapperProvider.FindMember(System.Reflection.MemberInfo[],Dapper.DbDataInfo)">
+        <member name="M:Dapper.MemberMapper.FindMember(System.Reflection.MemberInfo[],Dapper.DataReaderCellInfo)">
             <summary>
             Returns attribute information based on field information
             </summary>
         </member>
-        <member name="M:Dapper.EntityMapperProvider.FindConvertMethod(System.Type,System.Type)">
+        <member name="M:Dapper.MemberMapper.FindConvertMethod(System.Type,System.Type)">
             <summary>
             Return type conversion function.
             </summary>
         </member>
-        <member name="T:Dapper.DataConvertMethod">
+        <member name="T:Dapper.MemberMapper.MemberMapperMethod">
             <summary>
             数据库类型到Csharp类型转换器
             </summary>
@@ -513,7 +560,7 @@
             xml配置提供程序
             </summary>
         </member>
-        <member name="M:Dapper.IXmlCommandsProvider.Resolve``1(System.String,``0)">
+        <member name="M:Dapper.IXmlCommandsProvider.Build``1(System.String,``0)">
             <summary>
             解析动态sql
             </summary>
@@ -522,7 +569,7 @@
             <param name="parameter"></param>
             <returns></returns>
         </member>
-        <member name="M:Dapper.IXmlCommandsProvider.Resolve(System.String)">
+        <member name="M:Dapper.IXmlCommandsProvider.Build(System.String)">
             <summary>
             解析sql
             </summary>
