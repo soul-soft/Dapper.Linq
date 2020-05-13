@@ -1183,7 +1183,7 @@
             xml命令映射器
             </summary>
         </member>
-        <member name="M:Dapper.IXmlQuery.ExecuteMultiQuery(System.Nullable{System.Int32},System.Nullable{System.Data.CommandType})">
+        <member name="M:Dapper.IXmlQuery.MultipleQuery(System.Nullable{System.Int32},System.Nullable{System.Data.CommandType})">
              <summary>
             执行多结果集查询，返回IMultiResult
              </summary>
@@ -1191,7 +1191,7 @@
              <param name="commandType">命令类型</param>
              <returns></returns>
         </member>
-        <member name="M:Dapper.IXmlQuery.ExecuteQuery(System.Nullable{System.Int32},System.Nullable{System.Data.CommandType})">
+        <member name="M:Dapper.IXmlQuery.Query(System.Nullable{System.Int32},System.Nullable{System.Data.CommandType})">
             <summary>
             执行单结果集查询，并返回dynamic类型的结果集
             </summary>
@@ -1199,7 +1199,7 @@
             <param name="commandType">命令类型</param>
             <returns></returns>
         </member>
-        <member name="M:Dapper.IXmlQuery.ExecuteQueryAsync(System.Nullable{System.Int32},System.Nullable{System.Data.CommandType})">
+        <member name="M:Dapper.IXmlQuery.QueryAsync(System.Nullable{System.Int32},System.Nullable{System.Data.CommandType})">
             <summary>
             异步执行单结果集查询，并返回dynamic类型的结果集
             </summary>
@@ -1207,7 +1207,7 @@
             <param name="commandType">命令类型</param>
             <returns></returns>
         </member>
-        <member name="M:Dapper.IXmlQuery.ExecuteQuery``1(System.Nullable{System.Int32},System.Nullable{System.Data.CommandType})">
+        <member name="M:Dapper.IXmlQuery.Query``1(System.Nullable{System.Int32},System.Nullable{System.Data.CommandType})">
             <summary>
             执行单结果集查询，并返回T类型的结果集
             </summary>
@@ -1216,7 +1216,7 @@
             <param name="commandType">命令类型</param>
             <returns></returns>
         </member>
-        <member name="M:Dapper.IXmlQuery.ExecuteQueryAsync``1(System.Nullable{System.Int32},System.Nullable{System.Data.CommandType})">
+        <member name="M:Dapper.IXmlQuery.QueryAsync``1(System.Nullable{System.Int32},System.Nullable{System.Data.CommandType})">
             <summary>
             异步执行单结果集查询，并返回T类型的结果集
             </summary>
@@ -1225,7 +1225,7 @@
             <param name="commandType">命令类型</param>
             <returns></returns>
         </member>
-        <member name="M:Dapper.IXmlQuery.ExecuteNonQuery(System.Nullable{System.Int32},System.Nullable{System.Data.CommandType})">
+        <member name="M:Dapper.IXmlQuery.Execute(System.Nullable{System.Int32},System.Nullable{System.Data.CommandType})">
             <summary>
             执行无结果集查询，并返回受影响的行数
             </summary>
@@ -1233,7 +1233,7 @@
             <param name="commandType">命令类型</param>
             <returns></returns>
         </member>
-        <member name="M:Dapper.IXmlQuery.ExecuteNonQueryAsync(System.Nullable{System.Int32},System.Nullable{System.Data.CommandType})">
+        <member name="M:Dapper.IXmlQuery.ExecuteAsync(System.Nullable{System.Int32},System.Nullable{System.Data.CommandType})">
             <summary>
             异步执行无结果集查询，并返回受影响的行数
             </summary>

@@ -44,7 +44,7 @@ namespace Dapper.Linq.NUnitTest
             //2.必须是public的
             try
             {
-                using (var multi = db.From("student.list", new { Id = (int?)null, Name = (string)null }).ExecuteMultiQuery())
+                using (var multi = db.From("student.list", new { Id = (int?)null, Name = (string)null }).MultipleQuery())
                 {
                     //执行第一个sql
                     var list2 = multi.GetList<Student>();
