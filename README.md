@@ -5,7 +5,8 @@
   2. 不再支持多表linq
   3. 新增简单的java.ibatis的xml功能
   4. 新版文档参考：[新版参考文档](https://github.com/1448376744/SqlBatis)，建议通过单测和源码学习
-  5. 建议尽快从Dapper.Linq和Dapper.Common移植到[SqlBatis](https://github.com/1448376744/Dapper.Linq)
+  5. 建议尽快从Dapper.Linq和Dapper.Common移植到[SqlBatis](https://github.com/1448376744/SqlBatis)
+  sqlBatis代码可维护性极好，实体映射规则可定制化，移植成本非常小。
 ## About author
   1. Email:1448376744@qq.com
   2. QQ:1448376744
