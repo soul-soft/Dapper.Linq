@@ -4,6 +4,10 @@
 
 ### 免责说明：使用前请先测试和阅读源代码并自觉遵守开源协议
 
+## 新版本的linq支持
+
+  1. [SqlBatis.Extensions.Dapper](https://www.nuget.org/packages/SqlBatis.Extensions.Dapper/)
+
 ## 3.x版本说明
   1. 移除dapper，无需依赖dapper，内置一个简约的对象映射器，用于替代dapper  
   2. 新增简单的java.ibatis的xml功能
