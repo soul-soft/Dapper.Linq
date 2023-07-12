@@ -43,7 +43,7 @@ namespace Dapper.Linq
         public DatasourceType SourceType { get; set; }
         public List<Logger> Loggers { get; set; }
         public IDbTransaction Transaction { get; private set; }
-        public IDbConnection Connection { get; }
+        public IDbConnection Connection { get; private set; }
         public bool? Buffered { get; set; }
         public int? Timeout { get; set; }
         public DbContextState State { get; private set; }
@@ -85,6 +85,7 @@ namespace Dapper.Linq
         }
         public void Close()
         {
+            Rollback();
             Connection?.Close();
             State = DbContextState.Closed;
         }
@@ -95,6 +96,7 @@ namespace Dapper.Linq
                 Transaction.Commit();
                 Transaction.Dispose();
                 State = DbContextState.Commit;
+                Transaction = null;
             }
         }
         public void Rollback()
@@ -104,6 +106,7 @@ namespace Dapper.Linq
                 Transaction.Rollback();
                 Transaction.Dispose();
                 State = DbContextState.Rollback;
+                Transaction = null;
             }
         }
         public void Dispose()

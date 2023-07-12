@@ -16,10 +16,11 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCopyrightAttribute("花间岛")]
 [assembly: System.Reflection.AssemblyDescriptionAttribute("dapper,mysql,sqlserver,sqlite,linq to sql,subquery,windows function")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.1.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.1.0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.1-fix1")]
 [assembly: System.Reflection.AssemblyProductAttribute("Dapper.Linq")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Dapper.Linq")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.1.0")]
+[assembly: System.Reflection.AssemblyMetadataAttribute("RepositoryUrl", "https://github.com/1448376744/Dapper.Linq")]
 
 // 由 MSBuild WriteCodeFragment 类生成。
 

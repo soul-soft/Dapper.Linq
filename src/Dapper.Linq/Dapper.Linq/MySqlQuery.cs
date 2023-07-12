@@ -86,18 +86,23 @@ namespace Dapper.Linq
             }
             return this;
         }
-        public IQueryable<T> Having(string expression, bool condition = true)
+        public IQueryable<T> Having(string expression, object param = null, bool condition = true)
         {
             if (condition)
             {
+                if (_havingBuffer.Length > 0)
+                {
+                    _havingBuffer.AppendFormat(" {0} ", Operator.GetOperator(ExpressionType.AndAlso));
+                }
                 _havingBuffer.Append(expression);
+                AddParam(param);
             }
             return this;
         }
         public IQueryable<T> Having(Expression<Func<T, bool?>> expression, bool condition = true)
         {
             if (condition)
-            {
+            {              
                 Having(string.Join(",", ExpressionUtil.BuildColumns(expression, _param, _prefix).Select(s => s.Value)));
             }
             return this;
@@ -199,7 +204,7 @@ namespace Dapper.Linq
             }
             return this;
         }
-        public IQueryable<T> Where(string expression, bool condition = true)
+        public IQueryable<T> Where(string expression, object param = null, bool condition = true)
         {
             if (condition)
             {
@@ -207,6 +212,7 @@ namespace Dapper.Linq
                 {
                     _whereBuffer.AppendFormat(" {0} ", Operator.GetOperator(ExpressionType.AndAlso));
                 }
+                AddParam(param);
                 _whereBuffer.Append(expression);
             }
             return this;
@@ -606,6 +612,20 @@ namespace Dapper.Linq
         #endregion
 
         #region build
+        public void AddParam(object param)
+        {
+            if (param==null)
+            {
+                return;
+            }
+            var propertities = param.GetType().GetProperties();
+            foreach (var item in propertities)
+            {
+                var name = item.Name;
+                var value = item.GetValue(param);
+                _param.Add(name,value);
+            }
+        }
         public string BuildInsert(Expression expression = null)
         {
             if (expression == null)
@@ -835,11 +855,16 @@ namespace Dapper.Linq
             }
             return this;
         }
-        public IQueryable<T1, T2> Having(string expression, bool condition = true)
+        public IQueryable<T1, T2> Having(string expression, object param = null, bool condition = true)
         {
             if (condition)
             {
+                if (_havingBuffer.Length > 0)
+                {
+                    _havingBuffer.AppendFormat(" {0} ", Operator.GetOperator(ExpressionType.AndAlso));
+                }
                 _havingBuffer.Append(expression);
+                AddParam(param);
             }
             return this;
         }
@@ -906,7 +931,7 @@ namespace Dapper.Linq
             }
             return this;
         }
-        public IQueryable<T1, T2> Where(string expression, bool condition = true)
+        public IQueryable<T1, T2> Where(string expression, object param = null, bool condition = true)
         {
             if (condition)
             {
@@ -914,6 +939,7 @@ namespace Dapper.Linq
                 {
                     _whereBuffer.AppendFormat(" {0} ", Operator.GetOperator(ExpressionType.AndAlso));
                 }
+                AddParam(param);
                 _whereBuffer.Append(expression);
             }
             return this;
@@ -1051,6 +1077,20 @@ namespace Dapper.Linq
         #endregion
 
         #region build
+        public void AddParam(object param)
+        {
+            if (param == null)
+            {
+                return;
+            }
+            var propertities = param.GetType().GetProperties();
+            foreach (var item in propertities)
+            {
+                var name = item.Name;
+                var value = item.GetValue(param);
+                _param.Add(name, value);
+            }
+        }
         public string BuildSelect()
         {
             var sqlBuffer = new StringBuilder("SELECT");
@@ -1178,11 +1218,16 @@ namespace Dapper.Linq
             }
             return this;
         }
-        public IQueryable<T1, T2, T3> Having(string expression, bool condition = true)
+        public IQueryable<T1, T2, T3> Having(string expression, object param = null, bool condition = true)
         {
             if (condition)
             {
+                if (_havingBuffer.Length > 0)
+                {
+                    _havingBuffer.AppendFormat(" {0} ", Operator.GetOperator(ExpressionType.AndAlso));
+                }
                 _havingBuffer.Append(expression);
+                AddParam(param);
             }
             return this;
         }
@@ -1249,7 +1294,7 @@ namespace Dapper.Linq
             }
             return this;
         }
-        public IQueryable<T1, T2, T3> Where(string expression, bool condition = true)
+        public IQueryable<T1, T2, T3> Where(string expression, object param = null, bool condition = true)
         {
             if (condition)
             {
@@ -1257,6 +1302,7 @@ namespace Dapper.Linq
                 {
                     _whereBuffer.AppendFormat(" {0} ", Operator.GetOperator(ExpressionType.AndAlso));
                 }
+                AddParam(param);
                 _whereBuffer.Append(expression);
             }
             return this;
@@ -1410,6 +1456,20 @@ namespace Dapper.Linq
         #endregion
 
         #region build
+        public void AddParam(object param)
+        {
+            if (param == null)
+            {
+                return;
+            }
+            var propertities = param.GetType().GetProperties();
+            foreach (var item in propertities)
+            {
+                var name = item.Name;
+                var value = item.GetValue(param);
+                _param.Add(name, value);
+            }
+        }
         public string BuildSelect()
         {
             var sqlBuffer = new StringBuilder("SELECT");
@@ -1537,11 +1597,16 @@ namespace Dapper.Linq
             }
             return this;
         }
-        public IQueryable<T1, T2, T3, T4> Having(string expression, bool condition = true)
+        public IQueryable<T1, T2, T3, T4> Having(string expression, object param = null, bool condition = true)
         {
             if (condition)
             {
+                if (_havingBuffer.Length > 0)
+                {
+                    _havingBuffer.AppendFormat(" {0} ", Operator.GetOperator(ExpressionType.AndAlso));
+                }
                 _havingBuffer.Append(expression);
+                AddParam(param);
             }
             return this;
         }
@@ -1608,7 +1673,7 @@ namespace Dapper.Linq
             }
             return this;
         }
-        public IQueryable<T1, T2, T3, T4> Where(string expression, bool condition = true)
+        public IQueryable<T1, T2, T3, T4> Where(string expression, object param = null, bool condition = true)
         {
             if (condition)
             {
@@ -1616,6 +1681,7 @@ namespace Dapper.Linq
                 {
                     _whereBuffer.AppendFormat(" {0} ", Operator.GetOperator(ExpressionType.AndAlso));
                 }
+                AddParam(param);
                 _whereBuffer.Append(expression);
             }
             return this;
@@ -1769,6 +1835,20 @@ namespace Dapper.Linq
         #endregion
 
         #region build
+        public void AddParam(object param)
+        {
+            if (param == null)
+            {
+                return;
+            }
+            var propertities = param.GetType().GetProperties();
+            foreach (var item in propertities)
+            {
+                var name = item.Name;
+                var value = item.GetValue(param);
+                _param.Add(name, value);
+            }
+        }
         public string BuildSelect()
         {
             var sqlBuffer = new StringBuilder("SELECT");

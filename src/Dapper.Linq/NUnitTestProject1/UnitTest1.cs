@@ -12,6 +12,7 @@ namespace Tests
 {
     public class Tests
     {
+       
 
         #region SetUp：初始化配置[Initialization configuration]
         [SetUp]
@@ -28,6 +29,18 @@ namespace Tests
             });
         }
         #endregion
+        [Test]
+        public void Test()
+        {
+            using (var context = DbContextFactory.GetDbContext())
+            {
+                var row1 = context.From<Student>()
+                    .Having("id>@id1", new { id1 = 20 })
+                    .Having("age<@id2", new { id2 = 20 })
+                    .Select();
+
+            }
+        }
 
         #region Insert：测试新增[Test Add]
         [Test]

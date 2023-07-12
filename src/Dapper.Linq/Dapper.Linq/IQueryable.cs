@@ -14,7 +14,7 @@ namespace Dapper.Linq
         IQueryable<T> Set<TResult>(Expression<Func<T, TResult>> column, Expression<Func<T, TResult>> expression, bool condition = true);
         IQueryable<T> GroupBy(string expression, bool condition = true);
         IQueryable<T> GroupBy<TResult>(Expression<Func<T, TResult>> expression, bool condition = true);
-        IQueryable<T> Where(string expression, bool condition = true);
+        IQueryable<T> Where(string expression, object param = null, bool condition = true);
         IQueryable<T> Where(Expression<Func<T, bool?>> expression, bool condition = true);
         IQueryable<T> OrderBy(string orderBy, bool condition = true);
         IQueryable<T> OrderBy<TResult>(Expression<Func<T, TResult>> expression, bool condition = true);
@@ -22,7 +22,7 @@ namespace Dapper.Linq
         IQueryable<T> Skip(int index, int count, bool condition = true);
         IQueryable<T> Take(int count, bool condition = true);
         IQueryable<T> Page(int index, int count, out long total, bool condition = true);
-        IQueryable<T> Having(string expression, bool condition = true);
+        IQueryable<T> Having(string expression, object param = null, bool condition = true);
         IQueryable<T> Having(Expression<Func<T, bool?>> expression, bool condition = true);
         IQueryable<T> Filter<TResult>(Expression<Func<T, TResult>> columns, bool condition = true);
         IQueryable<T> With(string lockType, bool condition = true);
@@ -53,7 +53,7 @@ namespace Dapper.Linq
         int Update(bool condition = true, int? timeout = null);
         Task<int> UpdateAsync(bool condition = true, int? timeout = null);
         int Update(T entity, bool condition = true, int? timeout = null);
-        int Update(Expression<Func<T,T>> expression, bool condition = true, int? timeout = null);
+        int Update(Expression<Func<T, T>> expression, bool condition = true, int? timeout = null);
         Task<int> UpdateAsync(Expression<Func<T, T>> expression, bool condition = true, int? timeout = null);
         Task<int> UpdateAsync(T entity, bool condition = true, int? timeout = null);
         int Update(IEnumerable<T> entitys, bool condition = true, int? timeout = null);
@@ -75,7 +75,7 @@ namespace Dapper.Linq
         IQueryable<T1, T2> Join(Expression<Func<T1, T2, bool?>> expression, JoinType join = JoinType.Inner);
         IQueryable<T1, T2> GroupBy(string expression, bool condition = true);
         IQueryable<T1, T2> GroupBy<TResult>(Expression<Func<T1, T2, TResult>> expression, bool condition = true);
-        IQueryable<T1, T2> Where(string expression, bool condition = true);
+        IQueryable<T1, T2> Where(string expression, object param = null, bool condition = true);
         IQueryable<T1, T2> Where(Expression<Func<T1, T2, bool?>> expression, bool condition = true);
         IQueryable<T1, T2> OrderBy(string orderBy, bool condition = true);
         IQueryable<T1, T2> OrderBy<TResult>(Expression<Func<T1, T2, TResult>> expression, bool condition = true);
@@ -83,7 +83,7 @@ namespace Dapper.Linq
         IQueryable<T1, T2> Skip(int index, int count, bool condition = true);
         IQueryable<T1, T2> Take(int count, bool condition = true);
         IQueryable<T1, T2> Page(int index, int count, out long total, bool condition = true);
-        IQueryable<T1, T2> Having(string expression, bool condition = true);
+        IQueryable<T1, T2> Having(string expression, object param = null, bool condition = true);
         IQueryable<T1, T2> Having(Expression<Func<T1, T2, bool?>> expression, bool condition = true);
         IQueryable<T1, T2> Distinct(bool condition = true);
         IEnumerable<TResult> Select<TResult>(string colums = null, bool buffered = true, int? timeout = null);
@@ -103,7 +103,7 @@ namespace Dapper.Linq
         IQueryable<T1, T2, T3> Join<E1, E2>(Expression<Func<E1, E2, bool?>> expression, JoinType join = JoinType.Inner) where E1 : class where E2 : class;
         IQueryable<T1, T2, T3> GroupBy(string expression, bool condition = true);
         IQueryable<T1, T2, T3> GroupBy<TResult>(Expression<Func<T1, T2, T3, TResult>> expression, bool condition = true);
-        IQueryable<T1, T2, T3> Where(string expression, bool condition = true);
+        IQueryable<T1, T2, T3> Where(string expression, object param = null, bool condition = true);
         IQueryable<T1, T2, T3> Where(Expression<Func<T1, T2, T3, bool?>> expression, bool condition = true);
         IQueryable<T1, T2, T3> OrderBy(string orderBy, bool condition = true);
         IQueryable<T1, T2, T3> OrderBy<TResult>(Expression<Func<T1, T2, T3, TResult>> expression, bool condition = true);
@@ -111,7 +111,7 @@ namespace Dapper.Linq
         IQueryable<T1, T2, T3> Skip(int index, int count, bool condition = true);
         IQueryable<T1, T2, T3> Take(int count, bool condition = true);
         IQueryable<T1, T2, T3> Page(int index, int count, out long total, bool condition = true);
-        IQueryable<T1, T2, T3> Having(string expression, bool condition = true);
+        IQueryable<T1, T2, T3> Having(string expression, object param = null, bool condition = true);
         IQueryable<T1, T2, T3> Having(Expression<Func<T1, T2, T3, bool?>> expression, bool condition = true);
         IQueryable<T1, T2, T3> Distinct(bool condition = true);
         IEnumerable<TResult> Select<TResult>(string colums = null, bool buffered = true, int? timeout = null);
@@ -131,7 +131,7 @@ namespace Dapper.Linq
         IQueryable<T1, T2, T3, T4> Join<E1, E2>(Expression<Func<E1, E2, bool?>> expression, JoinType join = JoinType.Inner) where E1 : class where E2 : class;
         IQueryable<T1, T2, T3, T4> GroupBy(string expression, bool condition = true);
         IQueryable<T1, T2, T3, T4> GroupBy<TResult>(Expression<Func<T1, T2, T3, T4, TResult>> expression, bool condition = true);
-        IQueryable<T1, T2, T3, T4> Where(string expression, bool condition = true);
+        IQueryable<T1, T2, T3, T4> Where(string expression, object param = null, bool condition = true);
         IQueryable<T1, T2, T3, T4> Where(Expression<Func<T1, T2, T3, T4, bool?>> expression, bool condition = true);
         IQueryable<T1, T2, T3, T4> OrderBy(string orderBy, bool condition = true);
         IQueryable<T1, T2, T3, T4> OrderBy<TResult>(Expression<Func<T1, T2, T3, T4, TResult>> expression, bool condition = true);
@@ -139,7 +139,7 @@ namespace Dapper.Linq
         IQueryable<T1, T2, T3, T4> Skip(int index, int count, bool condition = true);
         IQueryable<T1, T2, T3, T4> Take(int count, bool condition = true);
         IQueryable<T1, T2, T3, T4> Page(int index, int count, out long total, bool condition = true);
-        IQueryable<T1, T2, T3, T4> Having(string expression, bool condition = true);
+        IQueryable<T1, T2, T3, T4> Having(string expression, object param = null, bool condition = true);
         IQueryable<T1, T2, T3, T4> Having(Expression<Func<T1, T2, T3, T4, bool?>> expression, bool condition = true);
         IQueryable<T1, T2, T3, T4> Distinct(bool condition = true);
         IEnumerable<TResult> Select<TResult>(string colums = null, bool buffered = true, int? timeout = null);

@@ -1,20 +1,6 @@
 {
   "version": 3,
   "targets": {
-    ".NETFramework,Version=v4.5": {
-      "Dapper/1.42.0": {
-        "type": "package",
-        "frameworkAssemblies": [
-          "Microsoft.CSharp"
-        ],
-        "compile": {
-          "lib/net45/Dapper.dll": {}
-        },
-        "runtime": {
-          "lib/net45/Dapper.dll": {}
-        }
-      }
-    },
     ".NETStandard,Version=v2.0": {
       "Dapper/2.0.4": {
         "type": "package",
@@ -22,10 +8,14 @@
           "System.Reflection.Emit.Lightweight": "4.3.0"
         },
         "compile": {
-          "lib/netstandard2.0/Dapper.dll": {}
+          "lib/netstandard2.0/Dapper.dll": {
+            "related": ".xml"
+          }
         },
         "runtime": {
-          "lib/netstandard2.0/Dapper.dll": {}
+          "lib/netstandard2.0/Dapper.dll": {
+            "related": ".xml"
+          }
         }
       },
       "Microsoft.NETCore.Platforms/1.1.0": {
@@ -71,7 +61,9 @@
           "System.Threading.Tasks": "4.3.0"
         },
         "compile": {
-          "ref/netstandard1.5/System.IO.dll": {}
+          "ref/netstandard1.5/System.IO.dll": {
+            "related": ".xml"
+          }
         }
       },
       "System.Reflection/4.3.0": {
@@ -84,7 +76,9 @@
           "System.Runtime": "4.3.0"
         },
         "compile": {
-          "ref/netstandard1.5/System.Reflection.dll": {}
+          "ref/netstandard1.5/System.Reflection.dll": {
+            "related": ".xml"
+          }
         }
       },
       "System.Reflection.Emit.ILGeneration/4.3.0": {
@@ -95,7 +89,9 @@
           "System.Runtime": "4.3.0"
         },
         "compile": {
-          "ref/netstandard1.0/System.Reflection.Emit.ILGeneration.dll": {}
+          "ref/netstandard1.0/System.Reflection.Emit.ILGeneration.dll": {
+            "related": ".xml"
+          }
         },
         "runtime": {
           "lib/netstandard1.3/System.Reflection.Emit.ILGeneration.dll": {}
@@ -110,7 +106,9 @@
           "System.Runtime": "4.3.0"
         },
         "compile": {
-          "ref/netstandard1.0/System.Reflection.Emit.Lightweight.dll": {}
+          "ref/netstandard1.0/System.Reflection.Emit.Lightweight.dll": {
+            "related": ".xml"
+          }
         },
         "runtime": {
           "lib/netstandard1.3/System.Reflection.Emit.Lightweight.dll": {}
@@ -124,7 +122,9 @@
           "System.Runtime": "4.3.0"
         },
         "compile": {
-          "ref/netstandard1.0/System.Reflection.Primitives.dll": {}
+          "ref/netstandard1.0/System.Reflection.Primitives.dll": {
+            "related": ".xml"
+          }
         }
       },
       "System.Runtime/4.3.0": {
@@ -134,7 +134,9 @@
           "Microsoft.NETCore.Targets": "1.1.0"
         },
         "compile": {
-          "ref/netstandard1.5/System.Runtime.dll": {}
+          "ref/netstandard1.5/System.Runtime.dll": {
+            "related": ".xml"
+          }
         }
       },
       "System.Text.Encoding/4.3.0": {
@@ -145,7 +147,9 @@
           "System.Runtime": "4.3.0"
         },
         "compile": {
-          "ref/netstandard1.3/System.Text.Encoding.dll": {}
+          "ref/netstandard1.3/System.Text.Encoding.dll": {
+            "related": ".xml"
+          }
         }
       },
       "System.Threading.Tasks/4.3.0": {
@@ -156,34 +160,16 @@
           "System.Runtime": "4.3.0"
         },
         "compile": {
-          "ref/netstandard1.3/System.Threading.Tasks.dll": {}
+          "ref/netstandard1.3/System.Threading.Tasks.dll": {
+            "related": ".xml"
+          }
         }
       }
     }
   },
   "libraries": {
-    "Dapper/1.42.0": {
-      "sha512": "4tJlY93CSDCdqh6eEYR7au06R+moIgEQs5/rNrPYvSu+kwtlWnUPFzaWPSmk3biS9qKeI/QsJkfVWnSdb95dTw==",
-      "type": "package",
-      "path": "dapper/1.42.0",
-      "files": [
-        ".nupkg.metadata",
-        ".signature.p7s",
-        "dapper.1.42.0.nupkg.sha512",
-        "dapper.nuspec",
-        "lib/net35/Dapper.dll",
-        "lib/net35/Dapper.pdb",
-        "lib/net35/Dapper.xml",
-        "lib/net40/Dapper.dll",
-        "lib/net40/Dapper.pdb",
-        "lib/net40/Dapper.xml",
-        "lib/net45/Dapper.dll",
-        "lib/net45/Dapper.pdb",
-        "lib/net45/Dapper.xml"
-      ]
-    },
     "Dapper/2.0.4": {
-      "sha512": "D1INbXigB4HaZcr4O77Th5vcS+dDoDFeRNwCg6/1glk+COSYAII/IxkcEfD8H4pHfs+vycnkNOa5xf/FlIXaxA==",
+      "sha512": "DrNPDqK3nR4RpwAPX2R0R34YhlT+k5Fbw7UnqxQ2aH+wSWvEIj+fCDXB8RJWgw6fGFZLavq7nuJ6J/eAqSrIpw==",
       "type": "package",
       "path": "dapper/2.0.4",
       "files": [
@@ -883,37 +869,32 @@
     }
   },
   "projectFileDependencyGroups": {
-    ".NETFramework,Version=v4.5": [
-      "Dapper >= 1.42.0"
-    ],
     ".NETStandard,Version=v2.0": [
       "Dapper >= 2.0.4",
       "NETStandard.Library >= 2.0.3"
     ]
   },
   "packageFolders": {
-    "C:\\Users\\chaeyeon\\.nuget\\packages\\": {},
+    "C:\\Users\\DELL\\.nuget\\packages\\": {},
     "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder": {}
   },
   "project": {
-    "version": "1.0.1",
+    "version": "1.0.1-fix1",
     "restore": {
-      "projectUniqueName": "C:\\Dapper.Linq\\src\\Dapper.Linq\\Dapper.Linq\\Dapper.Linq.csproj",
+      "projectUniqueName": "E:\\github\\Dapper.Linq\\src\\Dapper.Linq\\Dapper.Linq\\Dapper.Linq.csproj",
       "projectName": "Dapper.Linq",
-      "projectPath": "C:\\Dapper.Linq\\src\\Dapper.Linq\\Dapper.Linq\\Dapper.Linq.csproj",
-      "packagesPath": "C:\\Users\\chaeyeon\\.nuget\\packages\\",
-      "outputPath": "C:\\Dapper.Linq\\src\\Dapper.Linq\\Dapper.Linq\\obj\\",
+      "projectPath": "E:\\github\\Dapper.Linq\\src\\Dapper.Linq\\Dapper.Linq\\Dapper.Linq.csproj",
+      "packagesPath": "C:\\Users\\DELL\\.nuget\\packages\\",
+      "outputPath": "E:\\github\\Dapper.Linq\\src\\Dapper.Linq\\Dapper.Linq\\obj\\",
       "projectStyle": "PackageReference",
-      "crossTargeting": true,
       "fallbackFolders": [
         "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
       ],
       "configFilePaths": [
-        "C:\\Users\\chaeyeon\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Users\\DELL\\AppData\\Roaming\\NuGet\\NuGet.Config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
       "originalTargetFrameworks": [
-        "net45",
         "netstandard2.0"
       ],
       "sources": {
@@ -921,10 +902,8 @@
         "https://api.nuget.org/v3/index.json": {}
       },
       "frameworks": {
-        "net45": {
-          "projectReferences": {}
-        },
         "netstandard2.0": {
+          "targetAlias": "netstandard2.0",
           "projectReferences": {}
         }
       },
@@ -935,15 +914,8 @@
       }
     },
     "frameworks": {
-      "net45": {
-        "dependencies": {
-          "Dapper": {
-            "target": "Package",
-            "version": "[1.42.0, )"
-          }
-        }
-      },
       "netstandard2.0": {
+        "targetAlias": "netstandard2.0",
         "dependencies": {
           "Dapper": {
             "target": "Package",
@@ -957,10 +929,17 @@
           }
         },
         "imports": [
-          "net461"
+          "net461",
+          "net462",
+          "net47",
+          "net471",
+          "net472",
+          "net48",
+          "net481"
         ],
         "assetTargetFallback": true,
-        "warn": true
+        "warn": true,
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.302\\RuntimeIdentifierGraph.json"
       }
     }
   }
