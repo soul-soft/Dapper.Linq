@@ -212,8 +212,8 @@ namespace Dapper.Linq
                 {
                     _whereBuffer.AppendFormat(" {0} ", Operator.GetOperator(ExpressionType.AndAlso));
                 }
-                AddParam(param);
                 _whereBuffer.Append(expression);
+                AddParam(param);
             }
             return this;
         }

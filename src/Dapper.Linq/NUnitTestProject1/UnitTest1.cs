@@ -35,8 +35,8 @@ namespace Tests
             using (var context = DbContextFactory.GetDbContext())
             {
                 var row1 = context.From<Student>()
-                    .Having("id>@id1", new { id1 = 20 })
-                    .Having("age<@id2", new { id2 = 20 })
+                    .Where("id>@id1", new { id1 = 20 })
+                    .Where("age<@id2", new { id2 = 20 })
                     .Select();
 
             }
