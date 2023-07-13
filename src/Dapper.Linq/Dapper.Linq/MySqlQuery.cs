@@ -618,6 +618,14 @@ namespace Dapper.Linq
             {
                 return;
             }
+            if (param is Dictionary<string, object> values)
+            {
+                foreach (var item in values)
+                {
+                    _param.Add(item.Key, item.Value);
+                }
+                return;
+            }
             var propertities = param.GetType().GetProperties();
             foreach (var item in propertities)
             {
@@ -1083,6 +1091,14 @@ namespace Dapper.Linq
             {
                 return;
             }
+            if (param is Dictionary<string, object> values)
+            {
+                foreach (var item in values)
+                {
+                    _param.Add(item.Key, item.Value);
+                }
+                return;
+            }
             var propertities = param.GetType().GetProperties();
             foreach (var item in propertities)
             {
@@ -1462,6 +1478,14 @@ namespace Dapper.Linq
             {
                 return;
             }
+            if (param is Dictionary<string, object> values)
+            {
+                foreach (var item in values)
+                {
+                    _param.Add(item.Key, item.Value);
+                }
+                return;
+            }
             var propertities = param.GetType().GetProperties();
             foreach (var item in propertities)
             {
@@ -1839,6 +1863,14 @@ namespace Dapper.Linq
         {
             if (param == null)
             {
+                return;
+            }
+            if (param is Dictionary<string, object> values)
+            {
+                foreach (var item in values)
+                {
+                    _param.Add(item.Key, item.Value);
+                }
                 return;
             }
             var propertities = param.GetType().GetProperties();
