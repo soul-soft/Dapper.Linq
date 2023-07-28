@@ -13,8 +13,10 @@ namespace Dapper.Linq
         #region constructor
         public IDbContext _dbcontext { get; }
         public string _prefix { get; }
-        public MySqlQuery(IDbContext dbcontext = null)
+        public string _view { get; }
+        public MySqlQuery(IDbContext dbcontext = null, string view = null)
         {
+            _view = view;
             _prefix = "@";
             _dbcontext = dbcontext;
             _param = new Dictionary<string, object>();
@@ -102,7 +104,7 @@ namespace Dapper.Linq
         public IQueryable<T> Having(Expression<Func<T, bool?>> expression, bool condition = true)
         {
             if (condition)
-            {              
+            {
                 Having(string.Join(",", ExpressionUtil.BuildColumns(expression, _param, _prefix).Select(s => s.Value)));
             }
             return this;
@@ -612,9 +614,13 @@ namespace Dapper.Linq
         #endregion
 
         #region build
+        public string GetTableName()
+        {
+            return string.IsNullOrEmpty(_view) ? _table.TableName : _view;
+        }
         public void AddParam(object param)
         {
-            if (param==null)
+            if (param == null)
             {
                 return;
             }
@@ -631,7 +637,7 @@ namespace Dapper.Linq
             {
                 var name = item.Name;
                 var value = item.GetValue(param);
-                _param.Add(name,value);
+                _param.Add(name, value);
             }
         }
         public string BuildInsert(Expression expression = null)
@@ -639,7 +645,7 @@ namespace Dapper.Linq
             if (expression == null)
             {
                 var sql = string.Format("INSERT INTO {0} ({1}) VALUES ({2})"
-                    , _table.TableName
+                    , GetTableName()
                     , string.Join(",", _table.Columns.FindAll(f => f.Identity == false && !_filters.Exists(e => e == f.ColumnName)).Select(s => s.ColumnName))
                     , string.Join(",", _table.Columns.FindAll(f => f.Identity == false && !_filters.Exists(e => e == f.ColumnName)).Select(s => string.Format("@{0}", s.CSharpName))));
                 return sql;
@@ -648,7 +654,7 @@ namespace Dapper.Linq
             {
                 var columns = ExpressionUtil.BuildColumnAndValues(expression, _param, _prefix);
                 var sql = string.Format("INSERT INTO {0} ({1}) VALUES ({2})"
-                    , _table.TableName
+                    , GetTableName()
                     , string.Join(",", columns.Keys)
                     , string.Join(",", columns.Values));
                 return sql;
@@ -661,7 +667,7 @@ namespace Dapper.Linq
                 var keyColumn = _table.Columns.Find(f => f.ColumnKey == ColumnKey.Primary);
                 var columns = _table.Columns.FindAll(f => f.ColumnKey != ColumnKey.Primary && !_filters.Exists(e => e == f.ColumnName));
                 var sql = string.Format("UPDATE {0} SET {1} WHERE {2}"
-                    , _table.TableName
+                    , GetTableName()
                     , string.Join(",", columns.Select(s => string.Format("{0} = @{1}", s.ColumnName, s.CSharpName)))
                     , _whereBuffer.Length > 0 ? _whereBuffer.ToString() : string.Format("{0} = @{1}", keyColumn.ColumnName, keyColumn.CSharpName)
                     );
@@ -670,7 +676,7 @@ namespace Dapper.Linq
             else
             {
                 var sql = string.Format("UPDATE {0} SET {1}{2}"
-                    , _table.TableName
+                    , GetTableName()
                     , _setBuffer
                     , _whereBuffer.Length > 0 ? string.Format(" WHERE {0}", _whereBuffer) : "");
                 return sql;
@@ -682,7 +688,7 @@ namespace Dapper.Linq
             var keyColumn = _table.Columns.Find(f => f.ColumnKey == ColumnKey.Primary);
             var columns = ExpressionUtil.BuildColumnAndValues(expression, _param, _prefix).Where(a => a.Key != keyColumn.ColumnName);
             var sql = string.Format("UPDATE {0} SET {1} WHERE {2}",
-                    _table.TableName,
+                    GetTableName(),
                     string.Join(",", columns.Select(s => string.Format("{0} = {1}", s.Key, s.Value))),
                     _whereBuffer.Length > 0 ? _whereBuffer.ToString() : string.Format("{0} = @{1}", keyColumn.ColumnName, keyColumn.CSharpName)
                     );
@@ -691,7 +697,7 @@ namespace Dapper.Linq
         public string BuildDelete()
         {
             var sql = string.Format("DELETE FROM {0}{1}",
-                _table.TableName,
+                GetTableName(),
                 _whereBuffer.Length > 0 ? string.Format(" WHERE {0}", _whereBuffer) : "");
             return sql;
         }
@@ -710,7 +716,7 @@ namespace Dapper.Linq
             {
                 sqlBuffer.AppendFormat(" {0}", string.Join(",", _table.Columns.FindAll(f => !_filters.Exists(e => e == f.ColumnName)).Select(s => string.Format("{0} AS {1}", s.ColumnName, s.CSharpName))));
             }
-            sqlBuffer.AppendFormat(" FROM {0}", _table.TableName);
+            sqlBuffer.AppendFormat(" FROM {0}", GetTableName());
             if (_whereBuffer.Length > 0)
             {
                 sqlBuffer.AppendFormat(" WHERE {0}", _whereBuffer);
@@ -762,7 +768,8 @@ namespace Dapper.Linq
                     sqlBuffer.AppendFormat(" COUNT(1)");
                 }
             }
-            sqlBuffer.AppendFormat(" FROM {0}", _table.TableName);
+           
+            sqlBuffer.AppendFormat(" FROM {0}", GetTableName());
             if (_whereBuffer.Length > 0)
             {
                 sqlBuffer.AppendFormat(" WHERE {0}", _whereBuffer);
@@ -788,7 +795,7 @@ namespace Dapper.Linq
         {
             var sqlBuffer = new StringBuilder();
 
-            sqlBuffer.AppendFormat("SELECT 1 FROM {0}", _table.TableName);
+            sqlBuffer.AppendFormat("SELECT 1 FROM {0}", GetTableName());
             if (_whereBuffer.Length > 0)
             {
                 sqlBuffer.AppendFormat(" WHERE {0}", _whereBuffer);
@@ -807,7 +814,7 @@ namespace Dapper.Linq
         public string BuildSum()
         {
             var sqlBuffer = new StringBuilder();
-            sqlBuffer.AppendFormat("SELECT SUM({0}) FROM {1}", _sumBuffer, _table.TableName);
+            sqlBuffer.AppendFormat("SELECT SUM({0}) FROM {1}", _sumBuffer, GetTableName());
             if (_whereBuffer.Length > 0)
             {
                 sqlBuffer.AppendFormat(" WHERE {0}", _whereBuffer);

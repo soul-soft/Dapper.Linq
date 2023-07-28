@@ -153,6 +153,22 @@ namespace Dapper.Linq
             }
             throw new NotImplementedException();
         }
+        public IQueryable<T> FromSql<T>(string sql) where T : class
+        {
+            if (SourceType == DatasourceType.MYSQL)
+            {
+                return new MySqlQuery<T>(this);
+            }
+            else if (SourceType == DatasourceType.SQLSERVER)
+            {
+                return new SqlQuery<T>(this);
+            }
+            else if (SourceType == DatasourceType.SQLITE)
+            {
+                return new SQLiteQuery<T>(this);
+            }
+            throw new NotImplementedException();
+        }
         public IQueryable<T1, T2> From<T1, T2>() where T1 : class where T2 : class
         {
             if (SourceType == DatasourceType.MYSQL)
