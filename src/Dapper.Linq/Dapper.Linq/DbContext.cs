@@ -15,6 +15,7 @@ namespace Dapper.Linq
         int? Timeout { get; set; }
         List<Logger> Loggers { get; }
         IQueryable<T> From<T>() where T : class;
+        IQueryable<T> FromSql<T>(string sql) where T : class;
         IQueryable<T1, T2> From<T1, T2>() where T1 : class where T2 : class;
         IQueryable<T1, T2, T3> From<T1, T2, T3>() where T1 : class where T2 : class where T3 : class;
         IQueryable<T1, T2, T3, T4> From<T1, T2, T3, T4>() where T1 : class where T2 : class where T3 : class where T4 : class;
@@ -384,6 +385,22 @@ namespace Dapper.Linq
             if (SourceType == DatasourceType.MYSQL)
             {
                 return new MySqlQuery<T>(this);
+            }
+            else if (SourceType == DatasourceType.SQLSERVER)
+            {
+                return new SqlQuery<T>(this);
+            }
+            else if (SourceType == DatasourceType.SQLITE)
+            {
+                return new SQLiteQuery<T>(this);
+            }
+            throw new NotImplementedException();
+        }
+        public IQueryable<T> FromSql<T>(string sql) where T : class
+        {
+            if (SourceType == DatasourceType.MYSQL)
+            {
+                return new MySqlQuery<T>(this, sql);
             }
             else if (SourceType == DatasourceType.SQLSERVER)
             {
