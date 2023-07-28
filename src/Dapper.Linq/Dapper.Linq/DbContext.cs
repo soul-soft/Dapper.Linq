@@ -157,7 +157,7 @@ namespace Dapper.Linq
         {
             if (SourceType == DatasourceType.MYSQL)
             {
-                return new MySqlQuery<T>(this);
+                return new MySqlQuery<T>(this,sql);
             }
             else if (SourceType == DatasourceType.SQLSERVER)
             {
