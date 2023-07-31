@@ -616,7 +616,7 @@ namespace Dapper.Linq
         #region build
         public string GetTableName()
         {
-            return string.IsNullOrEmpty(_view) ? _table.TableName : _view;
+            return string.IsNullOrEmpty(_view) ? _table.TableName : $"({_view}) AS t";
         }
         public void AddParam(object param)
         {
