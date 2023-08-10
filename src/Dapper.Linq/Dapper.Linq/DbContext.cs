@@ -2,19 +2,18 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Threading.Tasks;
-using System.Transactions;
 using static Dapper.SqlMapper;
 
 namespace Dapper.Linq
 {
-    public class DbContext
+    public class DbContext : IDisposable
     {
         public List<Logger> Loggers { get; set; }
-       
+
         private IDbConnection _connection;
-       
+
         public IDbConnection Connection => _connection;
-       
+
         public DbContext(IDbConnection connection)
         {
             _connection = connection;
@@ -50,7 +49,7 @@ namespace Dapper.Linq
                 autoCloase = true;
             }
             transaction = transaction ?? _connection.BeginTransaction();
-            _currentTransaction = new DbContextTransaction(transaction ,() =>
+            _currentTransaction = new DbContextTransaction(transaction, () =>
             {
                 _currentTransaction = null;
                 if (autoCloase)
@@ -72,7 +71,7 @@ namespace Dapper.Linq
             {
                 _currentTransaction?.Dispose();
             }
-            finally 
+            finally
             {
                 try
                 {
@@ -119,7 +118,7 @@ namespace Dapper.Linq
             return new MySqlQuery<T>(this, sql);
             throw new NotImplementedException();
         }
-     
+
         public IEnumerable<T> Query<T>(string sql, object param = null, bool buffered = false, int? commandTimeout = null, CommandType? commandType = null)
         {
             return Connection.Query<T>(sql, param, GetDbTransaction(), buffered, commandTimeout, commandType);
@@ -145,7 +144,7 @@ namespace Dapper.Linq
         Commit = 2,
         Rollback = 3,
     }
- 
+
     public enum DatasourceType
     {
         MYSQL,
