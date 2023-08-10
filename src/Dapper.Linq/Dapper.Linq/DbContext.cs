@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Linq;
 using System.Threading.Tasks;
 using static Dapper.SqlMapper;
 
@@ -119,21 +120,21 @@ namespace Dapper.Linq
             throw new NotImplementedException();
         }
 
-        public IEnumerable<T> Query<T>(string sql, object param = null, bool buffered = false, int? commandTimeout = null, CommandType? commandType = null)
+        public List<T> Query<T>(string sql, object param = null, bool buffered = false, int? commandTimeout = null, CommandType? commandType = null)
         {
-            return Connection.Query<T>(sql, param, GetDbTransaction(), buffered, commandTimeout, commandType);
+            return Connection.Query<T>(sql, param, GetDbTransaction(), buffered, commandTimeout, commandType).ToList();
         }
-        public Task<IEnumerable<T>> QueryAsync<T>(string sql, object param = null, int? commandTimeout = null, CommandType? commandType = null)
+        public async Task<List<T>> QueryAsync<T>(string sql, object param = null, int? commandTimeout = null, CommandType? commandType = null)
         {
-            return Connection.QueryAsync<T>(sql, param, GetDbTransaction(), commandTimeout, commandType);
+            return (await Connection.QueryAsync<T>(sql, param, GetDbTransaction(), commandTimeout, commandType)).ToList();
         }
-        public IEnumerable<dynamic> Query(string sql, object param = null, bool buffered = false, int? commandTimeout = null, CommandType? commandType = null)
+        public List<dynamic> Query(string sql, object param = null, bool buffered = false, int? commandTimeout = null, CommandType? commandType = null)
         {
-            return Connection.Query(sql, param, GetDbTransaction(), buffered, commandTimeout, commandType);
+            return Connection.Query(sql, param, GetDbTransaction(), buffered, commandTimeout, commandType).ToList();
         }
-        public Task<IEnumerable<dynamic>> QueryAsync(string sql, object param = null, int? commandTimeout = null, CommandType? commandType = null)
+        public async Task<List<dynamic>> QueryAsync(string sql, object param = null, int? commandTimeout = null, CommandType? commandType = null)
         {
-            return Connection.QueryAsync(sql, param, GetDbTransaction(), commandTimeout, commandType);
+            return (await Connection.QueryAsync(sql, param, GetDbTransaction(), commandTimeout, commandType)).ToList();
         }
     }
 
