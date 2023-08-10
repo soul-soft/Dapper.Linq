@@ -79,7 +79,6 @@ namespace Dapper.Linq
         public IQueryable<T> FromSql<T>(string sql) where T : class
         {
             return new MySqlQuery<T>(this, sql);
-            throw new NotImplementedException();
         }
 
         public void Dispose()
