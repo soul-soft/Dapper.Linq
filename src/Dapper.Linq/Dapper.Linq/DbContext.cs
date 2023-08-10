@@ -3,21 +3,28 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using static Dapper.SqlMapper;
 
 namespace Dapper.Linq
 {
     public class DbContext : IDisposable
     {
-        public List<Logger> Loggers { get; set; }
-
         private IDbConnection _connection;
 
         public IDbConnection Connection => _connection;
 
+        private readonly ILoggerFactory _loggerFactory;
+
         public DbContext(IDbConnection connection)
         {
             _connection = connection;
+        }
+
+        public DbContext(IDbConnection connection, ILoggerFactory loggerFactory)
+        {
+            _connection = connection;
+            _loggerFactory = loggerFactory;
         }
 
         private IDbContextTransaction _currentTransaction;
@@ -65,6 +72,15 @@ namespace Dapper.Linq
         {
             return CurrentTransaction?.DbTransaction;
         }
+        public IQueryable<T> From<T>() where T : class
+        {
+            return new MySqlQuery<T>(this);
+        }
+        public IQueryable<T> FromSql<T>(string sql) where T : class
+        {
+            return new MySqlQuery<T>(this, sql);
+            throw new NotImplementedException();
+        }
 
         public void Dispose()
         {
@@ -88,70 +104,73 @@ namespace Dapper.Linq
 
         public GridReader QueryMultiple(string sql, object param = null, int? commandTimeout = null, CommandType text = CommandType.Text)
         {
+            Logging(sql);
             return Connection.QueryMultiple(sql, param, GetDbTransaction(), commandTimeout, text);
         }
+
         public Task<GridReader> QueryMultipleAsync(string sql, object param = null, int? commandTimeout = null, CommandType text = CommandType.Text)
         {
+            Logging(sql);
             return Connection.QueryMultipleAsync(sql, param, GetDbTransaction(), commandTimeout, text);
         }
+
         public int Execute(string sql, object param = null, int? commandTimeout = null, CommandType text = CommandType.Text)
         {
+            Logging(sql);
             return Connection.Execute(sql, param, GetDbTransaction(), commandTimeout, text);
         }
+
         public Task<int> ExecuteAsync(string sql, object param = null, int? commandTimeout = null, CommandType text = CommandType.Text)
         {
+            Logging(sql);
             return Connection.ExecuteAsync(sql, param, GetDbTransaction(), commandTimeout, text);
         }
+
         public T ExecuteScalar<T>(string sql, object param = null, int? commandTimeout = null, CommandType text = CommandType.Text)
         {
+            Logging(sql);
             return Connection.ExecuteScalar<T>(sql, param, GetDbTransaction(), commandTimeout, text);
         }
+
         public Task<T> ExecuteScalarAsync<T>(string sql, object param = null, int? commandTimeout = null, CommandType text = CommandType.Text)
         {
+            Logging(sql);
             return Connection.ExecuteScalarAsync<T>(sql, param, GetDbTransaction(), commandTimeout, text);
         }
-        public IQueryable<T> From<T>() where T : class
-        {
-            return new MySqlQuery<T>(this);
-        }
-        public IQueryable<T> FromSql<T>(string sql) where T : class
-        {
-            return new MySqlQuery<T>(this, sql);
-            throw new NotImplementedException();
-        }
+
 
         public List<T> Query<T>(string sql, object param = null, bool buffered = false, int? commandTimeout = null, CommandType? commandType = null)
         {
+            Logging(sql);
             return Connection.Query<T>(sql, param, GetDbTransaction(), buffered, commandTimeout, commandType).ToList();
         }
+
         public async Task<List<T>> QueryAsync<T>(string sql, object param = null, int? commandTimeout = null, CommandType? commandType = null)
         {
+            Logging(sql);
             return (await Connection.QueryAsync<T>(sql, param, GetDbTransaction(), commandTimeout, commandType)).ToList();
         }
+
         public List<dynamic> Query(string sql, object param = null, bool buffered = false, int? commandTimeout = null, CommandType? commandType = null)
         {
+            Logging(sql);
             return Connection.Query(sql, param, GetDbTransaction(), buffered, commandTimeout, commandType).ToList();
         }
+
         public async Task<List<dynamic>> QueryAsync(string sql, object param = null, int? commandTimeout = null, CommandType? commandType = null)
         {
+            Logging(sql);
             return (await Connection.QueryAsync(sql, param, GetDbTransaction(), commandTimeout, commandType)).ToList();
         }
-    }
 
-    public enum DbContextState
-    {
-        Closed = 0,
-        Open = 1,
-        Commit = 2,
-        Rollback = 3,
-    }
-
-    public enum DatasourceType
-    {
-        MYSQL,
-        SQLSERVER,
-        ORACLE,
-        SQLITE,
-        NONE
+        protected virtual void Logging(string sql)
+        {
+            if (_loggerFactory == null)
+            {
+                return;
+            }
+            var logger = _loggerFactory.CreateLogger<DbContext>();
+            logger.LogInformation(sql);
+        }
     }
 }
