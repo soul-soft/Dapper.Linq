@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
 using static Dapper.SqlMapper;
 
 namespace Dapper.Linq
@@ -14,17 +13,10 @@ namespace Dapper.Linq
 
         public IDbConnection Connection => _connection;
 
-        private readonly ILoggerFactory _loggerFactory;
 
         public DbContext(IDbConnection connection)
         {
             _connection = connection;
-        }
-
-        public DbContext(IDbConnection connection, ILoggerFactory loggerFactory)
-        {
-            _connection = connection;
-            _loggerFactory = loggerFactory;
         }
 
         private IDbContextTransaction _currentTransaction;
@@ -164,12 +156,7 @@ namespace Dapper.Linq
 
         protected virtual void Logging(string sql)
         {
-            if (_loggerFactory == null)
-            {
-                return;
-            }
-            var logger = _loggerFactory.CreateLogger<DbContext>();
-            logger.LogInformation(sql);
+          
         }
     }
 }
