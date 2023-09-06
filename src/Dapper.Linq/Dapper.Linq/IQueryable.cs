@@ -9,7 +9,7 @@ namespace Dapper.Linq
 {
     public interface IQueryable<T>
     {
-        (string, Dictionary<string, object>) BuildWhere();
+        SqlBuilder Build();
         IQueryable<T> Set<TResult>(Expression<Func<T, TResult>> column, ISubQuery subquery, bool condition = true);
         IQueryable<T> Set<TResult>(Expression<Func<T, TResult>> column, TResult value, bool condition = true);
         IQueryable<T> Set<TResult>(Expression<Func<T, TResult>> column, Expression<Func<T, TResult>> expression, bool condition = true);

@@ -822,11 +822,12 @@ namespace Dapper.Linq
             return sqlBuffer.ToString();
         }
 
-        public (string, Dictionary<string, object>) BuildWhere()
+        public SqlBuilder Build()
         {
-            var sql = _whereBuffer.ToString();
-            var values = _param;
-            return (sql, values);
+            var sb = new SqlBuilder(_param);
+            sb.Where(_whereBuffer.ToString());
+            sb.Having(_havingBuffer.ToString());
+            return sb;
         }
         #endregion
     }
