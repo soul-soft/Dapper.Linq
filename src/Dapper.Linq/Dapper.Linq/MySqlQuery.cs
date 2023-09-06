@@ -825,8 +825,14 @@ namespace Dapper.Linq
         public SqlBuilder Build()
         {
             var sb = new SqlBuilder(_param);
-            sb.Where(_whereBuffer.ToString());
-            sb.Having(_havingBuffer.ToString());
+            if (_whereBuffer.Length>0)
+            {
+                sb.Where(_whereBuffer.ToString());
+            }
+            if (_havingBuffer.Length>0)
+            {
+                sb.Having(_havingBuffer.ToString());
+            }
             return sb;
         }
         #endregion
