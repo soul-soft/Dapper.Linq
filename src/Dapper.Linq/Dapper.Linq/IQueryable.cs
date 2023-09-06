@@ -9,6 +9,7 @@ namespace Dapper.Linq
 {
     public interface IQueryable<T>
     {
+        (string, Dictionary<string, object>) BuildWhere();
         IQueryable<T> Set<TResult>(Expression<Func<T, TResult>> column, ISubQuery subquery, bool condition = true);
         IQueryable<T> Set<TResult>(Expression<Func<T, TResult>> column, TResult value, bool condition = true);
         IQueryable<T> Set<TResult>(Expression<Func<T, TResult>> column, Expression<Func<T, TResult>> expression, bool condition = true);
@@ -69,90 +70,7 @@ namespace Dapper.Linq
         TResult Sum<TResult>(Expression<Func<T, TResult>> expression, bool condition = true, int? timeout = null);
         Task<TResult> SumAsync<TResult>(Expression<Func<T, TResult>> expression, bool condition = true, int? timeout = null);
     }
-    public interface IQueryable<T1, T2>
-    {
-        IQueryable<T1, T2> Join(string expression);
-        IQueryable<T1, T2> Join(Expression<Func<T1, T2, bool?>> expression, JoinType join = JoinType.Inner);
-        IQueryable<T1, T2> GroupBy(string expression, bool condition = true);
-        IQueryable<T1, T2> GroupBy<TResult>(Expression<Func<T1, T2, TResult>> expression, bool condition = true);
-        IQueryable<T1, T2> Where(string expression, object param = null, bool condition = true);
-        IQueryable<T1, T2> Where(Expression<Func<T1, T2, bool?>> expression, bool condition = true);
-        IQueryable<T1, T2> OrderBy(string orderBy, bool condition = true);
-        IQueryable<T1, T2> OrderBy<TResult>(Expression<Func<T1, T2, TResult>> expression, bool condition = true);
-        IQueryable<T1, T2> OrderByDescending<TResult>(Expression<Func<T1, T2, TResult>> expression, bool condition = true);
-        IQueryable<T1, T2> Skip(int index, int count, bool condition = true);
-        IQueryable<T1, T2> Take(int count, bool condition = true);
-        IQueryable<T1, T2> Page(int index, int count, out long total, bool condition = true);
-        IQueryable<T1, T2> Having(string expression, object param = null, bool condition = true);
-        IQueryable<T1, T2> Having(Expression<Func<T1, T2, bool?>> expression, bool condition = true);
-        IQueryable<T1, T2> Distinct(bool condition = true);
-        IEnumerable<TResult> Select<TResult>(string colums = null, bool buffered = true, int? timeout = null);
-        Task<IEnumerable<TResult>> SelectAsync<TResult>(string colums = null, int? timeout = null);
-        TResult Single<TResult>(string colums = null, bool buffered = true, int? timeout = null);
-        Task<TResult> SingleAsync<TResult>(string colums = null, int? timeout = null);
-        IEnumerable<TResult> Select<TResult>(Expression<Func<T1, T2, TResult>> columns, bool buffered = true, int? timeout = null);
-        Task<IEnumerable<TResult>> SelectAsync<TResult>(Expression<Func<T1, T2, TResult>> columns, int? timeout = null);
-        TResult Single<TResult>(Expression<Func<T1, T2, TResult>> columns, bool buffered = true, int? timeout = null);
-        Task<TResult> SingleAsync<TResult>(Expression<Func<T1, T2, TResult>> columns, int? timeout = null);
-        long Count(string columns = null, bool condition = true, int? timeout = null);
-        Task<long> CountAsync(string columns = null, bool condition = true, int? timeout = null);
-    }
-    public interface IQueryable<T1, T2, T3>
-    {
-        IQueryable<T1, T2, T3> Join(string expression);
-        IQueryable<T1, T2, T3> Join<E1, E2>(Expression<Func<E1, E2, bool?>> expression, JoinType join = JoinType.Inner) where E1 : class where E2 : class;
-        IQueryable<T1, T2, T3> GroupBy(string expression, bool condition = true);
-        IQueryable<T1, T2, T3> GroupBy<TResult>(Expression<Func<T1, T2, T3, TResult>> expression, bool condition = true);
-        IQueryable<T1, T2, T3> Where(string expression, object param = null, bool condition = true);
-        IQueryable<T1, T2, T3> Where(Expression<Func<T1, T2, T3, bool?>> expression, bool condition = true);
-        IQueryable<T1, T2, T3> OrderBy(string orderBy, bool condition = true);
-        IQueryable<T1, T2, T3> OrderBy<TResult>(Expression<Func<T1, T2, T3, TResult>> expression, bool condition = true);
-        IQueryable<T1, T2, T3> OrderByDescending<TResult>(Expression<Func<T1, T2, T3, TResult>> expression, bool condition = true);
-        IQueryable<T1, T2, T3> Skip(int index, int count, bool condition = true);
-        IQueryable<T1, T2, T3> Take(int count, bool condition = true);
-        IQueryable<T1, T2, T3> Page(int index, int count, out long total, bool condition = true);
-        IQueryable<T1, T2, T3> Having(string expression, object param = null, bool condition = true);
-        IQueryable<T1, T2, T3> Having(Expression<Func<T1, T2, T3, bool?>> expression, bool condition = true);
-        IQueryable<T1, T2, T3> Distinct(bool condition = true);
-        IEnumerable<TResult> Select<TResult>(string colums = null, bool buffered = true, int? timeout = null);
-        Task<IEnumerable<TResult>> SelectAsync<TResult>(string colums = null, int? timeout = null);
-        TResult Single<TResult>(string colums = null, bool buffered = true, int? timeout = null);
-        Task<TResult> SingleAsync<TResult>(string colums = null, int? timeout = null);
-        IEnumerable<TResult> Select<TResult>(Expression<Func<T1, T2, T3, TResult>> columns, bool buffered = true, int? timeout = null);
-        Task<IEnumerable<TResult>> SelectAsync<TResult>(Expression<Func<T1, T2, T3, TResult>> columns, int? timeout = null);
-        TResult Single<TResult>(Expression<Func<T1, T2, T3, TResult>> columns, bool buffered = true, int? timeout = null);
-        Task<TResult> SingleAsync<TResult>(Expression<Func<T1, T2, T3, TResult>> columns, int? timeout = null);
-        long Count(string columns = null, bool condition = true, int? timeout = null);
-        Task<long> CountAsync(string columns = null, bool condition = true, int? timeout = null);
-    }
-    public interface IQueryable<T1, T2, T3, T4>
-    {
-        IQueryable<T1, T2, T3, T4> Join(string expression);
-        IQueryable<T1, T2, T3, T4> Join<E1, E2>(Expression<Func<E1, E2, bool?>> expression, JoinType join = JoinType.Inner) where E1 : class where E2 : class;
-        IQueryable<T1, T2, T3, T4> GroupBy(string expression, bool condition = true);
-        IQueryable<T1, T2, T3, T4> GroupBy<TResult>(Expression<Func<T1, T2, T3, T4, TResult>> expression, bool condition = true);
-        IQueryable<T1, T2, T3, T4> Where(string expression, object param = null, bool condition = true);
-        IQueryable<T1, T2, T3, T4> Where(Expression<Func<T1, T2, T3, T4, bool?>> expression, bool condition = true);
-        IQueryable<T1, T2, T3, T4> OrderBy(string orderBy, bool condition = true);
-        IQueryable<T1, T2, T3, T4> OrderBy<TResult>(Expression<Func<T1, T2, T3, T4, TResult>> expression, bool condition = true);
-        IQueryable<T1, T2, T3, T4> OrderByDescending<TResult>(Expression<Func<T1, T2, T3, T4, TResult>> expression, bool condition = true);
-        IQueryable<T1, T2, T3, T4> Skip(int index, int count, bool condition = true);
-        IQueryable<T1, T2, T3, T4> Take(int count, bool condition = true);
-        IQueryable<T1, T2, T3, T4> Page(int index, int count, out long total, bool condition = true);
-        IQueryable<T1, T2, T3, T4> Having(string expression, object param = null, bool condition = true);
-        IQueryable<T1, T2, T3, T4> Having(Expression<Func<T1, T2, T3, T4, bool?>> expression, bool condition = true);
-        IQueryable<T1, T2, T3, T4> Distinct(bool condition = true);
-        IEnumerable<TResult> Select<TResult>(string colums = null, bool buffered = true, int? timeout = null);
-        Task<IEnumerable<TResult>> SelectAsync<TResult>(string colums = null, int? timeout = null);
-        TResult Single<TResult>(string colums = null, bool buffered = true, int? timeout = null);
-        Task<TResult> SingleAsync<TResult>(string colums = null, int? timeout = null);
-        IEnumerable<TResult> Select<TResult>(Expression<Func<T1, T2, T3, T4, TResult>> columns, bool buffered = true, int? timeout = null);
-        Task<IEnumerable<TResult>> SelectAsync<TResult>(Expression<Func<T1, T2, T3, T4, TResult>> columns, int? timeout = null);
-        TResult Single<TResult>(Expression<Func<T1, T2, T3, T4, TResult>> columns, bool buffered = true, int? timeout = null);
-        Task<TResult> SingleAsync<TResult>(Expression<Func<T1, T2, T3, T4, TResult>> columns, int? timeout = null);
-        long Count(string columns = null, bool condition = true, int? timeout = null);
-        Task<long> CountAsync(string columns = null, bool condition = true, int? timeout = null);
-    }
+ 
     public enum LockType
     {
         FOR_UPADTE,

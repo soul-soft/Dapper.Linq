@@ -768,7 +768,7 @@ namespace Dapper.Linq
                     sqlBuffer.AppendFormat(" COUNT(1)");
                 }
             }
-           
+
             sqlBuffer.AppendFormat(" FROM {0}", GetTableName());
             if (_whereBuffer.Length > 0)
             {
@@ -820,6 +820,13 @@ namespace Dapper.Linq
                 sqlBuffer.AppendFormat(" WHERE {0}", _whereBuffer);
             }
             return sqlBuffer.ToString();
+        }
+
+        public (string, Dictionary<string, object>) BuildWhere()
+        {
+            var sql = _whereBuffer.ToString();
+            var values = _param;
+            return (sql, values);
         }
         #endregion
     }
