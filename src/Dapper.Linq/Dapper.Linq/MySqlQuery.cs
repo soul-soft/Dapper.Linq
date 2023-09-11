@@ -443,6 +443,22 @@ namespace Dapper.Linq
                 ExpressionUtil.BuildColumns(columns, _param, _prefix).Select(s => string.Format("{0} AS {1}", s.Value, s.Key)));
             return SingleAsync<TResult>(columnstr, timeout);
         }
+
+        public List<T> ToList(DynamicParameters param = null)
+        {
+            if (param != null)
+            {
+                param.AddDynamicParams(_param);
+                var sql = BuildSelect();
+                return _context.Query<T>(sql, param, false);
+            }
+            else
+            {
+                var sql = BuildSelect();
+                return _context.Query<T>(sql, _param, false);
+            }
+        }
+
         public IEnumerable<T> Select(string colums = null, bool buffered = true, int? timeout = null)
         {
             if (colums != null)
@@ -456,6 +472,7 @@ namespace Dapper.Linq
             }
             return new List<T>();
         }
+
         public async Task<IEnumerable<T>> SelectAsync(string colums = null, int? timeout = null)
         {
             if (colums != null)
