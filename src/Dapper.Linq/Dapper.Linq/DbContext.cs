@@ -68,6 +68,7 @@ namespace Dapper.Linq
         {
             return new MySqlQuery<T>(this);
         }
+       
         public IQueryable<T> FromSql<T>(string sql) where T : class
         {
             return new MySqlQuery<T>(this, sql);

@@ -444,19 +444,16 @@ namespace Dapper.Linq
             return SingleAsync<TResult>(columnstr, timeout);
         }
 
-        public List<T> ToList(DynamicParameters param = null)
+        public List<T> ToList()
         {
-            if (param != null)
-            {
-                param.AddDynamicParams(_param);
-                var sql = BuildSelect();
-                return _context.Query<T>(sql, param, false);
-            }
-            else
-            {
-                var sql = BuildSelect();
-                return _context.Query<T>(sql, _param, false);
-            }
+            var sql = BuildSelect();
+            return _context.Query<T>(sql, _param, false);
+        }
+
+        public Task<List<T>> ToListAsync()
+        {
+            var sql = BuildSelect();
+            return _context.QueryAsync<T>(sql, _param);
         }
 
         public IEnumerable<T> Select(string colums = null, bool buffered = true, int? timeout = null)

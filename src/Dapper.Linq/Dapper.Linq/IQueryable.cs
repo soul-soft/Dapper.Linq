@@ -69,7 +69,8 @@ namespace Dapper.Linq
         Task<long> CountAsync<TResult>(Expression<Func<T, TResult>> expression, bool condition = true, int? timeout = null);
         TResult Sum<TResult>(Expression<Func<T, TResult>> expression, bool condition = true, int? timeout = null);
         Task<TResult> SumAsync<TResult>(Expression<Func<T, TResult>> expression, bool condition = true, int? timeout = null);
-        List<T> ToList(DynamicParameters param = null);
+        List<T> ToList();
+        Task<List<T>> ToListAsync();
     }
  
     public enum LockType
