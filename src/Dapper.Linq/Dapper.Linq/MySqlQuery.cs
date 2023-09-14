@@ -14,12 +14,14 @@ namespace Dapper.Linq
         public DbContext _context { get; }
         public string _prefix { get; }
         public string _view { get; }
-        public MySqlQuery(DbContext dbcontext = null, string view = null)
+        private DynamicParameters _parameters;
+        public MySqlQuery(DbContext dbcontext = null, string view = null,DynamicParameters parameters = null)
         {
             _view = view;
             _prefix = "@";
             _context = dbcontext;
             _param = new Dictionary<string, object>();
+            _parameters = parameters;
         }
         public MySqlQuery(Dictionary<string, object> param)
         {

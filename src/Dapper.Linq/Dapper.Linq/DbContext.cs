@@ -68,10 +68,10 @@ namespace Dapper.Linq
         {
             return new MySqlQuery<T>(this);
         }
-       
-        public IQueryable<T> FromSql<T>(string sql) where T : class
+
+        public IQueryable<T> FromSql<T>(string sql, DynamicParameters parameters = null) where T : class
         {
-            return new MySqlQuery<T>(this, sql);
+            return new MySqlQuery<T>(this, sql, parameters);
         }
 
         public void Dispose()
@@ -157,7 +157,7 @@ namespace Dapper.Linq
 
         protected virtual void Logging(string sql)
         {
-          
+
         }
     }
 }
