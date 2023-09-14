@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
 
@@ -9,7 +10,7 @@ namespace Dapper.Linq.Util
     {
         #region propertys
         private StringBuilder _build = new StringBuilder();
-        private Dictionary<string, object> _param { get; set; }
+        private DynamicParameters _param { get; set; }
         private string _paramName = "Name";
         private string _prefix { get; set; }
         private string _operatorMethod { get; set; }
@@ -238,7 +239,7 @@ namespace Dapper.Linq.Util
                 {
                     value = Convert.ToBoolean(value) ? 1 : 0;
                 }
-                var key = string.Format("{0}{1}{2}", _prefix, _paramName, _param.Count);
+                var key = string.Format("{0}{1}{2}", _prefix, "P", _param.ParameterNames.Count());
                 _param.Add(key, value);
                 _build.Append(key);
             }
@@ -246,18 +247,18 @@ namespace Dapper.Linq.Util
         #endregion
 
         #region public
-        public static string BuildExpression(Expression expression, Dictionary<string, object> param, string prefix = "@", bool singleTable = true)
+        public static string BuildExpression(Expression expression, DynamicParameters param, string prefix = "@", bool singleTable = true)
         {
             var visitor = new ExpressionUtil
             {
-                _param = param ?? new Dictionary<string, object>(),
+                _param = param ?? new DynamicParameters(),
                 _singleTable = singleTable,
                 _prefix = prefix,
             };
             visitor.Visit(expression);
             return visitor._build.ToString();
         }
-        public static Dictionary<string, string> BuildColumns(Expression expression, Dictionary<string, object> param, string prefix, bool singleTable = true)
+        public static Dictionary<string, string> BuildColumns(Expression expression, DynamicParameters param, string prefix, bool singleTable = true)
         {
             var columns = new Dictionary<string, string>();
             if (expression is LambdaExpression)
@@ -379,7 +380,7 @@ namespace Dapper.Linq.Util
             }
             return columns;
         }
-        public static Dictionary<string, string> BuildColumn(Expression expression, Dictionary<string, object> param, string prefix, bool singleTable = true)
+        public static Dictionary<string, string> BuildColumn(Expression expression, DynamicParameters param, string prefix, bool singleTable = true)
         {
             if (expression is LambdaExpression)
             {
@@ -401,7 +402,7 @@ namespace Dapper.Linq.Util
                 return column;
             }
         }
-        public static Dictionary<string, string> BuildColumnAndValues(Expression expression, Dictionary<string, object> param, string prefix)
+        public static Dictionary<string, string> BuildColumnAndValues(Expression expression, DynamicParameters param, string prefix)
         {
             var columns = new Dictionary<string, string>();
             expression = (expression as LambdaExpression).Body;

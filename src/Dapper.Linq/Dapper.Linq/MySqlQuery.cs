@@ -14,16 +14,14 @@ namespace Dapper.Linq
         public DbContext _context { get; }
         public string _prefix { get; }
         public string _view { get; }
-        private DynamicParameters _parameters;
-        public MySqlQuery(DbContext dbcontext = null, string view = null,DynamicParameters parameters = null)
+        public MySqlQuery(DbContext dbcontext = null, string view = null, DynamicParameters parameters = null)
         {
             _view = view;
             _prefix = "@";
             _context = dbcontext;
-            _param = new Dictionary<string, object>();
-            _parameters = parameters;
+            _param = parameters ?? new DynamicParameters();
         }
-        public MySqlQuery(Dictionary<string, object> param)
+        public MySqlQuery(DynamicParameters param)
         {
             _prefix = "@";
             _param = param;
@@ -171,7 +169,7 @@ namespace Dapper.Linq
                     _setBuffer.Append(",");
                 }
                 var columns = ExpressionUtil.BuildColumn(column, _param, _prefix).First();
-                var key = string.Format("{0}{1}", columns.Key, _param.Count);
+                var key = string.Format("{0}{1}", columns.Key, _param.ParameterNames.Count());
                 _param.Add(key, value);
                 _setBuffer.AppendFormat("{0} = @{1}", columns.Value, key);
             }
@@ -612,7 +610,7 @@ namespace Dapper.Linq
         #endregion
 
         #region property
-        public Dictionary<string, object> _param { get; set; }
+        public DynamicParameters _param { get; set; }
         public StringBuilder _columnBuffer = new StringBuilder();
         public List<string> _filters = new List<string>();
         public StringBuilder _setBuffer = new StringBuilder();

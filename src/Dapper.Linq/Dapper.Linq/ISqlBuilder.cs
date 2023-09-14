@@ -8,7 +8,7 @@ namespace Dapper.Linq
 {
     public interface ISqlBuilder
     {
-        string Build(Dictionary<string, object> values, string prefix);
+        string Build(DynamicParameters values, string prefix);
     }
     public interface ISubQuery : ISqlBuilder
     {
