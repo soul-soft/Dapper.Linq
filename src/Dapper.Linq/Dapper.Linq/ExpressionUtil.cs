@@ -10,12 +10,12 @@ namespace Dapper.Linq.Util
     {
         #region propertys
         private StringBuilder _build = new StringBuilder();
-        private DynamicParameters _param { get; set; }
+        private DynamicParameters _param;
         private string _paramName = "Name";
-        private string _prefix { get; set; }
-        private string _operatorMethod { get; set; }
-        private string _operator { get; set; }
-        private bool _singleTable { get; set; }
+        private string _prefix;
+        private string _operatorMethod;
+        private string _operator;
+        private string _alias;
         #endregion
 
         #region override
@@ -190,20 +190,19 @@ namespace Dapper.Linq.Util
         #endregion
 
         #region private
-        private static string GetColumnName(Type type, string name, bool singleTable)
+        private static string GetColumnName(Type type, string name,string alias)
         {
             var columnName = EntityUtil.GetColumn(type, f => f.CSharpName == name)?.ColumnName ?? name;
-            if (!singleTable)
+            if (!string.IsNullOrEmpty(alias))
             {
-                var tableName = EntityUtil.GetTable(type).TableName;
-                columnName = string.Format("{0}.{1}", tableName, columnName);
+                columnName = string.Format("{0}.{1}", alias, columnName);
             }
             return columnName;
         }
         public void SetName(MemberExpression expression)
         {
             var name = expression.Member.Name;
-            var columnName = GetColumnName(expression.Expression.Type, name, _singleTable);
+            var columnName = GetColumnName(expression.Expression.Type, name,_alias);
             _build.Append(columnName);
             _paramName = name;
         }
@@ -247,18 +246,18 @@ namespace Dapper.Linq.Util
         #endregion
 
         #region public
-        public static string BuildExpression(Expression expression, DynamicParameters param, string prefix = "@", bool singleTable = true)
+        public static string BuildExpression(Expression expression, DynamicParameters param, string prefix = "@", string alias = null)
         {
             var visitor = new ExpressionUtil
             {
                 _param = param ?? new DynamicParameters(),
-                _singleTable = singleTable,
+                _alias = alias,
                 _prefix = prefix,
             };
             visitor.Visit(expression);
             return visitor._build.ToString();
         }
-        public static Dictionary<string, string> BuildColumns(Expression expression, DynamicParameters param, string prefix, bool singleTable = true)
+        public static Dictionary<string, string> BuildColumns(Expression expression, DynamicParameters param, string prefix, string alias = null)
         {
             var columns = new Dictionary<string, string>();
             if (expression is LambdaExpression)
@@ -268,7 +267,7 @@ namespace Dapper.Linq.Util
             if (expression is MemberExpression memberExpression0 && memberExpression0.Expression != null && memberExpression0.Expression.NodeType == ExpressionType.Parameter)
             {
                 var memberName = memberExpression0.Member.Name;
-                var columnName = GetColumnName(memberExpression0.Expression.Type, memberExpression0.Member.Name, singleTable);
+                var columnName = GetColumnName(memberExpression0.Expression.Type, memberExpression0.Member.Name, alias);
                 columns.Add(memberName, columnName);
             }
             else if (expression is MemberInitExpression initExpression)
@@ -284,7 +283,7 @@ namespace Dapper.Linq.Util
                     }
                     if (argument is MemberExpression memberExpression1 && memberExpression1.Expression != null && memberExpression1.Expression.NodeType == ExpressionType.Parameter)
                     {
-                        columnName = GetColumnName(memberExpression1.Expression.Type, memberExpression1.Member.Name, singleTable);
+                        columnName = GetColumnName(memberExpression1.Expression.Type, memberExpression1.Member.Name, alias);
                     }
                     else if (argument is MemberExpression memberExpression2 && memberExpression2.Expression != null && memberExpression2.Expression.NodeType == ExpressionType.Constant)
                     {
@@ -316,7 +315,7 @@ namespace Dapper.Linq.Util
                     }
                     else
                     {
-                        columnName = BuildExpression(argument, param, prefix, singleTable);
+                        columnName = BuildExpression(argument, param, prefix, alias);
                     }
 
                     columns.Add(memberName, columnName);
@@ -335,7 +334,7 @@ namespace Dapper.Linq.Util
                     }
                     if (argument is MemberExpression memberExpression1 && memberExpression1.Expression != null && memberExpression1.Expression.NodeType == ExpressionType.Parameter)
                     {
-                        columnName = GetColumnName(memberExpression1.Expression.Type, memberExpression1.Member.Name, singleTable);
+                        columnName = GetColumnName(memberExpression1.Expression.Type, memberExpression1.Member.Name, alias);
                     }
                     else if (argument is MemberExpression memberExpression2 && memberExpression2.Expression != null && memberExpression2.Expression.NodeType == ExpressionType.Constant)
                     {
@@ -367,7 +366,7 @@ namespace Dapper.Linq.Util
                     }
                     else
                     {
-                        columnName = BuildExpression(argument, param, prefix, singleTable);
+                        columnName = BuildExpression(argument, param, prefix, alias);
                     }
                     columns.Add(memberName, columnName);
                 }
@@ -375,12 +374,12 @@ namespace Dapper.Linq.Util
             else
             {
                 var name = string.Format("COLUMN0");
-                var columnName = BuildExpression(expression, param, prefix, singleTable);
+                var columnName = BuildExpression(expression, param, prefix, alias);
                 columns.Add(name, columnName);
             }
             return columns;
         }
-        public static Dictionary<string, string> BuildColumn(Expression expression, DynamicParameters param, string prefix, bool singleTable = true)
+        public static Dictionary<string, string> BuildColumn(Expression expression, DynamicParameters param, string prefix, string alias = null)
         {
             if (expression is LambdaExpression)
             {
@@ -390,14 +389,14 @@ namespace Dapper.Linq.Util
             if (expression is MemberExpression memberExpression && memberExpression.Expression != null && memberExpression.Expression.NodeType == ExpressionType.Parameter)
             {
                 var memberName = memberExpression.Member.Name;
-                var columnName = GetColumnName(memberExpression.Expression.Type, memberName, singleTable);
+                var columnName = GetColumnName(memberExpression.Expression.Type, memberName, alias);
                 column.Add(memberName, columnName);
                 return column;
             }
             else
             {
                 var name = string.Format("COLUMN0");
-                var build = BuildExpression(expression, param, prefix, singleTable);
+                var build = BuildExpression(expression, param, prefix, alias);
                 column.Add(name, build);
                 return column;
             }

@@ -3,9 +3,8 @@ using Dapper.Linq;
 using Dapper.Linq.Test;
 
 Console.WriteLine("Hello, World!");
+int s = 20;
 var context = new DbContext(null);
-SqlBuilder sql = context.From<Student>()
-    .Where(a => a.Id > 10)
-    .Build();
-var ff = sql.Build("/**where**/");
-Console.WriteLine(ff);
+var sql = context.From<Student>("pro")
+    .Where(a=>a.Id == s)
+  .Sum(a => a.Id);

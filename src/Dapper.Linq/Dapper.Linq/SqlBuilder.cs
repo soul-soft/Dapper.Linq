@@ -168,6 +168,14 @@ namespace Dapper.Linq
             }, RegexOptions.IgnoreCase);
         }
 
+        public string WhereSql 
+        {
+            get 
+            {
+                return Build("/**where**/");
+            }
+        }
+
         public SqlBuilder Clone()
         {
             SqlBuilder sqlBuilder = new SqlBuilder();
