@@ -190,7 +190,7 @@ namespace Dapper.Linq.Util
         #endregion
 
         #region private
-        private static string GetColumnName(Type type, string name,string alias)
+        private static string GetColumnName(Type type, string name, string alias)
         {
             var columnName = EntityUtil.GetColumn(type, f => f.CSharpName == name)?.ColumnName ?? name;
             if (!string.IsNullOrEmpty(alias))
@@ -202,7 +202,7 @@ namespace Dapper.Linq.Util
         public void SetName(MemberExpression expression)
         {
             var name = expression.Member.Name;
-            var columnName = GetColumnName(expression.Expression.Type, name,_alias);
+            var columnName = GetColumnName(expression.Expression.Type, name, _alias);
             _build.Append(columnName);
             _paramName = name;
         }

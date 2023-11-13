@@ -185,8 +185,8 @@ namespace Dapper.Linq
                 {
                     _setBuffer.Append(",");
                 }
-                var columnName = ExpressionUtil.BuildColumn(column, Param, Prefix).First().Value;
-                var expression = ExpressionUtil.BuildExpression(value, Param, Prefix);
+                var columnName = ExpressionUtil.BuildColumn(column, Param, Prefix, Alias).First().Value;
+                var expression = ExpressionUtil.BuildExpression(value, Param, Prefix, Alias);
                 _setBuffer.AppendFormat("{0} = {1}", columnName, expression);
             }
             return this;
