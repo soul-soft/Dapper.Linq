@@ -14,13 +14,12 @@ namespace Dapper.Linq
         public DbContext _context { get; }
         public string Prefix { get; }
         public string View { get; }
-        public string Alias {get;}
-        public MySqlQuery(DbContext dbcontext = null, string view = null, string alias = null, DynamicParameters parameters = null)
+        public string Alias { get; private set; }
+        public MySqlQuery(DbContext dbcontext = null, string view = null, DynamicParameters parameters = null)
         {
             View = view;
             Prefix = "@";
             _context = dbcontext;
-            Alias = alias;
             Param = parameters ?? new DynamicParameters();
         }
         public MySqlQuery(DynamicParameters param)
@@ -862,6 +861,12 @@ namespace Dapper.Linq
                 sb.Having(_havingBuffer.ToString());
             }
             return sb;
+        }
+
+        public IQueryable<T> As(string alias)
+        {
+            Alias = alias;
+            return this;
         }
         #endregion
     }

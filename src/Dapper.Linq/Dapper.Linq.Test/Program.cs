@@ -5,7 +5,8 @@ using Dapper.Linq.Test;
 Console.WriteLine("Hello, World!");
 int s = 20;
 var context = new DbContext(null);
-var sql = context.From<Student>("pro")
+var sql = context.From<Student>()
+    .As("pro")
     .Set(a => a.Id, a=>a.Id+1)
     .Where(a => a.Id == s)
     .Update();

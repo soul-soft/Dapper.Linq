@@ -65,14 +65,14 @@ namespace Dapper.Linq
             return CurrentTransaction?.DbTransaction;
         }
         
-        public IQueryable<T> From<T>(string alias = null) where T : class
+        public IQueryable<T> From<T>() where T : class
         {
-            return new MySqlQuery<T>(this,alias: alias);
+            return new MySqlQuery<T>(this);
         }
 
-        public IQueryable<T> FromSql<T>(string sql, string alias = null, DynamicParameters parameters = null) where T : class
+        public IQueryable<T> FromSql<T>(string sql, DynamicParameters parameters = null) where T : class
         {
-            return new MySqlQuery<T>(this, sql, alias, parameters);
+            return new MySqlQuery<T>(this, sql, parameters);
         }
 
         public void Dispose()

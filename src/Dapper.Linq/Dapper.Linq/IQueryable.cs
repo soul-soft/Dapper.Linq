@@ -10,6 +10,7 @@ namespace Dapper.Linq
     public interface IQueryable<T>
     {
         SqlBuilder Build();
+        IQueryable<T> As(string alias);
         IQueryable<T> Set<TResult>(Expression<Func<T, TResult>> column, ISubQuery subquery, bool condition = true);
         IQueryable<T> Set<TResult>(Expression<Func<T, TResult>> column, TResult value, bool condition = true);
         IQueryable<T> Set<TResult>(Expression<Func<T, TResult>> column, Expression<Func<T, TResult>> expression, bool condition = true);
