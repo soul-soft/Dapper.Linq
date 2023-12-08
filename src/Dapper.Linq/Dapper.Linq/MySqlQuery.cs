@@ -97,7 +97,7 @@ namespace Dapper.Linq
                 {
                     _havingBuffer.AppendFormat(" {0} ", Operator.GetOperator(ExpressionType.AndAlso));
                 }
-                _havingBuffer.Append(expression);
+                _havingBuffer.Append($"({expression})");
                 AddParam(param);
             }
             return this;
@@ -215,7 +215,7 @@ namespace Dapper.Linq
                 {
                     _whereBuffer.AppendFormat(" {0} ", Operator.GetOperator(ExpressionType.AndAlso));
                 }
-                _whereBuffer.Append(expression);
+                _whereBuffer.Append($"({expression})");
                 AddParam(param);
             }
             return this;
