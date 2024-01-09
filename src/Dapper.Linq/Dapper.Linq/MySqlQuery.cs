@@ -22,10 +22,16 @@ namespace Dapper.Linq
             _context = dbcontext;
             Param = parameters ?? new DynamicParameters();
         }
-        public MySqlQuery(DynamicParameters param)
+
+        public MySqlQuery(SqlBuilder sqlBuilder, DynamicParameters parameters)
         {
             Prefix = "@";
-            Param = param;
+            Param = parameters ?? new DynamicParameters();
+            var whereText = sqlBuilder.WhereText;
+            if (!string.IsNullOrEmpty(whereText))
+            {
+                Where(whereText);
+            }
         }
         #endregion
 

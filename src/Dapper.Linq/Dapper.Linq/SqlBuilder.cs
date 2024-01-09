@@ -33,6 +33,7 @@ namespace Dapper.Linq
 
         private List<Token> _tokens = new List<Token>();
 
+
         private string View => (from a in _tokens
                                 where a.Type == TokenType.From
                                 select a into s
@@ -45,9 +46,9 @@ namespace Dapper.Linq
             Parameters = new DynamicParameters();
         }
 
-        public SqlBuilder(object parma)
+        public SqlBuilder(DynamicParameters parameters)
         {
-            Parameters = new DynamicParameters(parma);
+            Parameters = parameters;
         }
 
         public SqlBuilder Where(string sql, bool flag = true)
@@ -173,6 +174,14 @@ namespace Dapper.Linq
             get 
             {
                 return Build("/**where**/");
+            }
+        }
+
+        internal string WhereText
+        {
+            get 
+            {
+                return string.Join(" AND ", _tokens.Where(a => a.Type == TokenType.Where).Select(s => s.Text));
             }
         }
 

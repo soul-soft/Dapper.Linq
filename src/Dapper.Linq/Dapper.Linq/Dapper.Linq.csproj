@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <Version>1.0.1-yc010</Version>
+    <Version>1.0.1-yc011</Version>
     <Description>where中的sql不需要括号</Description>
     <Authors>花间岛</Authors>
     <PackageProjectUrl>https://github.com/1448376744/Dapper.Linq</PackageProjectUrl>

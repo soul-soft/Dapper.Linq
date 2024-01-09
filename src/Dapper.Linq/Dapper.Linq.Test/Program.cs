@@ -5,9 +5,9 @@ using Dapper.Linq.Test;
 Console.WriteLine("Hello, World!");
 int s = 20;
 var context = new DbContext(null);
-var sql = context.From<Student>()
-    .As("pro")
-    .Set(a => a.Id, a=>a.Id+1)
-    .Where(a => a.Id == s)
-    .Update();
+var sb = new SqlBuilder();
+sb.Where("1>1");
+sb.Where("2>2");
+var where = sb.WhereText;
+Console.WriteLine(  );
 
