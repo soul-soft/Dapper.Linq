@@ -72,7 +72,7 @@ namespace Dapper.Linq
 
         public IQueryable<T> From<T>(SqlBuilder sqlBuilder,DynamicParameters parameters = null) where T : class
         {
-            return new MySqlQuery<T>(this);
+            return new MySqlQuery<T>(this, sqlBuilder, parameters);
         }
 
         public IQueryable<T> FromSql<T>(string sql, DynamicParameters parameters = null) where T : class

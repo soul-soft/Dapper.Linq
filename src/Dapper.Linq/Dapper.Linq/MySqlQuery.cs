@@ -12,20 +12,25 @@ namespace Dapper.Linq
     {
         #region constructor
         public DbContext _context { get; }
-        public string Prefix { get; }
+        public string Prefix = "@";
         public string View { get; }
         public string Alias { get; private set; }
-        public MySqlQuery(DbContext dbcontext = null, string view = null, DynamicParameters parameters = null)
+        public MySqlQuery(DbContext context)
+        {
+            _context = context;
+            Param = new DynamicParameters();
+        }
+
+        public MySqlQuery(DbContext context, string view, DynamicParameters parameters = null)
         {
             View = view;
-            Prefix = "@";
-            _context = dbcontext;
+            _context = context;
             Param = parameters ?? new DynamicParameters();
         }
 
-        public MySqlQuery(SqlBuilder sqlBuilder, DynamicParameters parameters)
+        public MySqlQuery(DbContext context, SqlBuilder sqlBuilder, DynamicParameters parameters)
         {
-            Prefix = "@";
+            _context = context;
             Param = parameters ?? new DynamicParameters();
             var whereText = sqlBuilder.WhereText;
             if (!string.IsNullOrEmpty(whereText))
