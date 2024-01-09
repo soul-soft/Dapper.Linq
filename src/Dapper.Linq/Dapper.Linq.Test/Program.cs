@@ -8,6 +8,6 @@ var context = new DbContext(null);
 var sb = new SqlBuilder();
 sb.Where("1>1");
 sb.Where("2>2");
-var where = sb.WhereText;
+var where = context.From<Student>().Where("aa>10").Build() ;
 Console.WriteLine(  );
 

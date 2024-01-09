@@ -55,7 +55,7 @@ namespace Dapper.Linq
         {
             if (flag)
             {
-                _tokens.Add(new Token(TokenType.Where, sql));
+                _tokens.Add(new Token(TokenType.Where, $"({sql})"));
             }
 
             return this;
