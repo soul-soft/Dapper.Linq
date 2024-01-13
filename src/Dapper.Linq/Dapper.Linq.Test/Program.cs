@@ -10,17 +10,19 @@ connectionStringBuilder.Server = "127.0.0.1";
 connectionStringBuilder.Password = "1024";
 connectionStringBuilder.Database = "test";
 var connection = new MySqlConnection(connectionStringBuilder.ConnectionString);
-var context = new DbContext(connection);
+var context = new MyDbContext(connection);
 var view = @"
 SELECT
     st.*,
-    (st.id + 1) AS gs
+    (st.id + 1) AS Gs
 FROM
     student AS st
 ";
+
 var list = context.From<Student>()
     .Where(a => a.Name == "aa")
-    .Page(1,20, out long total)
+    .Page(1, 20, out long total)
+    .OrderBy(a=>a.Gs)
     .ToList();
 Console.WriteLine();
 

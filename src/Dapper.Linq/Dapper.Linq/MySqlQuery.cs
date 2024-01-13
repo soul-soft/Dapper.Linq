@@ -824,32 +824,55 @@ namespace Dapper.Linq
             }
             if (!string.IsNullOrEmpty(View) && IsView)
             {
-                sqlBuffer.AppendFormat("\nFROM (\n{0}\n) AS t", GetTableName());
+                var sub = new StringBuilder();
+                sub.Append(GetTableName());
+                if (_whereBuffer.Length > 0)
+                {
+                    sub.AppendFormat("\nWHERE\n\t{0}", _whereBuffer);
+                }
+                if (_groupBuffer.Length > 0)
+                {
+                    sub.AppendFormat("\nGROUP BY\n\t0}", _groupBuffer);
+                }
+                if (_havingBuffer.Length > 0)
+                {
+                    sub.AppendFormat("\nHAVING\n\t{0}", _havingBuffer);
+                }
+                sqlBuffer.AppendFormat("\nFROM (\n{0}\n) AS t", sub);
+                if (_groupBuffer.Length > 0)
+                {
+                    return string.Format("SELECT\n\tCOUNT(1)\nFROM\n\t({0}) AS t2", sub);
+                }
+                else
+                {
+                    return sqlBuffer.ToString();
+                }
             }
             else
             {
                 sqlBuffer.AppendFormat("\nFROM\n\t{0}", GetTableName());
+                if (_whereBuffer.Length > 0)
+                {
+                    sqlBuffer.AppendFormat("\nWHERE\n\t{0}", _whereBuffer);
+                }
+                if (_groupBuffer.Length > 0)
+                {
+                    sqlBuffer.AppendFormat("\nGROUP BY\n\t0}", _groupBuffer);
+                }
+                if (_havingBuffer.Length > 0)
+                {
+                    sqlBuffer.AppendFormat("\nHAVING\n\t{0}", _havingBuffer);
+                }
+                if (_groupBuffer.Length > 0)
+                {
+                    return string.Format("SELECT\n\tCOUNT(1)\nFROM\n\t({0}) AS T", sqlBuffer);
+                }
+                else
+                {
+                    return sqlBuffer.ToString();
+                }
             }
-            if (_whereBuffer.Length > 0)
-            {
-                sqlBuffer.AppendFormat("\nWHERE\n\t{0}", _whereBuffer);
-            }
-            if (_groupBuffer.Length > 0)
-            {
-                sqlBuffer.AppendFormat("\nGROUP BY\n\t0}", _groupBuffer);
-            }
-            if (_havingBuffer.Length > 0)
-            {
-                sqlBuffer.AppendFormat("\nHAVING\n\t{0}", _havingBuffer);
-            }
-            if (_groupBuffer.Length > 0)
-            {
-                return string.Format("SELECT\n\tCOUNT(1)\nFROM\n\t({0}) AS T", sqlBuffer);
-            }
-            else
-            {
-                return sqlBuffer.ToString();
-            }
+          
         }
         public string BuildExists()
         {
