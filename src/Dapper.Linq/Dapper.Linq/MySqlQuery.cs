@@ -800,11 +800,11 @@ namespace Dapper.Linq
         }
         public string BuildCount()
         {
-            var sqlBuffer = new StringBuilder("SELECT");
+            var sqlBuffer = new StringBuilder("SELECT\n");
             if (_columnBuffer.Length > 0)
             {
 
-                sqlBuffer.Append(" COUNT(");
+                sqlBuffer.Append("\tCOUNT(");
                 if (_distinctBuffer.Length > 0)
                 {
                     sqlBuffer.AppendFormat("{0} ", _distinctBuffer);
@@ -815,30 +815,36 @@ namespace Dapper.Linq
             {
                 if (_groupBuffer.Length > 0)
                 {
-                    sqlBuffer.Append(" 1 AS COUNT");
+                    sqlBuffer.Append("\t1 AS COUNT");
                 }
                 else
                 {
-                    sqlBuffer.AppendFormat(" COUNT(1)");
+                    sqlBuffer.AppendFormat("\tCOUNT(*)");
                 }
             }
-
-            sqlBuffer.AppendFormat(" FROM {0}", GetTableName());
+            if (!string.IsNullOrEmpty(View) && IsView)
+            {
+                sqlBuffer.AppendFormat("\nFROM (\n{0}\n) AS t", GetTableName());
+            }
+            else
+            {
+                sqlBuffer.AppendFormat("\nFROM\n\t{0}", GetTableName());
+            }
             if (_whereBuffer.Length > 0)
             {
-                sqlBuffer.AppendFormat(" WHERE {0}", _whereBuffer);
+                sqlBuffer.AppendFormat("\nWHERE\n\t{0}", _whereBuffer);
             }
             if (_groupBuffer.Length > 0)
             {
-                sqlBuffer.AppendFormat(" GROUP BY {0}", _groupBuffer);
+                sqlBuffer.AppendFormat("\nGROUP BY\n\t0}", _groupBuffer);
             }
             if (_havingBuffer.Length > 0)
             {
-                sqlBuffer.AppendFormat(" HAVING {0}", _havingBuffer);
+                sqlBuffer.AppendFormat("\nHAVING\n\t{0}", _havingBuffer);
             }
             if (_groupBuffer.Length > 0)
             {
-                return string.Format("SELECT COUNT(1) FROM ({0}) AS T", sqlBuffer);
+                return string.Format("SELECT\n\tCOUNT(1)\nFROM\n\t({0}) AS T", sqlBuffer);
             }
             else
             {
