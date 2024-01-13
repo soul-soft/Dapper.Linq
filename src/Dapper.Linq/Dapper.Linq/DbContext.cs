@@ -75,9 +75,15 @@ namespace Dapper.Linq
             return new MySqlQuery<T>(this, sqlBuilder, parameters);
         }
 
+        [Obsolete("有严重的性能问题")]
         public IQueryable<T> FromSql<T>(string sql, DynamicParameters parameters = null) where T : class
         {
-            return new MySqlQuery<T>(this, sql, parameters);
+            return new MySqlQuery<T>(this, sql, false, parameters);
+        }
+
+        public IQueryable<T> FromView<T>(string sql, DynamicParameters parameters = null) where T : class
+        {
+            return new MySqlQuery<T>(this, sql, true, parameters);
         }
 
         public void Dispose()

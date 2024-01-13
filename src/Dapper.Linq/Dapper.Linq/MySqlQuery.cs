@@ -15,15 +15,18 @@ namespace Dapper.Linq
         public string Prefix = "@";
         public string View { get; }
         public string Alias { get; private set; }
+        public bool IsView { get;  set; }
         public MySqlQuery(DbContext context)
         {
             _context = context;
+            IsView = true;
             Param = new DynamicParameters();
         }
 
-        public MySqlQuery(DbContext context, string view, DynamicParameters parameters = null)
+        public MySqlQuery(DbContext context, string view, bool isView,DynamicParameters parameters = null)
         {
-            View = view;
+            View = view.Trim();
+            IsView = isView;
             _context = context;
             Param = parameters ?? new DynamicParameters();
         }
@@ -642,10 +645,14 @@ namespace Dapper.Linq
         #region build
         public string GetTableName()
         {
-            if (!string.IsNullOrEmpty(View))
+            if (!string.IsNullOrEmpty(View) && !IsView)
             {
                 var alias = string.IsNullOrEmpty(Alias) ? "t" : Alias;
                 return $"({View}) AS {alias}";
+            }
+            else if (!string.IsNullOrEmpty(View) && IsView)
+            {
+                return View;
             }
             else if(!string.IsNullOrEmpty(Alias))
             {
@@ -741,39 +748,47 @@ namespace Dapper.Linq
         }
         public string BuildSelect()
         {
-            var sqlBuffer = new StringBuilder("SELECT");
-            if (_distinctBuffer.Length > 0)
+            var sqlBuffer = new StringBuilder();
+            if (IsView == true && !string.IsNullOrEmpty(View))
             {
-                sqlBuffer.AppendFormat(" {0}", _distinctBuffer);
-            }
-            if (_columnBuffer.Length > 0)
-            {
-                sqlBuffer.AppendFormat(" {0}", _columnBuffer);
+                sqlBuffer.Append(GetTableName());
             }
             else
             {
-                sqlBuffer.AppendFormat(" {0}", string.Join(",", _table.Columns.FindAll(f => !_filters.Exists(e => e == f.ColumnName)).Select(s => string.Format("{0} AS {1}", s.ColumnName, s.CSharpName))));
+                sqlBuffer.Append("SELECT\n\t");
+                if (_distinctBuffer.Length > 0)
+                {
+                    sqlBuffer.AppendFormat(" {0} ", _distinctBuffer);
+                }
+                if (_columnBuffer.Length > 0)
+                {
+                    sqlBuffer.AppendFormat("{0}", _columnBuffer);
+                }
+                else
+                {
+                    sqlBuffer.AppendFormat("{0}", string.Join(",\n\t", _table.Columns.FindAll(f => !_filters.Exists(e => e == f.ColumnName)).Select(s => string.Format("{0} AS {1}", s.ColumnName, s.CSharpName))));
+                }
+                sqlBuffer.AppendFormat("\nFROM\n\t{0}", GetTableName());
             }
-            sqlBuffer.AppendFormat(" FROM {0}", GetTableName());
             if (_whereBuffer.Length > 0)
             {
-                sqlBuffer.AppendFormat(" WHERE {0}", _whereBuffer);
+                sqlBuffer.AppendFormat("\nWHERE\n\t{0}", _whereBuffer);
             }
             if (_groupBuffer.Length > 0)
             {
-                sqlBuffer.AppendFormat(" GROUP BY {0}", _groupBuffer);
+                sqlBuffer.AppendFormat("\nGROUP BY\n\t{0}", _groupBuffer);
             }
             if (_havingBuffer.Length > 0)
             {
-                sqlBuffer.AppendFormat(" HAVING {0}", _havingBuffer);
+                sqlBuffer.AppendFormat("\nHAVING\n\t{0}", _havingBuffer);
             }
             if (_orderBuffer.Length > 0)
             {
-                sqlBuffer.AppendFormat(" ORDER BY {0}", _orderBuffer);
+                sqlBuffer.AppendFormat("\nORDER BY\n\t{0}", _orderBuffer);
             }
             if (pageIndex != null && pageCount != null)
             {
-                sqlBuffer.AppendFormat(" LIMIT {0},{1}", pageIndex, pageCount);
+                sqlBuffer.AppendFormat("\nLIMIT {0},{1}", pageIndex, pageCount);
             }
             if (_lock.Length > 0)
             {
