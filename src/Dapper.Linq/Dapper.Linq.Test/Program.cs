@@ -18,7 +18,7 @@ SELECT
 FROM
     student AS st
 ";
-var list = context.FromView<Student>(view)
+var list = context.From<Student>()
     .Where(a => a.Name == "aa")
     .Page(1,20, out long total)
     .ToList();
