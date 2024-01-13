@@ -193,11 +193,19 @@ namespace Dapper.Linq
             }
         }
 
-        internal string WhereText
+        public string WhereText
         {
             get 
             {
                 return string.Join(" AND ", _tokens.Where(a => a.Type == TokenType.Where).Select(s => s.Text));
+            }
+        }
+
+        public string OrderText
+        {
+            get
+            {
+                return string.Join(" AND ", _tokens.Where(a => a.Type == TokenType.OrderBy).Select(s => s.Text));
             }
         }
 

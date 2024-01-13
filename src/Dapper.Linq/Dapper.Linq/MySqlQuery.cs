@@ -800,11 +800,10 @@ namespace Dapper.Linq
         }
         public string BuildCount()
         {
-            var sqlBuffer = new StringBuilder("SELECT\n");
+            var sqlBuffer = new StringBuilder("SELECT");
             if (_columnBuffer.Length > 0)
             {
-
-                sqlBuffer.Append("\tCOUNT(");
+                sqlBuffer.Append("\n\tCOUNT(");
                 if (_distinctBuffer.Length > 0)
                 {
                     sqlBuffer.AppendFormat("{0} ", _distinctBuffer);
@@ -815,11 +814,11 @@ namespace Dapper.Linq
             {
                 if (_groupBuffer.Length > 0)
                 {
-                    sqlBuffer.Append("\t1 AS COUNT");
+                    sqlBuffer.Append("\n\t1 AS COUNT");
                 }
                 else
                 {
-                    sqlBuffer.AppendFormat("\tCOUNT(*)");
+                    sqlBuffer.AppendFormat("\n\t COUNT(*) ");
                 }
             }
             if (!string.IsNullOrEmpty(View) && IsView)
