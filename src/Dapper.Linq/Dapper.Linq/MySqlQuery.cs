@@ -747,6 +747,7 @@ namespace Dapper.Linq
                 _whereBuffer.Length > 0 ? string.Format(" WHERE {0}", _whereBuffer) : "");
             return sql;
         }
+    
         public string BuildSelect()
         {
             var sqlBuffer = new StringBuilder();
@@ -798,6 +799,7 @@ namespace Dapper.Linq
             var sql = sqlBuffer.ToString();
             return sql;
         }
+       
         public string BuildCount()
         {
             var sqlBuffer = new StringBuilder("SELECT");
@@ -818,7 +820,7 @@ namespace Dapper.Linq
                 }
                 else
                 {
-                    sqlBuffer.AppendFormat("\n\t COUNT(*) ");
+                    sqlBuffer.AppendFormat("\n\tCOUNT(*) ");
                 }
             }
             if (!string.IsNullOrEmpty(View) && IsView)
