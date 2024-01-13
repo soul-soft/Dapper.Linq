@@ -805,12 +805,12 @@ namespace Dapper.Linq
             var sqlBuffer = new StringBuilder("SELECT");
             if (_columnBuffer.Length > 0)
             {
-                sqlBuffer.Append("\n\tCOUNT(");
+                sqlBuffer.Append("\n COUNT(");
                 if (_distinctBuffer.Length > 0)
                 {
                     sqlBuffer.AppendFormat("{0} ", _distinctBuffer);
                 }
-                sqlBuffer.AppendFormat("{0})", _columnBuffer);
+                sqlBuffer.AppendFormat("{0}) ", _columnBuffer);
             }
             else
             {
@@ -820,7 +820,7 @@ namespace Dapper.Linq
                 }
                 else
                 {
-                    sqlBuffer.AppendFormat("\n\tCOUNT(*) ");
+                    sqlBuffer.AppendFormat("\n COUNT(*) ");
                 }
             }
             if (!string.IsNullOrEmpty(View) && IsView)
