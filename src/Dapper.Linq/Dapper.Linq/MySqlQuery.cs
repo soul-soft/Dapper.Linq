@@ -16,14 +16,15 @@ namespace Dapper.Linq
         public string View { get; }
         public string Alias { get; private set; }
         public bool IsView { get;  set; }
-        public MySqlQuery(DbContext context)
+       
+        public MySqlQuery(DbContext context, DynamicParameters parameters = null)
         {
             _context = context;
             IsView = true;
-            Param = new DynamicParameters();
+            Param = parameters ?? new DynamicParameters();
         }
 
-        public MySqlQuery(DbContext context, string view, bool isView,DynamicParameters parameters = null)
+        public MySqlQuery(DbContext context, string view, bool isView, DynamicParameters parameters = null)
         {
             View = view.Trim();
             IsView = isView;

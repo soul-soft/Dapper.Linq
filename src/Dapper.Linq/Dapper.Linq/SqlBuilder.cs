@@ -177,6 +177,22 @@ namespace Dapper.Linq
             }
         }
 
+        public string OrderSql
+        {
+            get
+            {
+                return Build("/**orderby**/");
+            }
+        }
+
+        public string LimitSql
+        {
+            get
+            {
+                return Build("/**limit**/");
+            }
+        }
+
         internal string WhereText
         {
             get 
